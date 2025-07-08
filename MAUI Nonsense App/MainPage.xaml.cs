@@ -1,4 +1,6 @@
-﻿namespace MAUI_Nonsense_App
+﻿using MAUI_Nonsense_App.Pages;
+
+namespace MAUI_Nonsense_App
 {
     public partial class MainPage : ContentPage
     {
@@ -9,16 +11,14 @@
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
+        private async void OnStepCounterClicked(object sender, EventArgs e)
         {
-            count++;
+            await Navigation.PushAsync(new StepCounterPage());
+        }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private async void OnQrScannerClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new QrScannerPage());
         }
     }
 }
