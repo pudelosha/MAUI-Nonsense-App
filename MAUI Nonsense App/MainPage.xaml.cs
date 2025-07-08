@@ -27,8 +27,7 @@ namespace MAUI_Nonsense_App
 
         private async void OnQrScannerClicked(object sender, EventArgs e)
         {
-            var vm = new QrScannerViewModel(App.Services.GetService<IQrScannerService>());
-            await Navigation.PushAsync(new QrScannerPage(vm));
+            await Navigation.PushAsync(new QrScannerPage());
         }
     }
 }

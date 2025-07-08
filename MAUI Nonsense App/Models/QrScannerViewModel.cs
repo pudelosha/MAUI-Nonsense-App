@@ -1,20 +1,21 @@
-﻿using MAUI_Nonsense_App.Services;
+﻿namespace MAUI_Nonsense_App.Models;
 
-namespace MAUI_Nonsense_App.Models;
-
-public partial class QrScannerViewModel
+public class QrScannerViewModel
 {
-    private readonly IQrScannerService _qrService;
+    public string Result { get; private set; }
 
-    public string Result { get; set; }
-
-    public QrScannerViewModel(IQrScannerService qrService)
+    public QrScannerViewModel()
     {
-        _qrService = qrService;
+        Result = "Please point the camera at a QR or barcode";
     }
 
     public void OnBarcodeDetected(string? result)
     {
         Result = result ?? "No result";
+    }
+
+    public void ResetResult()
+    {
+        Result = "Please point the camera at a QR or barcode";
     }
 }
