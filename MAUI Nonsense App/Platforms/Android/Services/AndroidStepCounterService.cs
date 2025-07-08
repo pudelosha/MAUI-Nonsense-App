@@ -1,56 +1,70 @@
-﻿using AApp = Android.App.Application;
+﻿using System;
+using System.Threading.Tasks;
 using Android.Content;
-using Android.Hardware;
+using Android.OS;
+using Microsoft.Maui.Storage;
+using AApp = Android.App.Application;
 
 namespace MAUI_Nonsense_App.Services.Android
 {
-    public class AndroidStepCounterService : Java.Lang.Object, ISensorEventListener, IStepCounterService
+    public class AndroidStepCounterService : IStepCounterService
     {
-        private SensorManager _sensorManager;
-        private Sensor _stepSensor;
-        private int _initialSteps;
-        private const string InitialStepsKey = "InitialSteps";
+        private readonly Context _context;
+        private readonly Handler _handler;
+        private const int PollIntervalMs = 2000;
 
-        public int TotalSteps { get; private set; }
-        public int Last24HoursSteps => TotalSteps; // placeholder — real 24h tracking needs storage
+        public int TotalSteps => Preferences.Get("TotalSteps", 0);
+        public int Last24HoursSteps => TotalSteps; // Placeholder
 
         public event EventHandler StepsUpdated;
 
         public AndroidStepCounterService()
         {
-            _sensorManager = (SensorManager)AApp.Context.GetSystemService(Context.SensorService);
-            _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
-
-            _initialSteps = Preferences.Get(InitialStepsKey, -1);
+            _context = AApp.Context;
+            _handler = new Handler();
         }
 
         public Task StartAsync()
         {
-            if (_stepSensor != null)
-                _sensorManager.RegisterListener(this, _stepSensor, SensorDelay.Ui);
-
+            StartForegroundService();
+            StartPolling();
             return Task.CompletedTask;
         }
 
         public Task StopAsync()
         {
-            _sensorManager?.UnregisterListener(this, _stepSensor);
+            StopForegroundService();
+            _handler.RemoveCallbacksAndMessages(null);
             return Task.CompletedTask;
         }
 
-        public void OnSensorChanged(SensorEvent e)
+        private void StartForegroundService()
         {
-            if (_initialSteps == -1)
+            var intent = new Intent(_context, typeof(MAUI_Nonsense_App.Platforms.Android.Services.StepCounterForegroundService));
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                _initialSteps = (int)e.Values[0];
-                Preferences.Set(InitialStepsKey, _initialSteps);
+                _context.StartForegroundService(intent);
             }
-
-            TotalSteps = (int)e.Values[0] - _initialSteps;
-
-            StepsUpdated?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                _context.StartService(intent);
+            }
         }
 
-        public void OnAccuracyChanged(Sensor sensor, SensorStatus accuracy) { }
+        private void StopForegroundService()
+        {
+            var intent = new Intent(_context, typeof(MAUI_Nonsense_App.Platforms.Android.Services.StepCounterForegroundService));
+            _context.StopService(intent);
+        }
+
+        private void StartPolling()
+        {
+            _handler.PostDelayed(() =>
+            {
+                StepsUpdated?.Invoke(this, EventArgs.Empty);
+                StartPolling();
+            }, PollIntervalMs);
+        }
     }
 }
