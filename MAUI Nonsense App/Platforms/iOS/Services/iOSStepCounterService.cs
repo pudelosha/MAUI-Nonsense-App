@@ -1,13 +1,12 @@
-﻿#if IOS
-using CoreMotion;
+﻿using CoreMotion;
 using Foundation;
-using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App.Services.iOS
 {
     public class iOSStepCounterService : IStepCounterService
     {
         private readonly CMPedometer _pedometer = new CMPedometer();
+        private int _initialSteps = -1;
 
         public int TotalSteps { get; private set; }
         public int Last24HoursSteps { get; private set; }
@@ -16,21 +15,30 @@ namespace MAUI_Nonsense_App.Services.iOS
 
         public async Task StartAsync()
         {
-            if (!CMPedometer.IsStepCountingAvailable) return;
+            if (!CMPedometer.IsStepCountingAvailable)
+                return;
 
             var now = NSDate.Now;
-            var yesterday = now.AddSeconds(-24 * 3600);
 
-            var summary = await _pedometer.QueryPedometerDataAsync(yesterday, now);
-            Last24HoursSteps = summary.NumberOfSteps.Int32Value;
+            // Query the last 24h steps to initialize Last24HoursSteps
+            var from = now.AddSeconds(-24 * 3600);
+            var summary = await _pedometer.QueryPedometerDataAsync(from, now);
+            Last24HoursSteps = summary?.NumberOfSteps?.Int32Value ?? 0;
 
-            _pedometer.StartPedometerUpdates(NSDate.Now, (data, error) =>
+            // Start live updates
+            _pedometer.StartPedometerUpdates(now, (data, error) =>
             {
-                if (data != null)
-                {
-                    TotalSteps = data.NumberOfSteps.Int32Value;
-                    StepsUpdated?.Invoke(this, EventArgs.Empty);
-                }
+                if (error != null || data == null)
+                    return;
+
+                int currentSteps = data.NumberOfSteps?.Int32Value ?? 0;
+
+                if (_initialSteps == -1)
+                    _initialSteps = currentSteps;
+
+                TotalSteps = currentSteps - _initialSteps;
+
+                StepsUpdated?.Invoke(this, EventArgs.Empty);
             });
         }
 
@@ -41,4 +49,3 @@ namespace MAUI_Nonsense_App.Services.iOS
         }
     }
 }
-#endif

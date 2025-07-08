@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MAUI_Nonsense_App.Models"
              x:Class="MAUI_Nonsense_App.Pages.StepCounterPage"
-             Title="StepCounterPage">
+             Title="Step Counter">
 
     <VerticalStackLayout Padding="20" Spacing="20">
         <Label Text="Step Counter" FontSize="24" HorizontalOptions="Center" />
-        <Label x:Name="TotalStepsLabel" Text="Steps: 0" FontSize="18" />
-        <Label x:Name="Last24HoursLabel" Text="Last 24h: 0" FontSize="18" />
+        <Label Text="{Binding TotalSteps, StringFormat='Steps: {0}'}" FontSize="18" />
+        <Label Text="{Binding Last24HoursSteps, StringFormat='Last 24h: {0}'}" FontSize="18" />
     </VerticalStackLayout>
 
 </ContentPage>
