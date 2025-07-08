@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Android.Content;
+﻿using Android.Content;
 using Android.OS;
-using Microsoft.Maui.Storage;
+using MAUI_Nonsense_App.Services;
 using AApp = Android.App.Application;
 
-namespace MAUI_Nonsense_App.Services.Android
+namespace MAUI_Nonsense_App.Platforms.Android.Services
 {
     public class AndroidStepCounterService : IStepCounterService
     {
@@ -14,7 +12,7 @@ namespace MAUI_Nonsense_App.Services.Android
         private const int PollIntervalMs = 2000;
 
         public int TotalSteps => Preferences.Get("TotalSteps", 0);
-        public int Last24HoursSteps => TotalSteps; // Placeholder
+        public int Last24HoursSteps => TotalSteps;
 
         public event EventHandler StepsUpdated;
 

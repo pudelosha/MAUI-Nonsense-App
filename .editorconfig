@@ -1,0 +1,13 @@
+﻿[*.cs]
+
+# IDE0022: Use block body for method
+dotnet_diagnostic.IDE0022.severity = silent
+
+# CS8767: Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+dotnet_diagnostic.CS8767.severity = silent
+
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = silent
+
+# IDE0002: Simplify Member Access
+dotnet_diagnostic.IDE0002.severity = silent

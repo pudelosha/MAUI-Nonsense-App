@@ -26,7 +26,15 @@ namespace MAUI_Nonsense_App
 
         private async void OnQrScannerClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new QrScannerPage());
+            var qrService = App.Services.GetService<IQrScannerService>();
+            if (qrService == null)
+            {
+                await DisplayAlert("Error", "QR scanner service not available.", "OK");
+                return;
+            }
+
+            await Navigation.PushAsync(new QrScannerPage(qrService));
         }
+
     }
 }

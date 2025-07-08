@@ -41,7 +41,6 @@ namespace MAUI_Nonsense_App.Models
         {
             _service = service;
 
-            // initialize with current values
             TotalSteps = service.TotalSteps;
             Last24HoursSteps = service.Last24HoursSteps;
 

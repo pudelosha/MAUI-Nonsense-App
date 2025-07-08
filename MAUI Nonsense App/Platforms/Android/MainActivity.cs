@@ -15,7 +15,6 @@ namespace MAUI_Nonsense_App
         {
             base.OnCreate(savedInstanceState);
 
-            // Request ACTIVITY_RECOGNITION permission if needed
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) // Android 10+
             {
                 if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ActivityRecognition) != Permission.Granted)

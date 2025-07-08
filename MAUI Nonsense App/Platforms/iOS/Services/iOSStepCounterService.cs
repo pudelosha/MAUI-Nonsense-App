@@ -1,7 +1,8 @@
 ﻿using CoreMotion;
 using Foundation;
+using MAUI_Nonsense_App.Services;
 
-namespace MAUI_Nonsense_App.Services.iOS
+namespace MAUI_Nonsense_App.Platforms.iOS.Services
 {
     public class iOSStepCounterService : IStepCounterService
     {
@@ -21,12 +22,10 @@ namespace MAUI_Nonsense_App.Services.iOS
 
             var now = NSDate.Now;
 
-            // Query the last 24h steps to initialize Last24HoursSteps
             var from = now.AddSeconds(-24 * 3600);
             var summary = await _pedometer.QueryPedometerDataAsync(from, now);
             Last24HoursSteps = summary?.NumberOfSteps?.Int32Value ?? 0;
 
-            // Start live updates
             _initialSteps = Preferences.Get(InitialStepsKey, -1);
 
             _pedometer.StartPedometerUpdates(now, (data, error) =>

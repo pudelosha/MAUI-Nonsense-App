@@ -17,9 +17,11 @@ namespace MAUI_Nonsense_App
                 });
 
 #if ANDROID
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Services.Android.AndroidStepCounterService>();
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.Android.Services.AndroidStepCounterService>();
+            builder.Services.AddSingleton<IQrScannerService, MAUI_Nonsense_App.Platforms.Android.Services.AndroidQrScannerService>();
 #elif IOS
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Services.iOS.iOSStepCounterService>();
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.iOS.Services.iOSStepCounterService>();
+            builder.Services.AddSingleton<IQrScannerService, MAUI_Nonsense_App.Platforms.iOS.Services.iOSQrScannerService>();
 #endif
 
 #if DEBUG
