@@ -1,4 +1,8 @@
-﻿using MAUI_Nonsense_App.Services;
+﻿using MAUI_Nonsense_App.Pages;
+using MAUI_Nonsense_App.Services;
+using ZXing.Net.Maui;
+using ZXing.Net.Maui.Controls;
+using ZXing.Net.Maui.Readers;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services
 {
@@ -6,9 +10,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services
     {
         public Task<string?> ScanAsync()
         {
-            // TODO: implement ZXing.Net.Maui scanner page or intent
-            // This is a stub
-            return Task.FromResult<string?>("Scanned QR Code (Android)");
+            // not needed because we delegate to QrScannerViewModel
+            return Task.FromResult<string?>(null);
         }
     }
 }

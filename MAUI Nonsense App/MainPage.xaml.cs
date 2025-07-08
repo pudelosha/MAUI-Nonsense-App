@@ -1,4 +1,5 @@
-﻿using MAUI_Nonsense_App.Pages;
+﻿using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App
@@ -26,15 +27,8 @@ namespace MAUI_Nonsense_App
 
         private async void OnQrScannerClicked(object sender, EventArgs e)
         {
-            var qrService = App.Services.GetService<IQrScannerService>();
-            if (qrService == null)
-            {
-                await DisplayAlert("Error", "QR scanner service not available.", "OK");
-                return;
-            }
-
-            await Navigation.PushAsync(new QrScannerPage(qrService));
+            var vm = new QrScannerViewModel(App.Services.GetService<IQrScannerService>());
+            await Navigation.PushAsync(new QrScannerPage(vm));
         }
-
     }
 }
