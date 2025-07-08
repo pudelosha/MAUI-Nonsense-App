@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App
 {
@@ -15,8 +16,14 @@ namespace MAUI_Nonsense_App
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+#if ANDROID
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Services.Android.AndroidStepCounterService>();
+#elif IOS
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Services.iOS.iOSStepCounterService>();
+#endif
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
