@@ -8,7 +8,8 @@ namespace MAUI_Nonsense_App.Services.Android
     {
         private SensorManager _sensorManager;
         private Sensor _stepSensor;
-        private int _initialSteps = -1;
+        private int _initialSteps;
+        private const string InitialStepsKey = "InitialSteps";
 
         public int TotalSteps { get; private set; }
         public int Last24HoursSteps => TotalSteps; // placeholder — real 24h tracking needs storage
@@ -19,6 +20,8 @@ namespace MAUI_Nonsense_App.Services.Android
         {
             _sensorManager = (SensorManager)AApp.Context.GetSystemService(Context.SensorService);
             _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
+
+            _initialSteps = Preferences.Get(InitialStepsKey, -1);
         }
 
         public Task StartAsync()
@@ -38,7 +41,10 @@ namespace MAUI_Nonsense_App.Services.Android
         public void OnSensorChanged(SensorEvent e)
         {
             if (_initialSteps == -1)
+            {
                 _initialSteps = (int)e.Values[0];
+                Preferences.Set(InitialStepsKey, _initialSteps);
+            }
 
             TotalSteps = (int)e.Values[0] - _initialSteps;
 

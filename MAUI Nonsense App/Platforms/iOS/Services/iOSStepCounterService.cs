@@ -6,7 +6,8 @@ namespace MAUI_Nonsense_App.Services.iOS
     public class iOSStepCounterService : IStepCounterService
     {
         private readonly CMPedometer _pedometer = new CMPedometer();
-        private int _initialSteps = -1;
+        private int _initialSteps;
+        private const string InitialStepsKey = "InitialSteps";
 
         public int TotalSteps { get; private set; }
         public int Last24HoursSteps { get; private set; }
@@ -26,19 +27,23 @@ namespace MAUI_Nonsense_App.Services.iOS
             Last24HoursSteps = summary?.NumberOfSteps?.Int32Value ?? 0;
 
             // Start live updates
+            _initialSteps = Preferences.Get(InitialStepsKey, -1);
+
             _pedometer.StartPedometerUpdates(now, (data, error) =>
             {
-                if (error != null || data == null)
-                    return;
+                if (data != null)
+                {
+                    int currentSteps = data.NumberOfSteps?.Int32Value ?? 0;
 
-                int currentSteps = data.NumberOfSteps?.Int32Value ?? 0;
+                    if (_initialSteps == -1)
+                    {
+                        _initialSteps = currentSteps;
+                        Preferences.Set(InitialStepsKey, _initialSteps);
+                    }
 
-                if (_initialSteps == -1)
-                    _initialSteps = currentSteps;
-
-                TotalSteps = currentSteps - _initialSteps;
-
-                StepsUpdated?.Invoke(this, EventArgs.Empty);
+                    TotalSteps = currentSteps - _initialSteps;
+                    StepsUpdated?.Invoke(this, EventArgs.Empty);
+                }
             });
         }
 
