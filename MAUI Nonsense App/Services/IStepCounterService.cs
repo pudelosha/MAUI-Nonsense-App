@@ -2,13 +2,15 @@
 {
     public interface IStepCounterService
     {
+        int TotalSteps { get; }
+        int Last24HoursSteps { get; }
+        Dictionary<string, int> StepHistory { get; }
+
+        event EventHandler StepsUpdated;
+
         Task StartAsync();
         Task StopAsync();
 
-        int TotalSteps { get; }
-
-        int Last24HoursSteps { get; }
-
-        event EventHandler StepsUpdated;
+        void ResetAll();
     }
 }

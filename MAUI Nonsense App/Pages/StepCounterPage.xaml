@@ -9,6 +9,18 @@
         <Label Text="Step Counter" FontSize="24" HorizontalOptions="Center" />
         <Label Text="{Binding TotalSteps, StringFormat='Steps: {0}'}" FontSize="18" />
         <Label Text="{Binding Last24HoursSteps, StringFormat='Last 24h: {0}'}" FontSize="18" />
+
+        <Label Text="Last 7 Days" FontSize="20" Margin="0,20,0,0"/>
+        <CollectionView ItemsSource="{Binding Last7Days}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <HorizontalStackLayout>
+                        <Label Text="{Binding Date}" WidthRequest="120"/>
+                        <Label Text="{Binding Steps}" />
+                    </HorizontalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 
 </ContentPage>
