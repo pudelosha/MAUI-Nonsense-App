@@ -7,9 +7,25 @@
     <VerticalStackLayout Padding="20" Spacing="20">
         <Label Text="Light Control" FontSize="24" HorizontalOptions="Center" />
 
-        <Button Text="Light" Clicked="OnToggleLightClicked">
+        <Button Text="Flashlight" Clicked="OnToggleLightClicked">
             <Button.Triggers>
                 <DataTrigger TargetType="Button" Binding="{Binding IsOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <Button Text="Lighthouse" Clicked="OnToggleLighthouseClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsLighthouseOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <Button Text="Police" Clicked="OnTogglePoliceClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsPoliceOn}" Value="true">
                     <Setter Property="BackgroundColor" Value="LightGreen"/>
                 </DataTrigger>
             </Button.Triggers>
@@ -30,5 +46,8 @@
                 </DataTrigger>
             </Button.Triggers>
         </Button>
+
+        <Button Text="Morse" Clicked="OnSendMorseClicked"
+                BackgroundColor="{Binding IsMorseOn, Converter={StaticResource BoolToColorConverter}}" />
     </VerticalStackLayout>
 </ContentPage>

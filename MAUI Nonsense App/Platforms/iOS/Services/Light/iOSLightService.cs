@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AVFoundation;
@@ -19,7 +20,7 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
         public iOSLightService()
         {
             _device = AVCaptureDevice
-                        .DevicesWithMediaType("vide")
+                        .DevicesWithMediaType("vide")  // ⬅️ kept exactly as your original
                         .FirstOrDefault(d => d.HasTorch);
 
             if (_device == null)
@@ -28,7 +29,8 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
             }
         }
 
-        public Task<bool> IsSupportedAsync() => Task.FromResult(_device?.TorchAvailable ?? false);
+        public Task<bool> IsSupportedAsync() =>
+            Task.FromResult(_device?.TorchAvailable ?? false);
 
         public async Task TurnOnAsync()
         {
@@ -71,8 +73,35 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
             return Task.CompletedTask;
         }
 
+        public Task StartLighthouseAsync()
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            var token = _cts.Token;
+
+            _ = Task.Run(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await TurnOnAsync();
+                    await Task.Delay(5000, token);
+                    await TurnOffAsync();
+                    await Task.Delay(5000, token);
+                }
+            }, token);
+
+            return Task.CompletedTask;
+        }
+
+        public Task StopLighthouseAsync()
+        {
+            _cts?.Cancel();
+            return TurnOffAsync();
+        }
+
         public Task StartStrobeAsync(int intervalMs)
         {
+            _cts?.Cancel();
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
 
@@ -85,7 +114,7 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
                     await TurnOffAsync();
                     await Task.Delay(intervalMs, token);
                 }
-            });
+            }, token);
 
             return Task.CompletedTask;
         }
@@ -93,42 +122,83 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
         public Task StopStrobeAsync()
         {
             _cts?.Cancel();
-            return Task.CompletedTask;
+            return TurnOffAsync();
         }
 
-        public Task StartSOSAsync() => StartMorseAsync("... --- ...");
-
-        public Task StopSOSAsync() => StopStrobeAsync();
-
-        private async Task StartMorseAsync(string morse)
+        public Task StartSOSAsync()
         {
-            const int unit = 200;
+            _cts?.Cancel();
+            return StartMorseAsync("... --- ...");
+        }
+
+        public Task StopSOSAsync()
+        {
+            _cts?.Cancel();
+            return TurnOffAsync();
+        }
+
+        public Task StartPoliceAsync()
+        {
+            _cts?.Cancel();
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
 
-            foreach (char c in morse)
+            _ = Task.Run(async () =>
             {
-                if (token.IsCancellationRequested) break;
+                while (!token.IsCancellationRequested)
+                {
+                    await TurnOnAsync();
+                    await Task.Delay(500, token);
+                    await TurnOffAsync();
+                    await Task.Delay(500, token);
+                }
+            }, token);
 
-                if (c == '.')
+            return Task.CompletedTask;
+        }
+
+        public Task StopPoliceAsync()
+        {
+            _cts?.Cancel();
+            return TurnOffAsync();
+        }
+
+        public Task StartMorseAsync(string morse)
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            var token = _cts.Token;
+
+            _ = Task.Run(async () =>
+            {
+                const int unit = 200;
+
+                foreach (char c in morse)
                 {
-                    await TurnOnAsync();
-                    await Task.Delay(unit, token);
-                    await TurnOffAsync();
-                    await Task.Delay(unit, token);
+                    if (token.IsCancellationRequested) break;
+
+                    if (c == '.')
+                    {
+                        await TurnOnAsync();
+                        await Task.Delay(unit, token);
+                        await TurnOffAsync();
+                        await Task.Delay(unit, token);
+                    }
+                    else if (c == '-')
+                    {
+                        await TurnOnAsync();
+                        await Task.Delay(unit * 3, token);
+                        await TurnOffAsync();
+                        await Task.Delay(unit, token);
+                    }
+                    else
+                    {
+                        await Task.Delay(unit * 3, token);
+                    }
                 }
-                else if (c == '-')
-                {
-                    await TurnOnAsync();
-                    await Task.Delay(unit * 3, token);
-                    await TurnOffAsync();
-                    await Task.Delay(unit, token);
-                }
-                else
-                {
-                    await Task.Delay(unit * 3, token);
-                }
-            }
+            }, token);
+
+            return Task.CompletedTask;
         }
     }
 }

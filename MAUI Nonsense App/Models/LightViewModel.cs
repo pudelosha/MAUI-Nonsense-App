@@ -1,4 +1,5 @@
-﻿using MAUI_Nonsense_App.Services;
+﻿using MAUI_Nonsense_App.Helpers;
+using MAUI_Nonsense_App.Services;
 using System.ComponentModel;
 
 public class LightViewModel : INotifyPropertyChanged
@@ -10,6 +11,10 @@ public class LightViewModel : INotifyPropertyChanged
     public bool IsOn { get; private set; }
     public bool IsStrobeOn { get; private set; }
     public bool IsSOSOn { get; private set; }
+    public bool IsMorseOn { get; private set; }
+    public bool IsLighthouseOn { get; private set; }
+    public bool IsPoliceOn { get; private set; }
+
 
     public LightViewModel(ILightService lightService)
     {
@@ -31,6 +36,40 @@ public class LightViewModel : INotifyPropertyChanged
         }
 
         OnPropertyChanged(nameof(IsOn));
+    }
+
+    public async Task ToggleLighthouseAsync()
+    {
+        if (!IsLighthouseOn)
+        {
+            await StopAllModes();
+            await _lightService.StartLighthouseAsync();
+            IsLighthouseOn = true;
+        }
+        else
+        {
+            await _lightService.StopLighthouseAsync();
+            IsLighthouseOn = false;
+        }
+
+        OnPropertyChanged(nameof(IsLighthouseOn));
+    }
+
+    public async Task TogglePoliceAsync()
+    {
+        if (!IsPoliceOn)
+        {
+            await StopAllModes();
+            await _lightService.StartPoliceAsync();
+            IsPoliceOn = true;
+        }
+        else
+        {
+            await _lightService.StopPoliceAsync();
+            IsPoliceOn = false;
+        }
+
+        OnPropertyChanged(nameof(IsPoliceOn));
     }
 
     public async Task ToggleStrobeAsync()
@@ -68,6 +107,21 @@ public class LightViewModel : INotifyPropertyChanged
         }
     }
 
+    public async Task SendMorseMessageAsync(string message)
+    {
+        await StopAllModes();
+        IsMorseOn = true;
+        OnPropertyChanged(nameof(IsMorseOn));
+
+        _ = Task.Run(async () =>
+        {
+            var morse = MorseEncoder.Encode(message);
+            await _lightService.StartMorseAsync(morse);
+            IsMorseOn = false;
+            OnPropertyChanged(nameof(IsMorseOn));
+        });
+    }
+
     private async Task StopAllModes()
     {
         if (IsOn)
@@ -75,6 +129,20 @@ public class LightViewModel : INotifyPropertyChanged
             await _lightService.TurnOffAsync();
             IsOn = false;
             OnPropertyChanged(nameof(IsOn));
+        }
+
+        if (IsLighthouseOn)
+        {
+            await _lightService.StopLighthouseAsync();
+            IsLighthouseOn = false;
+            OnPropertyChanged(nameof(IsLighthouseOn));
+        }
+
+        if (IsPoliceOn)
+        {
+            await _lightService.StopPoliceAsync();
+            IsPoliceOn = false;
+            OnPropertyChanged(nameof(IsPoliceOn));
         }
 
         if (IsStrobeOn)
@@ -89,6 +157,13 @@ public class LightViewModel : INotifyPropertyChanged
             await _lightService.StopSOSAsync();
             IsSOSOn = false;
             OnPropertyChanged(nameof(IsSOSOn));
+        }
+
+        if (IsMorseOn)
+        {
+            await _lightService.StopSOSAsync();
+            IsMorseOn = false;
+            OnPropertyChanged(nameof(IsMorseOn));
         }
 
         await _lightService.TurnOffAsync();
