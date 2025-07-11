@@ -8,6 +8,7 @@
             <Label Text="Welcome to MAUI Nonsense App!" FontSize="24" HorizontalOptions="Center" />
             <Button Text="Step Counter" Clicked="OnStepCounterClicked" />
             <Button Text="QR Code Scanner" Clicked="OnQrScannerClicked" />
+            <Button Text="Light" Clicked="OnLightClicked" />
         </VerticalStackLayout>
     </ScrollView>
 

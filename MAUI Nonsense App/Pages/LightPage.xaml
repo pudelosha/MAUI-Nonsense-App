@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.LightPage"
+             Title="Light">
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <Label Text="Light Control" FontSize="24" HorizontalOptions="Center" />
+
+        <Button Text="Light" Clicked="OnToggleLightClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <Button Text="Strobe" Clicked="OnToggleStrobeClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsStrobeOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <Button Text="SOS" Clicked="OnToggleSOSClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsSOSOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+    </VerticalStackLayout>
+</ContentPage>

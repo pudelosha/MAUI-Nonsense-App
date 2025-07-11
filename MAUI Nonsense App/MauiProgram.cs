@@ -20,9 +20,11 @@ namespace MAUI_Nonsense_App
                 });
 
 #if ANDROID
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.Android.Services.AndroidStepCounterService>();
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.AndroidStepCounterService>();
+            builder.Services.AddSingleton<ILightService, MAUI_Nonsense_App.Platforms.Android.Services.Light.AndroidLightService>();
 #elif IOS
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.iOS.Services.iOSStepCounterService>();
+            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter.iOSStepCounterService>();
+            builder.Services.AddSingleton<ILightService, MAUI_Nonsense_App.Platforms.iOS.Services.Light.iOSLightService>();
 #endif
 
 #if DEBUG

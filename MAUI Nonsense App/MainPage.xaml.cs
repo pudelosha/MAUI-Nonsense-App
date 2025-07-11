@@ -29,5 +29,17 @@ namespace MAUI_Nonsense_App
         {
             await Navigation.PushAsync(new QrScannerPage());
         }
+
+        private async void OnLightClicked(object sender, EventArgs e)
+        {
+            var lightService = App.Services.GetService<ILightService>();
+            if (lightService is null)
+            {
+                await DisplayAlert("Error", "Light service not available", "OK");
+                return;
+            }
+
+            await Navigation.PushAsync(new LightPage(lightService));
+        }
     }
 }

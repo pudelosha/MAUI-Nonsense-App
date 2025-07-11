@@ -7,7 +7,7 @@ using AndroidX.Core.App;
 using Microsoft.Maui.Storage;
 using System.Text.Json;
 
-namespace MAUI_Nonsense_App.Platforms.Android.Services
+namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
     [Service(ForegroundServiceType = ForegroundService.TypeSpecialUse)]
     public class StepCounterForegroundService : Service, ISensorEventListener

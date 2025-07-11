@@ -3,7 +3,7 @@ using Foundation;
 using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Storage;
 
-namespace MAUI_Nonsense_App.Platforms.iOS.Services
+namespace MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter
 {
     public class iOSStepCounterService : IStepCounterService
     {

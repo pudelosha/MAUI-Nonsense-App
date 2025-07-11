@@ -4,7 +4,7 @@ using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Storage;
 using AApp = Android.App.Application;
 
-namespace MAUI_Nonsense_App.Platforms.Android.Services
+namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
     public class AndroidStepCounterService : IStepCounterService
     {
