@@ -1,15 +1,106 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.MainPage">
+             x:Class="MAUI_Nonsense_App.MainPage"
+             Title="MAUI Nonsense App">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Welcome to MAUI Nonsense App!" FontSize="24" HorizontalOptions="Center" />
-            <Button Text="Step Counter" Clicked="OnStepCounterClicked" />
-            <Button Text="QR Code Scanner" Clicked="OnQrScannerClicked" />
-            <Button Text="Light" Clicked="OnLightClicked" />
-        </VerticalStackLayout>
-    </ScrollView>
+        <Grid Padding="20" RowSpacing="20" ColumnSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
+            <!-- Row 1 -->
+            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf554;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Activity" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnStepCounterTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf1bb;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Survival" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSurvivalTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Row 2 -->
+            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf0ad;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Tools" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnToolsTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf15b;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Office" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOfficeTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Row 3 -->
+            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf155;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Finance" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFinanceTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf02a;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Scanner" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnScannerTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Row 4 -->
+            <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf007;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Profile" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnProfileTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TileBorder}">
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10" Spacing="8">
+                    <Label Text="&#xf013;" FontFamily="FARegular" FontSize="48" HorizontalOptions="Center" TextColor="#888888"/>
+                    <Label Text="Settings" FontSize="Medium" HorizontalOptions="Center" TextColor="#888888"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSettingsTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+        </Grid>
+    </ScrollView>
 </ContentPage>
