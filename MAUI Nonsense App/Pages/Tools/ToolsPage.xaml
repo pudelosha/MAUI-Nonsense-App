@@ -2,11 +2,86 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.ToolsPage"
-             Title="ToolsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Tools">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Level -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf2d0;" 
+                           FontFamily="FARegular"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Level" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Check if a surface is level or measure tilt angle." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnLevelTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Unit Converter -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf0ec;" 
+                           FontFamily="FARegular"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Unit Converter" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Convert between units: length, weight, temperature, and more." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnUnitConverterTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Ruler -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf0cb;" 
+                           FontFamily="FARegular"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Ruler" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Measure small distances directly on your screen." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRulerTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
