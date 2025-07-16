@@ -2,11 +2,55 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Survival.CompassPage"
-             Title="CompassPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             Title="Compass"
+             BackgroundColor="White">
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+
+        <!-- Compass Dial -->
+        <Grid HeightRequest="300" WidthRequest="300" HorizontalOptions="Center" VerticalOptions="Center">
+            <!-- Rotating Dial -->
+            <Image x:Name="DialImage"
+                   Source="compass_dial_full.png"
+                   HeightRequest="300"
+                   WidthRequest="300"
+                   Rotation="0"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+
+            <!-- Fixed red arrow -->
+            <BoxView Color="Red"
+                     WidthRequest="4"
+                     HeightRequest="160"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center" />
+        </Grid>
+
+        <!-- Heading -->
+        <Label x:Name="HeadingLabel"
+               Text="0° N"
+               FontSize="36"
+               HorizontalOptions="Center"
+               TextColor="Black"/>
+
+        <!-- Coordinates -->
+        <Label x:Name="CoordinatesLabel"
+               Text="Lat: 0.0000, Lon: 0.0000"
+               FontSize="14"
+               HorizontalOptions="Center"
+               TextColor="Black"/>
+
+        <!-- Calibration Status -->
+        <Label x:Name="CalibrationStatusLabel"
+               Text="Calibration: Unknown"
+               FontSize="14"
+               HorizontalOptions="Center"
+               TextColor="Red"/>
+
+        <!-- Recalibrate Button -->
+        <Button Text="Recalibrate Compass"
+                Clicked="OnRecalibrateClicked"
+                HorizontalOptions="Center"/>
+
     </VerticalStackLayout>
 </ContentPage>

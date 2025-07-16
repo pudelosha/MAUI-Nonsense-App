@@ -1,14 +1,13 @@
 ﻿using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
 using MAUI_Nonsense_App.Pages.Survival;
-using MAUI_Nonsense_App.Services;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
 
 namespace MAUI_Nonsense_App
 {
-    public static class MauiProgram
+    public static partial class MauiProgram
     {
         public static MauiApp CreateMauiApp()
         {
@@ -23,15 +22,10 @@ namespace MAUI_Nonsense_App
                     fonts.AddFont("Font Awesome 6 Free-Solid-900", "FARegular");
                 });
 
-#if ANDROID
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.AndroidStepCounterService>();
-            builder.Services.AddSingleton<ILightService, MAUI_Nonsense_App.Platforms.Android.Services.Light.AndroidLightService>();
-#elif IOS
-            builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter.iOSStepCounterService>();
-            builder.Services.AddSingleton<ILightService, MAUI_Nonsense_App.Platforms.iOS.Services.Light.iOSLightService>();
-#endif
+            // Call platform-specific service registration
+            ConfigurePlatformServices(builder);
 
-            // Register all pages
+            // Register all pages (transient)
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<StepCounterPage>();
             builder.Services.AddTransient<SurvivalPage>();
@@ -50,5 +44,8 @@ namespace MAUI_Nonsense_App
 
             return builder.Build();
         }
+
+        // Declared here so shared code compiles — implemented in platform .cs files
+        static partial void ConfigurePlatformServices(MauiAppBuilder builder);
     }
 }

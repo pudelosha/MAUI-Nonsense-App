@@ -1,0 +1,15 @@
+﻿using MAUI_Nonsense_App.Services;
+
+namespace MAUI_Nonsense_App
+{
+    public static partial class MauiProgram
+    {
+        static partial void ConfigurePlatformServices(MauiAppBuilder builder)
+        {
+            builder.Services.AddSingleton<IStepCounterService, Platforms.iOS.Services.StepCounter.iOSStepCounterService>();
+            builder.Services.AddSingleton<ILightService, Platforms.iOS.Services.Light.iOSLightService>();
+            builder.Services.AddSingleton<ICompassService, Platforms.iOS.Services.Compass.iOSCompassService>();
+            builder.Services.AddSingleton<ILocationService, Platforms.iOS.Services.Location.iOSLocationService>();
+        }
+    }
+}
