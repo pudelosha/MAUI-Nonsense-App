@@ -51,7 +51,7 @@ public partial class CompassPage : ContentPage
             CompassGraphics.Invalidate(); // trigger redraw
 
             string cardinal = GetCardinalDirection(heading);
-            HeadingLabel.Text = $"{heading:0}° {cardinal}";
+            HeadingLabel.Text = $"{heading,3:##0}° {cardinal,-2}";
         });
     }
 
