@@ -23,4 +23,25 @@ public partial class SurvivalPage : ContentPage
         if (page is not null)
             await Navigation.PushAsync(page);
     }
+
+    private async void OnMovementDetectorTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<MovementDetectorPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
+
+    private async void OnMarkPointTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<MarkPointPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
+
+    private async void OnChecklistTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<ChecklistPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
 }
