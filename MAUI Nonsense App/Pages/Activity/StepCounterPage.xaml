@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MAUI_Nonsense_App.Models"
-             x:Class="MAUI_Nonsense_App.Pages.StepCounterPage"
+             x:Class="MAUI_Nonsense_App.Pages.Activity.StepCounterPage"
              Title="Step Counter">
 
     <VerticalStackLayout Padding="20" Spacing="20">

@@ -68,34 +68,37 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\FinancePage.xaml">
+	  <MauiXaml Update="Pages\Finance\FinancePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\LightPage.xaml">
+	  <MauiXaml Update="Pages\Survival\CompassPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\OfficePage.xaml">
+	  <MauiXaml Update="Pages\Survival\LightPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\ProfilePage.xaml">
+	  <MauiXaml Update="Pages\Office\OfficePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\QrScannerPage.xaml">
+	  <MauiXaml Update="Pages\Profile\ProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\SendMorseModal.xaml">
+	  <MauiXaml Update="Pages\Scanner\QrScannerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\SettingsPage.xaml">
+	  <MauiXaml Update="Pages\Survival\SendMorseModal.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\StepCounterPage.xaml">
+	  <MauiXaml Update="Pages\Settings\SettingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\SurvivalPage.xaml">
+	  <MauiXaml Update="Pages\Activity\StepCounterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\ToolsPage.xaml">
+	  <MauiXaml Update="Pages\Survival\SurvivalPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Tools\ToolsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

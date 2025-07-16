@@ -12,7 +12,7 @@ namespace MAUI_Nonsense_App
 
             Services = services;
 
-            MainPage = new NavigationPage(new MainPage());
+            MainPage = new NavigationPage(new MainPage(services));
 
             stepCounterService.StartAsync();
         }

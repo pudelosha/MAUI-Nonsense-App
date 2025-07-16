@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MAUI_Nonsense_App.Pages;
+using MAUI_Nonsense_App.Pages.Activity;
+using MAUI_Nonsense_App.Pages.Survival;
 using MAUI_Nonsense_App.Services;
+using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
 
@@ -27,6 +30,19 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<IStepCounterService, MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter.iOSStepCounterService>();
             builder.Services.AddSingleton<ILightService, MAUI_Nonsense_App.Platforms.iOS.Services.Light.iOSLightService>();
 #endif
+
+            // Register all pages
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<StepCounterPage>();
+            builder.Services.AddTransient<SurvivalPage>();
+            builder.Services.AddTransient<ToolsPage>();
+            builder.Services.AddTransient<OfficePage>();
+            builder.Services.AddTransient<FinancePage>();
+            builder.Services.AddTransient<QrScannerPage>();
+            builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddTransient<LightPage>();
+            builder.Services.AddTransient<CompassPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

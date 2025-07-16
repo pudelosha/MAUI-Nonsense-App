@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Survival.SurvivalPage"
+             Title="Survival Tools">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Light Button -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Icon -->
+                    <Label Grid.Column="0"
+                           Text="&#xf0eb;" 
+                           FontFamily="FARegular"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+
+                    <!-- Texts -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Light" 
+                               FontSize="Medium" 
+                               TextColor="#888888"/>
+                        <Label Text="Turn on your flashlight, including SOS and emergency signaling modes." 
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnLightTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Compass Button -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Icon -->
+                    <Label Grid.Column="0"
+                           Text="&#xf14e;" 
+                           FontFamily="FARegular"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+
+                    <!-- Texts -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Compass" 
+                               FontSize="Medium" 
+                               TextColor="#888888"/>
+                        <Label Text="Find directions easily using your device's built-in compass sensor." 
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCompassTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

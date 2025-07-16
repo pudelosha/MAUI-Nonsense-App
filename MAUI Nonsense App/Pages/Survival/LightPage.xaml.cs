@@ -1,7 +1,7 @@
 using MAUI_Nonsense_App.Models;
 using MAUI_Nonsense_App.Services;
 
-namespace MAUI_Nonsense_App.Pages;
+namespace MAUI_Nonsense_App.Pages.Survival;
 
 public partial class LightPage : ContentPage
 {
