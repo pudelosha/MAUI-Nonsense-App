@@ -7,29 +7,18 @@
 
     <VerticalStackLayout Padding="20" Spacing="20">
 
-        <!-- Compass Dial -->
-        <Grid HeightRequest="300" WidthRequest="300" HorizontalOptions="Center" VerticalOptions="Center">
-            <!-- Rotating Dial -->
-            <Image x:Name="DialImage"
-                   Source="compass_dial_full.png"
-                   HeightRequest="300"
-                   WidthRequest="300"
-                   Rotation="0"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center"/>
-
-            <!-- Fixed red arrow -->
-            <BoxView Color="Red"
-                     WidthRequest="4"
-                     HeightRequest="160"
-                     VerticalOptions="Center"
-                     HorizontalOptions="Center" />
-        </Grid>
+        <!-- GraphicsView for Compass -->
+        <GraphicsView x:Name="CompassGraphics"
+                      HeightRequest="300"
+                      WidthRequest="300"
+                      HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      Drawable="{Binding Drawable}" />
 
         <!-- Heading -->
         <Label x:Name="HeadingLabel"
                Text="0° N"
-               FontSize="36"
+               FontSize="24"
                HorizontalOptions="Center"
                TextColor="Black"/>
 

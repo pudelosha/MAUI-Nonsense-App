@@ -8,9 +8,12 @@ public partial class CompassPage : ContentPage
     private readonly ICompassService _compassService;
     private readonly ILocationService _locationService;
 
+    public CompassDrawable Drawable { get; } = new();
+
     public CompassPage(ICompassService compassService, ILocationService locationService)
     {
         InitializeComponent();
+        BindingContext = this;
 
         _compassService = compassService;
         _locationService = locationService;
@@ -44,7 +47,8 @@ public partial class CompassPage : ContentPage
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            DialImage.Rotation = -heading;
+            Drawable.Heading = heading;
+            CompassGraphics.Invalidate(); // trigger redraw
 
             string cardinal = GetCardinalDirection(heading);
             HeadingLabel.Text = $"{heading:0}° {cardinal}";

@@ -17,6 +17,7 @@ namespace MAUI_Nonsense_App
                 .UseBarcodeReader()
                 .ConfigureFonts(fonts =>
                 {
+                    fonts.AddFont("OpenSans-Bold.ttf", "OpenSansBold");
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("Font Awesome 6 Free-Solid-900", "FARegular");
