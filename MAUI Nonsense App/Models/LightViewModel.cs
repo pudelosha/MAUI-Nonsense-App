@@ -201,6 +201,11 @@ public class LightViewModel : INotifyPropertyChanged
         return true;
     }
 
+    public async Task ResetAsync()
+    {
+        await TurnOffAllAsync();
+    }
+
     private void OnPropertyChanged(string name) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

@@ -7,7 +7,7 @@ namespace MAUI_Nonsense_App
         static partial void ConfigurePlatformServices(MauiAppBuilder builder)
         {
             builder.Services.AddSingleton<IStepCounterService, Platforms.iOS.Services.StepCounter.iOSStepCounterService>();
-            builder.Services.AddSingleton<ILightService, Platforms.iOS.Services.Light.iOSLightService>();
+            builder.Services.AddTransient<ILightService, Platforms.iOS.Services.Light.iOSLightService>();
             builder.Services.AddSingleton<ICompassService, Platforms.iOS.Services.Compass.iOSCompassService>();
             builder.Services.AddSingleton<ILocationService, Platforms.iOS.Services.Location.iOSLocationService>();
             builder.Services.AddSingleton<IMovementAlarmService, Platforms.iOS.Services.MovementAlarm.iOSMovementAlarmService>();

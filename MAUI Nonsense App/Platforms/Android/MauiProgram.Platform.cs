@@ -7,7 +7,7 @@ namespace MAUI_Nonsense_App
         static partial void ConfigurePlatformServices(MauiAppBuilder builder)
         {
             builder.Services.AddSingleton<IStepCounterService, Platforms.Android.Services.StepCounter.AndroidStepCounterService>();
-            builder.Services.AddSingleton<ILightService, Platforms.Android.Services.Light.AndroidLightService>();
+            builder.Services.AddTransient<ILightService, Platforms.Android.Services.Light.AndroidLightService>();
             builder.Services.AddSingleton<ICompassService, Platforms.Android.Services.Compass.AndroidCompassService>();
             builder.Services.AddSingleton<ILocationService, Platforms.Android.Services.Location.AndroidLocationService>();
             builder.Services.AddSingleton<IMovementAlarmService, Platforms.Android.Services.MovementAlarm.AndroidMovementAlarmService>();

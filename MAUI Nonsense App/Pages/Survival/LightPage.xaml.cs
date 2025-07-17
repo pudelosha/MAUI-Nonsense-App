@@ -112,4 +112,11 @@ public partial class LightPage : ContentPage
 
         StopPoliceEffect();
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        await _vm.ResetAsync();
+    }
 }
