@@ -10,6 +10,9 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<ILightService, Platforms.iOS.Services.Light.iOSLightService>();
             builder.Services.AddSingleton<ICompassService, Platforms.iOS.Services.Compass.iOSCompassService>();
             builder.Services.AddSingleton<ILocationService, Platforms.iOS.Services.Location.iOSLocationService>();
+            builder.Services.AddSingleton<IMovementAlarmService, Platforms.iOS.Services.MovementAlarm.iOSMovementAlarmService>();
+            builder.Services.AddSingleton<IAlarmSoundService, Platforms.iOS.Services.AlarmSound.iOSAlarmSoundService>();
+
         }
     }
 }

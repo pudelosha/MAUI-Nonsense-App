@@ -1,4 +1,5 @@
-﻿using MAUI_Nonsense_App.Pages;
+﻿using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
 using MAUI_Nonsense_App.Pages.Survival;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace MAUI_Nonsense_App
                     fonts.AddFont("OpenSans-Bold.ttf", "OpenSansBold");
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("Font Awesome 6 Free-Solid-900", "FARegular");
+                    fonts.AddFont("Font Awesome 6 Free-Solid-900.otf", "FASolid");
                 });
 
             // Call platform-specific service registration
@@ -38,6 +39,12 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<SettingsPage>();
             builder.Services.AddTransient<LightPage>();
             builder.Services.AddTransient<CompassPage>();
+            builder.Services.AddTransient<MovementDetectorPage>();
+
+            builder.Services.AddTransient<MovementDetectorViewModel>();
+            builder.Services.AddTransient<LightViewModel>();
+            builder.Services.AddTransient<QrScannerViewModel>();
+            builder.Services.AddTransient<StepCounterViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

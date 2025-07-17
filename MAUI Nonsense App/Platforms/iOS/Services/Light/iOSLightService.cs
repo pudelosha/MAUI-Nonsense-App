@@ -20,8 +20,8 @@ namespace MAUI_Nonsense_App.Platforms.iOS.Services.Light
         public iOSLightService()
         {
             _device = AVCaptureDevice
-                .DevicesWithMediaType(AVMediaType.Video)
-                .FirstOrDefault(d => d.HasTorch);
+                        .DevicesWithMediaType("vide")  // kept exactly as your original
+                        .FirstOrDefault(d => d.HasTorch);
 
             if (_device == null)
             {

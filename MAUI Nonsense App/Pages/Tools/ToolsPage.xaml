@@ -17,7 +17,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
                            Text="&#xf2d0;" 
-                           FontFamily="FARegular"
+                           FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
@@ -42,7 +42,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
                            Text="&#xf0ec;" 
-                           FontFamily="FARegular"
+                           FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
@@ -67,7 +67,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
                            Text="&#xf0cb;" 
-                           FontFamily="FARegular"
+                           FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
