@@ -14,7 +14,7 @@ public class LevelViewModel : INotifyPropertyChanged
     public double Pitch
     {
         get => _pitch;
-        set
+        private set
         {
             if (_pitch != value)
             {
@@ -29,7 +29,7 @@ public class LevelViewModel : INotifyPropertyChanged
     public double Roll
     {
         get => _roll;
-        set
+        private set
         {
             if (_roll != value)
             {
@@ -50,8 +50,18 @@ public class LevelViewModel : INotifyPropertyChanged
         _levelService.ReadingChanged += OnReadingChanged;
     }
 
+    private DateTime _lastUpdate = DateTime.MinValue;
+
     private void OnReadingChanged(object? sender, LevelReading e)
     {
+        var now = DateTime.UtcNow;
+
+        // Throttle updates: only refresh every 200ms
+        if ((now - _lastUpdate).TotalMilliseconds < 200)
+            return;
+
+        _lastUpdate = now;
+
         MainThread.BeginInvokeOnMainThread(() =>
         {
             Pitch = e.Pitch;

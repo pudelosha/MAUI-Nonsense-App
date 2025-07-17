@@ -1,26 +1,61 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:graphics="clr-namespace:Microsoft.Maui.Graphics;assembly=Microsoft.Maui.Graphics"
              x:Class="MAUI_Nonsense_App.Pages.Tools.LevelPage"
-             Title="Level">
+             Title="Level"
+             BackgroundColor="White">
 
-    <ContentPage.Content>
-        <VerticalStackLayout BackgroundColor="White" Padding="20" Spacing="20">
-            <GraphicsView x:Name="LevelCanvas"
-                          HeightRequest="300"
-                          WidthRequest="300"
-                          HorizontalOptions="Center"
-                          VerticalOptions="Center"/>
+    <Grid RowSpacing="10" ColumnSpacing="10" Padding="20"
+          HorizontalOptions="Fill"
+          VerticalOptions="Start">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Top horizontal bubble -->
+            <RowDefinition Height="Auto"/>
+            <!-- Main circle + vertical bubble defines height -->
+            <RowDefinition Height="Auto"/>
+            <!-- Readings -->
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Left vertical bubble -->
+            <ColumnDefinition Width="*"/>
+            <!-- Horizontal & Main bubble -->
+        </Grid.ColumnDefinitions>
 
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
-                <GraphicsView x:Name="HorizontalBubbleCanvas"
-                              HeightRequest="50"
-                              WidthRequest="200"/>
-                <GraphicsView x:Name="VerticalBubbleCanvas"
-                              HeightRequest="200"
-                              WidthRequest="50"/>
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
-    </ContentPage.Content>
+        <!-- Top: Horizontal Bubble -->
+        <GraphicsView x:Name="HorizontalBubbleCanvas"
+                      Grid.Row="0" Grid.Column="1"
+                      HeightRequest="50"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Start"/>
+
+        <!-- Middle left: Vertical Bubble -->
+        <GraphicsView x:Name="VerticalBubbleCanvas"
+                      Grid.Row="1" Grid.Column="0"
+                      WidthRequest="50"
+                      HeightRequest="{Binding Source={x:Reference LevelCanvas}, Path=Height}"
+                      HorizontalOptions="Start"
+                      VerticalOptions="Fill"/>
+
+        <!-- Middle right: Main Circle Bubble -->
+        <GraphicsView x:Name="LevelCanvas"
+                      Grid.Row="1" Grid.Column="1"
+                      HeightRequest="300"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"/>
+
+        <!-- Bottom: Readings -->
+        <Frame Grid.Row="2" Grid.Column="1"
+               BackgroundColor="LightGray"
+               Padding="10"
+               HorizontalOptions="Center">
+            <Label x:Name="ReadingLabel"
+                   Text="X: 0°  Y: 0°"
+                   FontSize="Medium"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   TextColor="Black"/>
+        </Frame>
+    </Grid>
 </ContentPage>
