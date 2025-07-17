@@ -22,5 +22,6 @@ namespace MAUI_Nonsense_App.Services
         Task StartSOSAsync();
         Task StopSOSAsync();
         Task StartMorseAsync(string morse);
+        Task StopMorseAsync();
     }
 }

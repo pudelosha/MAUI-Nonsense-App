@@ -39,22 +39,39 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.Light
         public async Task TurnOnAsync()
         {
             if (_cameraId == null) return;
-            _cameraManager.SetTorchMode(_cameraId, true);
-            _isOn = true;
+
+            try
+            {
+                _cameraManager.SetTorchMode(_cameraId, true);
+                _isOn = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"⚠️ Failed to turn on torch: {ex.Message}");
+            }
         }
 
         public async Task TurnOffAsync()
         {
             if (_cameraId == null) return;
-            _cameraManager.SetTorchMode(_cameraId, false);
-            _isOn = false;
+
+            try
+            {
+                _cameraManager.SetTorchMode(_cameraId, false);
+                _isOn = false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"⚠️ Failed to turn off torch: {ex.Message}");
+            }
         }
 
         public Task SetBrightnessAsync(double strength) => Task.CompletedTask;
 
         public async Task StartLighthouseAsync()
         {
-            _cts?.Cancel();
+            StopCurrentLoop();
+
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
 
@@ -70,15 +87,16 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.Light
             });
         }
 
-        public Task StopLighthouseAsync()
+        public async Task StopLighthouseAsync()
         {
-            _cts?.Cancel();
-            return TurnOffAsync();
+            StopCurrentLoop();
+            await TurnOffAsync();
         }
 
         public async Task StartPoliceAsync()
         {
-            _cts?.Cancel();
+            StopCurrentLoop();
+
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
 
@@ -94,12 +112,11 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.Light
             });
         }
 
-        public Task StopPoliceAsync()
+        public async Task StopPoliceAsync()
         {
-            _cts?.Cancel();
-            return TurnOffAsync();
+            StopCurrentLoop();
+            await TurnOffAsync();
         }
-
 
         public async Task StartStrobeAsync(int intervalMs)
         {
@@ -165,45 +182,10 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.Light
             await TurnOffAsync();
         }
 
-        private void StopCurrentLoop()
-        {
-            _cts?.Cancel();
-            _cts = null;
-        }
-
-        private async Task PlayMorseCodeAsync(CancellationToken token)
-        {
-            const string morse = "... --- ...";
-            const int unit = 200;
-
-            foreach (char c in morse)
-            {
-                if (token.IsCancellationRequested) break;
-
-                if (c == '.')
-                {
-                    await TurnOnAsync();
-                    await Task.Delay(unit, token);
-                    await TurnOffAsync();
-                    await Task.Delay(unit, token);
-                }
-                else if (c == '-')
-                {
-                    await TurnOnAsync();
-                    await Task.Delay(unit * 3, token);
-                    await TurnOffAsync();
-                    await Task.Delay(unit, token);
-                }
-                else
-                {
-                    await Task.Delay(unit * 3, token);
-                }
-            }
-        }
-
         public async Task StartMorseAsync(string morse)
         {
-            _cts?.Cancel(); // cancel any previous job
+            StopCurrentLoop();
+
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
 
@@ -235,6 +217,52 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.Light
                     }
                 }
             });
+        }
+
+        public async Task StopMorseAsync()
+        {
+            StopCurrentLoop();
+            await TurnOffAsync();
+        }
+
+        private void StopCurrentLoop()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
+            }
+        }
+
+        private async Task PlayMorseCodeAsync(CancellationToken token)
+        {
+            const string morse = "... --- ...";
+            const int unit = 200;
+
+            foreach (char c in morse)
+            {
+                if (token.IsCancellationRequested) break;
+
+                if (c == '.')
+                {
+                    await TurnOnAsync();
+                    await Task.Delay(unit, token);
+                    await TurnOffAsync();
+                    await Task.Delay(unit, token);
+                }
+                else if (c == '-')
+                {
+                    await TurnOnAsync();
+                    await Task.Delay(unit * 3, token);
+                    await TurnOffAsync();
+                    await Task.Delay(unit, token);
+                }
+                else
+                {
+                    await Task.Delay(unit * 3, token);
+                }
+            }
         }
     }
 }

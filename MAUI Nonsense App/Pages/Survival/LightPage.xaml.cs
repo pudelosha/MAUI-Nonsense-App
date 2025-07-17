@@ -1,5 +1,6 @@
 using MAUI_Nonsense_App.Models;
 using MAUI_Nonsense_App.Services;
+using Microsoft.Maui.ApplicationModel;
 
 namespace MAUI_Nonsense_App.Pages.Survival;
 
@@ -74,10 +75,16 @@ public partial class LightPage : ContentPage
 
                 index = (index + 1) % colors.Length;
 
-                await Task.Delay(500, token); // change color every 0.5s
+                try
+                {
+                    await Task.Delay(500, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
             }
 
-            // reset to default background when stopped
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 this.BackgroundColor = Colors.White;
@@ -94,5 +101,15 @@ public partial class LightPage : ContentPage
         {
             this.BackgroundColor = Colors.White;
         });
+    }
+
+    protected override async void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        // stop all effects and release torch on exit
+        await _vm.TurnOffAllAsync();
+
+        StopPoliceEffect();
     }
 }

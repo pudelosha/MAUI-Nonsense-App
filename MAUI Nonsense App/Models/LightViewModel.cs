@@ -1,12 +1,13 @@
 ﻿using MAUI_Nonsense_App.Helpers;
 using MAUI_Nonsense_App.Services;
+using Microsoft.Maui.ApplicationModel;
 using System.ComponentModel;
 
 public class LightViewModel : INotifyPropertyChanged
 {
     private readonly ILightService _lightService;
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool IsOn { get; private set; }
     public bool IsStrobeOn { get; private set; }
@@ -15,7 +16,6 @@ public class LightViewModel : INotifyPropertyChanged
     public bool IsLighthouseOn { get; private set; }
     public bool IsPoliceOn { get; private set; }
 
-
     public LightViewModel(ILightService lightService)
     {
         _lightService = lightService;
@@ -23,6 +23,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task ToggleLightAsync()
     {
+        if (!await CheckPermissionAsync()) return;
+
         if (!IsOn)
         {
             await StopAllModes();
@@ -40,6 +42,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task ToggleLighthouseAsync()
     {
+        if (!await CheckPermissionAsync()) return;
+
         if (!IsLighthouseOn)
         {
             await StopAllModes();
@@ -57,6 +61,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task TogglePoliceAsync()
     {
+        if (!await CheckPermissionAsync()) return;
+
         if (!IsPoliceOn)
         {
             await StopAllModes();
@@ -74,6 +80,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task ToggleStrobeAsync()
     {
+        if (!await CheckPermissionAsync()) return;
+
         if (!IsStrobeOn)
         {
             await StopAllModes();
@@ -91,6 +99,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task ToggleSOSAsync()
     {
+        if (!await CheckPermissionAsync()) return;
+
         if (!IsSOSOn)
         {
             await StopAllModes();
@@ -109,6 +119,8 @@ public class LightViewModel : INotifyPropertyChanged
 
     public async Task SendMorseMessageAsync(string message)
     {
+        if (!await CheckPermissionAsync()) return;
+
         await StopAllModes();
         IsMorseOn = true;
         OnPropertyChanged(nameof(IsMorseOn));
@@ -121,6 +133,8 @@ public class LightViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsMorseOn));
         });
     }
+
+    public async Task TurnOffAllAsync() => await StopAllModes();
 
     private async Task StopAllModes()
     {
@@ -161,12 +175,30 @@ public class LightViewModel : INotifyPropertyChanged
 
         if (IsMorseOn)
         {
-            await _lightService.StopSOSAsync();
+            await _lightService.StopMorseAsync();
             IsMorseOn = false;
             OnPropertyChanged(nameof(IsMorseOn));
         }
+    }
 
-        await _lightService.TurnOffAsync();
+    private async Task<bool> CheckPermissionAsync()
+    {
+        var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.Camera>();
+        }
+
+        if (status != PermissionStatus.Granted)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Permission denied",
+                "Camera permission is required to use the flashlight.",
+                "OK");
+            return false;
+        }
+
+        return true;
     }
 
     private void OnPropertyChanged(string name) =>
