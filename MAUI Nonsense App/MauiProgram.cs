@@ -2,6 +2,7 @@
 using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
 using MAUI_Nonsense_App.Pages.Survival;
+using MAUI_Nonsense_App.Pages.Tools;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
@@ -40,11 +41,13 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<LightPage>();
             builder.Services.AddTransient<CompassPage>();
             builder.Services.AddTransient<MovementDetectorPage>();
+            builder.Services.AddTransient<LevelPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
             builder.Services.AddTransient<QrScannerViewModel>();
             builder.Services.AddTransient<StepCounterViewModel>();
+            builder.Services.AddTransient<LevelViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

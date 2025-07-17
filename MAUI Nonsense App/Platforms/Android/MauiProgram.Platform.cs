@@ -12,6 +12,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<ILocationService, Platforms.Android.Services.Location.AndroidLocationService>();
             builder.Services.AddSingleton<IMovementAlarmService, Platforms.Android.Services.MovementAlarm.AndroidMovementAlarmService>();
             builder.Services.AddSingleton<IAlarmSoundService, Platforms.Android.Services.AlarmSound.AndroidAlarmSoundService>();
+            builder.Services.AddSingleton<ILevelService, Platforms.Android.Services.Level.AndroidLevelService>();
 
         }
     }

@@ -12,6 +12,8 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<ILocationService, Platforms.iOS.Services.Location.iOSLocationService>();
             builder.Services.AddSingleton<IMovementAlarmService, Platforms.iOS.Services.MovementAlarm.iOSMovementAlarmService>();
             builder.Services.AddSingleton<IAlarmSoundService, Platforms.iOS.Services.AlarmSound.iOSAlarmSoundService>();
+            builder.Services.AddSingleton<ILevelService, Platforms.iOS.Services.Level.iOSLevelService>();
+
 
         }
     }

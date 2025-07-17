@@ -1,6 +1,5 @@
 ﻿using MAUI_Nonsense_App.Helpers;
 using MAUI_Nonsense_App.Services;
-using Microsoft.Maui.ApplicationModel;
 using System.ComponentModel;
 
 public class LightViewModel : INotifyPropertyChanged
