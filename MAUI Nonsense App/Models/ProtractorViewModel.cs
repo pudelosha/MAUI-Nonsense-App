@@ -8,23 +8,37 @@ namespace MAUI_Nonsense_App.Models
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Point Line1End { get; private set; } = new(100, 0);
-        public Point Line2End { get; private set; } = new(-100, 0);
+        public Point Line1End { get; private set; } = new(-70.7, -70.7);
+        public Point Line2End { get; private set; } = new(-70.7, 70.7);
 
-        public double Angle => CalculateAngle();
+
+
+        public double AngleBetween => CalculateAngle();
+
+        public double Angle1 => VectorToAngle(Line1End);
+        public double Angle2 => VectorToAngle(Line2End);
 
         public void SetLine1(Point vec)
         {
             Line1End = vec;
             OnPropertyChanged(nameof(Line1End));
-            OnPropertyChanged(nameof(Angle));
+            OnPropertyChanged(nameof(Angle1));
+            OnPropertyChanged(nameof(AngleBetween));
         }
 
         public void SetLine2(Point vec)
         {
             Line2End = vec;
             OnPropertyChanged(nameof(Line2End));
-            OnPropertyChanged(nameof(Angle));
+            OnPropertyChanged(nameof(Angle2));
+            OnPropertyChanged(nameof(AngleBetween));
+        }
+
+        private double VectorToAngle(Point vec)
+        {
+            // returns angle in degrees relative to +Y (vertical), where right is 0
+            double angle = Math.Atan2(vec.Y, vec.X) * (180.0 / Math.PI);
+            return angle;
         }
 
         private double CalculateAngle()

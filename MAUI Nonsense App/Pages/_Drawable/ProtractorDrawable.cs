@@ -1,69 +1,114 @@
 ﻿using MAUI_Nonsense_App.Models;
+using Microsoft.Maui.Graphics;
 
-namespace MAUI_Nonsense_App.Pages._Drawable
+public class ProtractorDrawable : IDrawable
 {
-    public class ProtractorDrawable : IDrawable
+    private readonly ProtractorViewModel _vm;
+
+    public ProtractorDrawable(ProtractorViewModel vm)
     {
-        private readonly ProtractorViewModel _vm;
+        _vm = vm;
+    }
 
-        public ProtractorDrawable(ProtractorViewModel vm)
+    public void Draw(ICanvas canvas, RectF dirtyRect)
+    {
+        float cx = dirtyRect.Right;
+        float cy = dirtyRect.Height / 2;
+
+        float radius = Math.Min(dirtyRect.Width, dirtyRect.Height / 2) - 20;
+
+        // Background
+        canvas.FillColor = Colors.White;
+        canvas.FillRectangle(dirtyRect);
+
+        // Draw pale gray circle background
+        canvas.FillColor = Colors.LightGray.WithAlpha(0.3f);
+        canvas.FillEllipse(cx - radius, cy - radius, radius * 2, radius * 2);
+
+        // Circle border
+        canvas.StrokeColor = Colors.Gray;
+        canvas.StrokeSize = 2;
+        canvas.DrawEllipse(cx - radius, cy - radius, radius * 2, radius * 2);
+
+        // Tick marks & custom labels
+        for (int angle = 0; angle < 360; angle++)
         {
-            _vm = vm;
-        }
+            double rad = angle * Math.PI / 180.0;
 
-        public void Draw(ICanvas canvas, RectF dirtyRect)
-        {
-            canvas.FillColor = Colors.White;
-            canvas.FillRectangle(dirtyRect);
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
 
-            float cx = dirtyRect.Center.X;
-            float cy = dirtyRect.Bottom;
-            float radius = Math.Min(dirtyRect.Width / 2, dirtyRect.Height);
+            float xOuter = cx + radius * cos;
+            float yOuter = cy + radius * sin;
 
-            // Protractor arc
-            canvas.StrokeColor = Colors.Black;
-            canvas.StrokeSize = 2;
-            canvas.DrawArc(cx - radius, cy - radius, radius * 2, radius * 2, 180, 180, false, false);
+            float xInner;
+            float yInner;
 
-            // Tick marks & numbers
-            for (int i = 0; i <= 180; i += 10)
+            bool isLabeledAngle =
+                (angle == 90 || angle == 120 || angle == 150 || angle == 180 ||
+                 angle == 210 || angle == 240 || angle == 270);
+
+            if (isLabeledAngle)
             {
-                double rad = Math.PI * i / 180.0;
-                float x1 = cx + (float)(radius * Math.Cos(rad));
-                float y1 = cy - (float)(radius * Math.Sin(rad));
-                float x2 = cx + (float)((radius - 15) * Math.Cos(rad));
-                float y2 = cy - (float)((radius - 15) * Math.Sin(rad));
-
-                canvas.DrawLine(x1, y1, x2, y2);
-
-                if (i % 30 == 0)
-                {
-                    float xText = cx + (float)((radius - 30) * Math.Cos(rad));
-                    float yText = cy - (float)((radius - 30) * Math.Sin(rad));
-                    canvas.DrawString($"{i}", xText - 10, yText - 10, 20, 20,
-                        HorizontalAlignment.Center, VerticalAlignment.Center);
-                }
+                xInner = cx + (radius - 10) * cos;
+                yInner = cy + (radius - 10) * sin;
+            }
+            else
+            {
+                // Small tick mark
+                xInner = cx + (radius - 5) * cos;
+                yInner = cy + (radius - 5) * sin;
             }
 
-            // Lines
-            canvas.StrokeColor = Colors.Red;
-            canvas.StrokeSize = 2;
+            canvas.StrokeSize = 1;
+            canvas.DrawLine(xOuter, yOuter, xInner, yInner);
 
-            var p1 = _vm.Line1End;
-            var p2 = _vm.Line2End;
+            // Draw labels at specific angles
+            if (isLabeledAngle)
+            {
+                float xText = cx + (radius - 25) * cos;
+                float yText = cy + (radius - 25) * sin;
 
-            canvas.DrawLine(cx, cy, cx + (float)p1.X, cy - (float)p1.Y);
-            canvas.DrawLine(cx, cy, cx + (float)p2.X, cy - (float)p2.Y);
+                int labelValue = 0;
 
-            // Center circle
-            canvas.FillColor = Colors.Gray;
-            canvas.FillCircle(cx, cy, 5);
+                if (angle == 90) labelValue = 0;
+                else if (angle == 120) labelValue = 30;
+                else if (angle == 150) labelValue = 60;
+                else if (angle == 180) labelValue = 90;
+                else if (angle == 210) labelValue = 60;
+                else if (angle == 240) labelValue = 30;
+                else if (angle == 270) labelValue = 0;
 
-            // Angle text
-            canvas.FontSize = 48;
-            canvas.FontColor = Colors.Black;
-            canvas.DrawString($"{_vm.Angle:0.00}°", cx - 60, cy - radius / 2, 120, 60,
-                HorizontalAlignment.Center, VerticalAlignment.Center);
+                float labelOffsetX = (angle == 90 || angle == 270) ? -10 : 0;
+
+                canvas.FontSize = 12;
+                canvas.FontColor = Colors.Black;
+                canvas.DrawString($"{labelValue}", xText - 8 + labelOffsetX, yText - 8, 16, 16,
+                    HorizontalAlignment.Center, VerticalAlignment.Center);
+            }
         }
+
+        // Draw center point
+        canvas.FillColor = Colors.Black;
+        canvas.FillCircle(cx, cy, 5);
+
+        // Draw red lines
+        canvas.StrokeColor = Colors.Red;
+        DrawLineAtAngle(canvas, cx, cy, radius, _vm.Angle1);
+        DrawLineAtAngle(canvas, cx, cy, radius, _vm.Angle2);
+
+        // Draw angle text
+        canvas.FontColor = Colors.Black;
+        canvas.FontSize = 24;
+        canvas.DrawString($"{_vm.AngleBetween:F1}°", cx - radius / 2, cy - 20,
+            HorizontalAlignment.Center);
+    }
+
+    private void DrawLineAtAngle(ICanvas canvas, float cx, float cy, float radius, double angle)
+    {
+        double rad = angle * Math.PI / 180.0;
+        float x = cx + (float)(radius * Math.Cos(rad));
+        float y = cy + (float)(radius * Math.Sin(rad));
+        canvas.DrawLine(cx, cy, x, y);
     }
 }
