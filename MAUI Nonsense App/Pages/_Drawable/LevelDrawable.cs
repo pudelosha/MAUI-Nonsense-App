@@ -61,7 +61,7 @@
             float bubbleRadius = dirtyRect.Height / 2 - 4;
             float trackLength = dirtyRect.Width - bubbleRadius * 2;
 
-            float offset = _getX() * (trackLength / 2);
+            float offset = -_getX() * (trackLength / 2);
 
             float centerX = dirtyRect.Center.X;
 
