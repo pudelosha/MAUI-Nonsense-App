@@ -110,6 +110,9 @@
 	  <MauiXaml Update="Pages\Tools\LevelPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\Tools\ProtractorPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\Tools\RulerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

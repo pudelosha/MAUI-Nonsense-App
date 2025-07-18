@@ -82,6 +82,31 @@
                 </Border.GestureRecognizers>
             </Border>
 
+            <!-- Protractor -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf10c;" 
+                           FontFamily="FASolid"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Protractor" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Measure angles on screen with precision." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnProtractorTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

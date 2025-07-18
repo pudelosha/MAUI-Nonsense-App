@@ -32,4 +32,11 @@ public partial class ToolsPage : ContentPage
         if (page is not null)
             await Navigation.PushAsync(page);
     }
+
+    private async void OnProtractorTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<ProtractorPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
 }

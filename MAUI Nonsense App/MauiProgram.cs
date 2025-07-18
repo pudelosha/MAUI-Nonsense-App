@@ -43,6 +43,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<MovementDetectorPage>();
             builder.Services.AddTransient<LevelPage>();
             builder.Services.AddTransient<RulerPage>();
+            builder.Services.AddTransient<ProtractorPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -50,6 +51,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<StepCounterViewModel>();
             builder.Services.AddTransient<LevelViewModel>();
             builder.Services.AddTransient<RulerViewModel>();
+            builder.Services.AddTransient<ProtractorViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();
