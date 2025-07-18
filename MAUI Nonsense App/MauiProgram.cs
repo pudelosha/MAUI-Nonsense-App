@@ -42,12 +42,14 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<CompassPage>();
             builder.Services.AddTransient<MovementDetectorPage>();
             builder.Services.AddTransient<LevelPage>();
+            builder.Services.AddTransient<RulerPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
             builder.Services.AddTransient<QrScannerViewModel>();
             builder.Services.AddTransient<StepCounterViewModel>();
             builder.Services.AddTransient<LevelViewModel>();
+            builder.Services.AddTransient<RulerViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

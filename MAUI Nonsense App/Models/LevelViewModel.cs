@@ -57,7 +57,7 @@ public class LevelViewModel : INotifyPropertyChanged
         var now = DateTime.UtcNow;
 
         // Throttle updates: only refresh every 200ms
-        if ((now - _lastUpdate).TotalMilliseconds < 200)
+        if ((now - _lastUpdate).TotalMilliseconds < 100)
             return;
 
         _lastUpdate = now;
