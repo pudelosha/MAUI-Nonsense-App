@@ -1,6 +1,7 @@
 ﻿using MAUI_Nonsense_App.Models;
 using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
+using MAUI_Nonsense_App.Pages.Random;
 using MAUI_Nonsense_App.Pages.Survival;
 using MAUI_Nonsense_App.Pages.Tools;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,14 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<LevelPage>();
             builder.Services.AddTransient<RulerPage>();
             builder.Services.AddTransient<ProtractorPage>();
+            builder.Services.AddTransient<UnitConverterPage>();
+            builder.Services.AddTransient<MirrorPage>();
+            builder.Services.AddTransient<VibrometerPage>();
+            builder.Services.AddTransient<MetalDetectorPage>();
+            builder.Services.AddTransient<RandomPage>();
+            builder.Services.AddTransient<RandomNumberPage>();
+            builder.Services.AddTransient<CoinFlipPage>();
+            builder.Services.AddTransient<DicePage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -52,6 +61,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<LevelViewModel>();
             builder.Services.AddTransient<RulerViewModel>();
             builder.Services.AddTransient<ProtractorViewModel>();
+
 
 #if DEBUG
             builder.Logging.AddDebug();

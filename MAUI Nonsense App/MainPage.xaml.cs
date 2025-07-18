@@ -1,5 +1,6 @@
 ﻿using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
+using MAUI_Nonsense_App.Pages.Random;
 using MAUI_Nonsense_App.Pages.Survival;
 
 namespace MAUI_Nonsense_App
@@ -44,9 +45,9 @@ namespace MAUI_Nonsense_App
             await Navigation.PushAsync(page);
         }
 
-        private async void OnScannerTapped(object sender, EventArgs e)
+        private async void OnRandomTapped(object sender, EventArgs e)
         {
-            var page = _services.GetRequiredService<QrScannerPage>();
+            var page = _services.GetRequiredService<RandomPage>();
             await Navigation.PushAsync(page);
         }
 

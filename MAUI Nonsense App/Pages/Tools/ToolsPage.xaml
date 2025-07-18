@@ -107,6 +107,106 @@
                 </Border.GestureRecognizers>
             </Border>
 
+            <!-- Mirror -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf2d1;" 
+                           FontFamily="FASolid"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Mirror" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Use your front camera as a quick mirror." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnMirrorTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Vibrometer -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf2f1;" 
+                           FontFamily="FASolid"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Vibrometer" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Measure vibrations and tremors using sensors." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnVibrometerTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Metal Detector -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf076;" 
+                           FontFamily="FASolid"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Metal Detector" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Detect magnetic fields near your device." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnMetalDetectorTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Voice Measure -->
+            <Border Style="{StaticResource TileBorder}" Padding="20"
+                    HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="&#xf130;" 
+                           FontFamily="FASolid"
+                           FontSize="42"
+                           TextColor="#888888"
+                           VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Voice Measure" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Measure sound level and visualize your voice." 
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnVoiceMeasureTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

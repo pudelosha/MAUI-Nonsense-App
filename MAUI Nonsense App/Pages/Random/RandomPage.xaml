@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.OfficePage"
-             Title="Office">
+             x:Class="MAUI_Nonsense_App.Pages.Random.RandomPage"
+             Title="Random">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Image to PDF -->
+            <!-- Random Number Generator -->
             <Border Style="{StaticResource TileBorder}" Padding="20"
                     HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
@@ -16,23 +16,23 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf1c1;" 
+                           Text="&#xf522;" 
                            FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Image to PDF" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Capture or select images and save them as a PDF document."
+                        <Label Text="Random Number Generator" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Generate a random number between your chosen range."
                                FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnImageToPdfTapped"/>
+                    <TapGestureRecognizer Tapped="OnRandomNumberTapped"/>
                 </Border.GestureRecognizers>
             </Border>
 
-            <!-- Image to Text -->
+            <!-- Coin Flip -->
             <Border Style="{StaticResource TileBorder}" Padding="20"
                     HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
@@ -41,23 +41,23 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf02d;" 
+                           Text="&#xf24e;" 
                            FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Image to Text (OCR)" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Extract text content from an image using OCR."
+                        <Label Text="Coin Flip" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Flip a virtual coin and get heads or tails."
                                FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnImageToTextTapped"/>
+                    <TapGestureRecognizer Tapped="OnCoinFlipTapped"/>
                 </Border.GestureRecognizers>
             </Border>
 
-            <!-- QR Code Scanner -->
+            <!-- Dice -->
             <Border Style="{StaticResource TileBorder}" Padding="20"
                     HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
@@ -66,19 +66,19 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf029;" 
+                           Text="&#xf522;" 
                            FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="QR Code Scanner" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Scan QR codes using your camera."
+                        <Label Text="Dice" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Roll one or more dice and get a random result."
                                FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnQrScannerTapped"/>
+                    <TapGestureRecognizer Tapped="OnDiceTapped"/>
                 </Border.GestureRecognizers>
             </Border>
 
