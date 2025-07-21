@@ -14,7 +14,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<IAlarmSoundService, Platforms.iOS.Services.AlarmSound.iOSAlarmSoundService>();
             builder.Services.AddSingleton<ILevelService, Platforms.iOS.Services.Level.iOSLevelService>();
             builder.Services.AddSingleton<IScreenMetricsService, Platforms.iOS.Services.Ruler.iOSScreenMetricsService>();
-
+            builder.Services.AddSingleton<IRandomNumberService, Platforms.iOS.Services.Random.iOSRandomNumberService>();
 
         }
     }

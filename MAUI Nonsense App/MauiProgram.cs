@@ -61,6 +61,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<LevelViewModel>();
             builder.Services.AddTransient<RulerViewModel>();
             builder.Services.AddTransient<ProtractorViewModel>();
+            builder.Services.AddTransient<RandomNumberViewModel>();
 
 
 #if DEBUG
