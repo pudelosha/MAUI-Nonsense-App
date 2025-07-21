@@ -24,6 +24,7 @@ namespace MAUI_Nonsense_App
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("Font Awesome 6 Free-Solid-900.otf", "FASolid");
+                    fonts.AddFont("Font Awesome 6 Brands-Regular-400.otf", "FABrands");
                 });
 
             // Call platform-specific service registration
@@ -62,6 +63,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<RulerViewModel>();
             builder.Services.AddTransient<ProtractorViewModel>();
             builder.Services.AddTransient<RandomNumberViewModel>();
+            builder.Services.AddTransient<CoinFlipViewModel>(); 
 
 
 #if DEBUG

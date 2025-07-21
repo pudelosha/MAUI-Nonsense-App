@@ -16,7 +16,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf522;" 
+                           Text="&#xf1b3;" 
                            FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"
@@ -41,7 +41,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf24e;" 
+                           Text="&#xf042;" 
                            FontFamily="FASolid"
                            FontSize="42"
                            TextColor="#888888"

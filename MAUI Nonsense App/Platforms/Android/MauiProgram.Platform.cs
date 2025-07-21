@@ -15,6 +15,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<ILevelService, Platforms.Android.Services.Level.AndroidLevelService>();
             builder.Services.AddSingleton<IScreenMetricsService, Platforms.Android.Services.Ruler.AndroidScreenMetricsService>();
             builder.Services.AddSingleton<IRandomNumberService, Platforms.Android.Services.Random.AndroidRandomNumberService>();
+            builder.Services.AddSingleton<ICoinFlipService, Platforms.Android.Services.Random.AndroidCoinFlipService>();
 
         }
     }
