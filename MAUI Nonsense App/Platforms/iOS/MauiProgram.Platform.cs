@@ -16,6 +16,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddSingleton<IScreenMetricsService, Platforms.iOS.Services.Ruler.iOSScreenMetricsService>();
             builder.Services.AddSingleton<IRandomNumberService, Platforms.iOS.Services.Random.iOSRandomNumberService>();
             builder.Services.AddSingleton<ICoinFlipService, Platforms.iOS.Services.Random.iOSCoinFlipService>();
+            builder.Services.AddSingleton<IDiceRollService, Platforms.iOS.Services.Random.iOSDiceRollService>();
 
 
         }

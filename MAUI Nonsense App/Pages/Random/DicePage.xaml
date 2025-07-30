@@ -3,4 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Random.DicePage"
              Title="Dice">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <!-- Dice Canvas -->
+        <GraphicsView x:Name="DiceCanvas" HeightRequest="300" />
+
+        <!-- Dice controls -->
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
+            <Button Text="-" Clicked="OnDecreaseClicked" />
+            <Label x:Name="DiceCountLabel" Text="1 Dice" FontAttributes="Bold" VerticalOptions="Center" />
+            <Button Text="+" Clicked="OnIncreaseClicked" />
+        </HorizontalStackLayout>
+
+        <!-- Roll Button -->
+        <Button Text="Roll Dices" Clicked="OnRollClicked" />
+
+        <!-- Result -->
+        <Label x:Name="ResultLabel"
+               Text="Result: "
+               FontAttributes="Bold"
+               FontSize="Medium"
+               HorizontalOptions="Center" />
+    </VerticalStackLayout>
 </ContentPage>
