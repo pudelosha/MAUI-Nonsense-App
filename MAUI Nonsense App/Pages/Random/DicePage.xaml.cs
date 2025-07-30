@@ -33,9 +33,10 @@ public partial class DicePage : ContentPage
 
     private async void OnRollClicked(object sender, EventArgs e)
     {
-        await _viewModel.RollDicesAsync();
-        DiceCanvas.Invalidate();
-        ResultLabel.Text = $"Result: {string.Join(", ", _viewModel.RollResults)} | Total: {_viewModel.RollResults.Sum()}";
+        var viewSize = new Size(DiceCanvas.Width, DiceCanvas.Height);
+        await _viewModel.AnimateRoll(DiceCanvas, viewSize);
+
+        ResultLabel.Text = $"Result: {string.Join(", ", _viewModel.Animations.Select(d => d.Value))}";
     }
 
     private void UpdateUI()
