@@ -1,26 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Random.RandomNumberPage"
              Title="Random Numbers">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <VerticalStackLayout Padding="20" Spacing="20">
 
         <!-- Label for range -->
-        <Label Text="Range (From - To)" FontAttributes="Bold" />
+        <Label Text="Range (From - To)"
+               FontSize="16"
+               FontAttributes="Bold"
+               TextColor="#444" />
 
         <!-- Row: From / To full width -->
         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-            <Entry Grid.Column="0" Text="{Binding From}" Keyboard="Numeric" Placeholder="From" />
-            <Entry Grid.Column="1" Text="{Binding To}" Keyboard="Numeric" Placeholder="To" />
+            <Entry Grid.Column="0"
+                   Text="{Binding From}"
+                   Keyboard="Numeric"
+                   Placeholder="From"
+                   FontSize="14" />
+            <Entry Grid.Column="1"
+                   Text="{Binding To}"
+                   Keyboard="Numeric"
+                   Placeholder="To"
+                   FontSize="14" />
         </Grid>
 
         <!-- Label for count -->
-        <Label Text="Count of generated numbers" FontAttributes="Bold" />
+        <Label Text="Count of generated numbers"
+               FontSize="16"
+               FontAttributes="Bold"
+               TextColor="#444" />
 
         <!-- Row: Count / +/- full width -->
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-            <Label Grid.Column="0" Text="Count:" VerticalOptions="Center" />
-            <Label Grid.Column="1" Text="{Binding Count}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <Label Grid.Column="0"
+                   Text="Count:"
+                   FontSize="14"
+                   VerticalOptions="Center" />
+            <Label Grid.Column="1"
+                   Text="{Binding Count}"
+                   FontSize="14"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center" />
             <Stepper Grid.Column="2"
                      Value="{Binding Count}"
                      Minimum="1"
@@ -30,14 +52,22 @@
 
         <!-- Row: Allow duplicates -->
         <HorizontalStackLayout>
-            <CheckBox IsChecked="{Binding AllowDuplicates}" IsEnabled="{Binding CanAllowDuplicates}" />
-            <Label Text="Allow duplicates" VerticalOptions="Center" />
+            <CheckBox IsChecked="{Binding AllowDuplicates}"
+                      IsEnabled="{Binding CanAllowDuplicates}" />
+            <Label Text="Allow duplicates"
+                   FontSize="14"
+                   VerticalOptions="Center" />
         </HorizontalStackLayout>
 
         <!-- Button -->
-        <Button Text="Generate" Command="{Binding GenerateCommand}" />
+        <Button Text="Generate"
+                Command="{Binding GenerateCommand}" />
 
         <!-- Output -->
-        <Editor Text="{Binding Result}" HeightRequest="100" IsReadOnly="True" />
+        <Editor Text="{Binding Result}"
+                HeightRequest="100"
+                IsReadOnly="True"
+                FontSize="14"
+                TextColor="#333" />
     </VerticalStackLayout>
 </ContentPage>

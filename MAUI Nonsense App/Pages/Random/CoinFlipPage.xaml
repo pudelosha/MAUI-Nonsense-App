@@ -1,29 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Random.CoinFlipPage"
              Title="Coin Flip">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <VerticalStackLayout Padding="20" Spacing="20">
 
         <!-- Coin canvas -->
-        <GraphicsView x:Name="CoinCanvas" HeightRequest="250" />
-
-        <!-- Toss button -->
-        <Button Text="Toss Coin" Clicked="OnTossClicked" />
+        <GraphicsView x:Name="CoinCanvas"
+                      HeightRequest="300"
+                      HorizontalOptions="Center" />
 
         <!-- Result label -->
-        <Label x:Name="ResultLabel" 
-               Text="Result will appear here"
+        <Label x:Name="ResultLabel"
+               Text="Result: "
+               FontSize="18"
                FontAttributes="Bold"
-               FontSize="Medium"
                HorizontalOptions="Center" />
 
-        <!-- Stats -->
-        <Label Text="Heads/Tails Split:" FontAttributes="Bold" />
-        <Label x:Name="SplitLabel" Text="0% Heads, 0% Tails" />
+        <!-- Toss button -->
+        <Button Text="Toss Coin"
+                Clicked="OnTossClicked" />
 
-        <Label Text="Last 5 Results:" FontAttributes="Bold" />
-        <Label x:Name="LastResultsLabel" Text="-" LineBreakMode="WordWrap" />
+        <!-- Split stats -->
+        <Label Text="Heads/Tails Split:"
+               FontSize="16"
+               FontAttributes="Bold"
+               TextColor="#444" />
 
+        <Label x:Name="SplitLabel"
+               Text="0% Heads, 0% Tails"
+               FontSize="14"
+               TextColor="#444" />
+
+        <!-- Last results -->
+        <Label Text="Last 5 Results:"
+               FontSize="16"
+               FontAttributes="Bold"
+               TextColor="#444" />
+
+        <Label x:Name="LastResultsLabel"
+               Text="-"
+               FontSize="14"
+               LineBreakMode="WordWrap"
+               TextColor="#444" />
     </VerticalStackLayout>
 </ContentPage>
