@@ -13,10 +13,18 @@ public partial class DicePage : ContentPage
     public DicePage(IDiceRollService diceRollService)
     {
         InitializeComponent();
+
         _viewModel = new DiceViewModel(diceRollService);
         _drawable = new DiceDrawable(_viewModel);
         DiceCanvas.Drawable = _drawable;
         BindingContext = _viewModel;
+
+        // Hook into SizeChanged to capture canvas dimensions
+        DiceCanvas.SizeChanged += (s, e) =>
+        {
+            var size = new Size(DiceCanvas.Width, DiceCanvas.Height);
+            _viewModel.SetCanvasSize(size);
+        };
     }
 
     private void OnDecreaseClicked(object sender, EventArgs e)
@@ -33,10 +41,11 @@ public partial class DicePage : ContentPage
 
     private async void OnRollClicked(object sender, EventArgs e)
     {
-        var viewSize = new Size(DiceCanvas.Width, DiceCanvas.Height);
-        await _viewModel.AnimateRoll(DiceCanvas, viewSize);
+        await _viewModel.AnimateRoll(DiceCanvas);
 
-        ResultLabel.Text = $"Result: {string.Join(", ", _viewModel.Animations.Select(d => d.Value))}";
+        var results = _viewModel.Animations.Select(d => d.Value).ToList();
+        ResultLabel.Text = $"Result: {string.Join(", ", results)}";
+        SumLabel.Text = $"Sum: {results.Sum()}";
     }
 
     private void UpdateUI()
