@@ -1,83 +1,143 @@
 ﻿using Android.Content;
-using Android.OS;
+using Android.Hardware;
 using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Storage;
+using System.Text.Json;
 using AApp = Android.App.Application;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
-    public class AndroidStepCounterService : IStepCounterService
+    public class AndroidStepCounterService : Java.Lang.Object, IStepCounterService, ISensorEventListener
     {
-        private readonly Context _context;
-        private readonly Handler _handler;
-        private const int PollIntervalMs = 2000;
+        private readonly SensorManager _sensorManager;
+        private readonly Sensor? _stepSensor;
+        private int _lastSensorValue;
 
-        public int TotalSteps => Preferences.Get("AccumulatedSteps", 0);
-        public int Last24HoursSteps => Preferences.Get("DailySteps", 0);
-        public Dictionary<string, int> StepHistory => GetStepHistory();
-
-        public event EventHandler? StepsUpdated;
+        public int RawSensorValue => _lastSensorValue;
 
         public AndroidStepCounterService()
         {
-            _context = AApp.Context;
-            _handler = new Handler();
+            _lastSensorValue = Preferences.Get("LastSensorValue", 0);
+
+            _sensorManager = (SensorManager)AApp.Context.GetSystemService(Context.SensorService);
+            _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
+
+            if (_stepSensor != null)
+            {
+                _sensorManager.RegisterListener(this, _stepSensor, SensorDelay.Ui);
+            }
         }
 
-        public Task StartAsync()
+        public int TotalSteps => GetAdjustedTotalSteps();
+
+        public int Last24HoursSteps
         {
-            StartForegroundService();
-            StartPolling();
-            return Task.CompletedTask;
+            get
+            {
+                int midnight = Preferences.Get("MidnightStepSensorValue", GetAdjustedTotalSteps());
+                return Math.Max(0, GetAdjustedTotalSteps() - midnight);
+            }
         }
+
+        public Dictionary<string, int> StepHistory
+        {
+            get
+            {
+                var history = LoadStepHistory();
+                var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+                // Always show live value for today
+                history[today] = GetAdjustedTotalSteps();
+
+                return history;
+            }
+        }
+
+        public void OnSensorChanged(SensorEvent e)
+        {
+            if (e?.Sensor?.Type == SensorType.StepCounter)
+            {
+                _lastSensorValue = (int)e.Values[0];
+                Preferences.Set("LastSensorValue", _lastSensorValue);
+
+                if (!Preferences.ContainsKey("BootBaseStepValue"))
+                {
+                    Preferences.Set("BootBaseStepValue", _lastSensorValue);
+                }
+
+                SaveDailySnapshotIfNeeded(GetAdjustedTotalSteps());
+            }
+        }
+
+        public void OnAccuracyChanged(Sensor sensor, SensorStatus accuracy)
+        {
+            // Not needed
+        }
+
+        private int GetAdjustedTotalSteps()
+        {
+            int bootBase = Preferences.Get("BootBaseStepValue", -1);
+            if (bootBase < 0 || _lastSensorValue < bootBase)
+            {
+                return _lastSensorValue;
+            }
+
+            return Math.Max(0, _lastSensorValue - bootBase);
+        }
+
+        public void SaveDailySnapshotIfNeeded(int adjustedSteps)
+        {
+            var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var lastSavedDate = Preferences.Get("LastStepDate", "");
+
+            if (today != lastSavedDate)
+            {
+                var history = LoadStepHistory();
+
+                // Save the previous day's final step count using the old midnight snapshot
+                if (!string.IsNullOrEmpty(lastSavedDate))
+                {
+                    int previousMidnight = Preferences.Get("MidnightStepSensorValue", 0);
+                    history[lastSavedDate] = previousMidnight;
+                }
+
+                // Store new day data
+                Preferences.Set("MidnightStepSensorValue", adjustedSteps); // snapshot of start-of-day
+                Preferences.Set("LastStepDate", today);
+                Preferences.Set("StepHistory", JsonSerializer.Serialize(history));
+            }
+        }
+
+        private Dictionary<string, int> LoadStepHistory()
+        {
+            var json = Preferences.Get("StepHistory", "{}");
+            return JsonSerializer.Deserialize<Dictionary<string, int>>(json)
+                   ?? new Dictionary<string, int>();
+        }
+
+        public Task StartAsync() => Task.CompletedTask;
 
         public Task StopAsync()
         {
-            StopForegroundService();
-            _handler.RemoveCallbacksAndMessages(null);
+            _sensorManager?.UnregisterListener(this);
             return Task.CompletedTask;
         }
 
         public void ResetAll()
         {
-            Preferences.Set("AccumulatedSteps", 0);
-            Preferences.Set("DailySteps", 0);
-            Preferences.Remove("FirstEverStepSensorValue");
+            Preferences.Remove("BootBaseStepValue");
+            Preferences.Remove("LastSensorValue");
             Preferences.Remove("MidnightStepSensorValue");
+            Preferences.Remove("LastStepDate");
             Preferences.Set("StepHistory", "{}");
-            Preferences.Set("LastStepDate", DateTime.UtcNow.ToString("yyyy-MM-dd"));
         }
 
-        private void StartForegroundService()
-        {
-            var intent = new Intent(_context, typeof(StepCounterForegroundService));
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                _context.StartForegroundService(intent);
-            else
-                _context.StartService(intent);
-        }
+        public int GetRawSensorValue() => _lastSensorValue;
 
-        private void StopForegroundService()
+        protected override void Dispose(bool disposing)
         {
-            var intent = new Intent(_context, typeof(StepCounterForegroundService));
-            _context.StopService(intent);
-        }
-
-        private void StartPolling()
-        {
-            _handler.PostDelayed(() =>
-            {
-                StepsUpdated?.Invoke(this, EventArgs.Empty);
-                StartPolling();
-            }, PollIntervalMs);
-        }
-
-        private Dictionary<string, int> GetStepHistory()
-        {
-            var json = Preferences.Get("StepHistory", "{}");
-            var history = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                          ?? new Dictionary<string, int>();
-            return history;
+            base.Dispose(disposing);
+            _sensorManager?.UnregisterListener(this, _stepSensor);
         }
     }
 }

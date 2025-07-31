@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Timers;
 using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App.Models
@@ -13,22 +14,30 @@ namespace MAUI_Nonsense_App.Models
     public class StepCounterViewModel : INotifyPropertyChanged
     {
         private readonly IStepCounterService _service;
+        private readonly System.Timers.Timer _refreshTimer;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int TotalSteps
+        private int _todaySteps;
+        public int TodaySteps
         {
-            get => _totalSteps;
-            set { if (_totalSteps != value) { _totalSteps = value; OnPropertyChanged(nameof(TotalSteps)); } }
+            get => _todaySteps;
+            set { if (_todaySteps != value) { _todaySteps = value; OnPropertyChanged(nameof(TodaySteps)); } }
         }
-        private int _totalSteps;
 
-        public int Last24HoursSteps
+        private int _accumulatedSteps;
+        public int AccumulatedSteps
         {
-            get => _last24HoursSteps;
-            set { if (_last24HoursSteps != value) { _last24HoursSteps = value; OnPropertyChanged(nameof(Last24HoursSteps)); } }
+            get => _accumulatedSteps;
+            set { if (_accumulatedSteps != value) { _accumulatedSteps = value; OnPropertyChanged(nameof(AccumulatedSteps)); } }
         }
-        private int _last24HoursSteps;
+
+        private int _rawSensorValue;
+        public int RawSensorValue
+        {
+            get => _rawSensorValue;
+            set { if (_rawSensorValue != value) { _rawSensorValue = value; OnPropertyChanged(nameof(RawSensorValue)); } }
+        }
 
         public ObservableCollection<StepDay> Last7Days { get; set; } = new();
 
@@ -36,28 +45,62 @@ namespace MAUI_Nonsense_App.Models
         {
             _service = service;
 
-            TotalSteps = service.TotalSteps;
-            Last24HoursSteps = service.Last24HoursSteps;
+            _refreshTimer = new System.Timers.Timer(5000);
+            _refreshTimer.Elapsed += async (s, e) => await RefreshAsync();
+            _refreshTimer.AutoReset = true;
+
+            _refreshTimer.Start(); // ensure it starts automatically
+            _ = RefreshAsync(); // immediate first refresh
+        }
+
+        public void StartTimer() => _refreshTimer.Start();
+        public void StopTimer() => _refreshTimer.Stop();
+
+        public async Task RefreshAsync()
+        {
+#if IOS
+            if (_service is MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter.iOSStepCounterService iosService)
+            {
+                await iosService.FetchCurrentStepsAsync();
+            }
+#endif
+            int current = _service.TotalSteps;
+
+            TodaySteps = current;
+            RawSensorValue = _service.RawSensorValue;
+
+            var history = _service.StepHistory;
+            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+
+            // Use live value for today, history for others
+            int historicalTotal = history
+                .Where(kv => kv.Key != today)
+                .Sum(kv => kv.Value);
+
+            AccumulatedSteps = historicalTotal + TodaySteps;
 
             LoadLast7Days();
-
-            service.StepsUpdated += (s, e) =>
-            {
-                TotalSteps = service.TotalSteps;
-                Last24HoursSteps = service.Last24HoursSteps;
-                LoadLast7Days();
-            };
         }
 
         private void LoadLast7Days()
         {
             Last7Days.Clear();
             var history = _service.StepHistory;
+            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
             for (int i = 0; i < 7; i++)
             {
                 var date = DateTime.UtcNow.Date.AddDays(-i).ToString("yyyy-MM-dd");
-                history.TryGetValue(date, out int steps);
+
+                int steps;
+                if (date == today)
+                {
+                    steps = _service.TotalSteps; // use live sensor value
+                }
+                else
+                {
+                    history.TryGetValue(date, out steps);
+                }
 
                 Last7Days.Add(new StepDay
                 {
