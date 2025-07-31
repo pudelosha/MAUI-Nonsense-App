@@ -33,26 +33,40 @@ public class SpinnerViewModel : INotifyPropertyChanged
     {
         int totalSlices = Options.Count;
         float fullRotations = 5;
-        float targetSlice = _random.Next(totalSlices);
-        float finalAngle = 360f * fullRotations + (360f / totalSlices) * (totalSlices - targetSlice - 0.5f);
+        float sliceSize = 360f / totalSlices;
+        float randomInSlice = (float)_random.NextDouble(); // fine offset within slice
+        int targetSlice = _random.Next(totalSlices);
 
-        const int duration = 3500;
-        var stopwatch = Stopwatch.StartNew();
+        // Make sure the angle moves forward regardless of current value
+        float normalizedCurrent = CurrentAngle % 360f;
+        float targetAngle = sliceSize * (totalSlices - targetSlice - randomInSlice);
+        float finalAngle = 360f * fullRotations + targetAngle;
 
-        while (stopwatch.ElapsedMilliseconds < duration)
-        {
-            float progress = (float)stopwatch.ElapsedMilliseconds / duration;
-            float easedProgress = 1f - (float)Math.Pow(1 - progress, 3); // Ease out
-            CurrentAngle = finalAngle * easedProgress;
+        float startAngle = normalizedCurrent;
+        float endAngle = normalizedCurrent + finalAngle;
+        float angleDelta = endAngle - startAngle;
 
-            MainThread.BeginInvokeOnMainThread(() => canvas.Invalidate());
-            await Task.Delay(16);
-        }
+        var tcs = new TaskCompletionSource();
 
-        CurrentAngle = finalAngle;
-        MainThread.BeginInvokeOnMainThread(() => canvas.Invalidate());
+        var animation = new Animation(
+            callback: value =>
+            {
+                CurrentAngle = startAngle + (float)value * angleDelta;
+                canvas.Invalidate();
+            },
+            start: 0,
+            end: 1,
+            easing: Easing.CubicOut
+        );
 
-        SelectedOption = Options[(int)Math.Floor(((360f - (CurrentAngle % 360f)) % 360f) / (360f / totalSlices))];
+        animation.Commit(canvas, "SpinAnimation", 16, 3500, finished: (v, c) => tcs.SetResult());
+
+        await tcs.Task;
+
+        float adjustedAngle = (360f - (CurrentAngle % 360f)) % 360f;
+        int selectedIndex = (int)Math.Floor(adjustedAngle / sliceSize);
+
+        SelectedOption = Options[selectedIndex];
         OnPropertyChanged(nameof(SelectedOption));
     }
 
