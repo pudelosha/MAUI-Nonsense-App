@@ -2,11 +2,23 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Random.RandomSpinnerPage"
-             Title="RandomSpinner">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             Title="Random Spinner">
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <!-- Spinner Canvas -->
+        <GraphicsView x:Name="SpinnerCanvas" HeightRequest="300"/>
+
+        <!-- Result -->
+        <Label x:Name="ResultLabel"
+               Text="Result: "
+               FontSize="18"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"/>
+
+        <!-- Spin Button -->
+        <Button Text="Spin" Clicked="OnSpinClicked" />
+
+        <!-- Edit Button -->
+        <Button Text="Edit Options" Clicked="OnEditClicked" />
     </VerticalStackLayout>
 </ContentPage>
