@@ -6,13 +6,13 @@ namespace MAUI_Nonsense_App.Pages.Random;
 
 public partial class RandomSpinnerPage : ContentPage
 {
-    private readonly SpinnerViewModel _viewModel;
+    private readonly RandomSpinnerViewModel _viewModel;
     private readonly SpinnerDrawable _drawable;
 
     public RandomSpinnerPage()
     {
         InitializeComponent();
-        _viewModel = new SpinnerViewModel();
+        _viewModel = new RandomSpinnerViewModel();
         _drawable = new SpinnerDrawable(_viewModel);
         SpinnerCanvas.Drawable = _drawable;
         BindingContext = _viewModel;

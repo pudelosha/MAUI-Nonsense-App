@@ -4,14 +4,14 @@ namespace MAUI_Nonsense_App.Pages._Drawable
 {
     public class SpinnerDrawable : IDrawable
     {
-        private readonly SpinnerViewModel _viewModel;
+        private readonly RandomSpinnerViewModel _viewModel;
         private readonly Color[] _colors = new Color[]
         {
             Colors.Red, Colors.Green, Colors.Blue, Colors.Orange, Colors.Purple,
             Colors.Cyan, Colors.Brown, Colors.Magenta, Colors.Teal, Colors.Yellow
         };
 
-        public SpinnerDrawable(SpinnerViewModel viewModel)
+        public SpinnerDrawable(RandomSpinnerViewModel viewModel)
         {
             _viewModel = viewModel;
         }

@@ -55,6 +55,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<CoinFlipPage>();
             builder.Services.AddTransient<DicePage>();
             builder.Services.AddTransient<RandomSpinnerPage>();
+            builder.Services.AddTransient<RouletteWheelPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -66,6 +67,8 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<RandomNumberViewModel>();
             builder.Services.AddTransient<CoinFlipViewModel>(); 
             builder.Services.AddTransient<DiceViewModel>();
+            builder.Services.AddTransient<RouletteViewModel>();
+            builder.Services.AddTransient<RandomSpinnerViewModel>();
 
 
 #if DEBUG

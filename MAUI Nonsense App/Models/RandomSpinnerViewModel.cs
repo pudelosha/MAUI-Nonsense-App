@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace MAUI_Nonsense_App.Models;
 
-public class SpinnerViewModel : INotifyPropertyChanged
+public class RandomSpinnerViewModel : INotifyPropertyChanged
 {
     private readonly Random _random = new();
     private float _currentAngle = 0f;
