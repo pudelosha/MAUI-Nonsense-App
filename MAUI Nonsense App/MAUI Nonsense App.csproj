@@ -68,6 +68,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\Random\RandomSpinnerPage.xaml.cs">
+	    <DependentUpon>RandomSpinnerPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\Random\RouletteWheelPage.xaml.cs">
+	    <DependentUpon>RouletteWheelPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\Random\SlotMachinePage.xaml.cs">
+	    <DependentUpon>SlotMachinePage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Pages\Finance\FinancePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -87,6 +99,15 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Random\RandomPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Random\RandomSpinnerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Random\RouletteWheelPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Random\SlotMachinePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Survival\ChecklistPage.xaml">

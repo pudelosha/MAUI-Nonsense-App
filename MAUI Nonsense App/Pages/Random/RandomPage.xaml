@@ -8,23 +8,16 @@
         <VerticalStackLayout Padding="20" Spacing="20">
 
             <!-- Random Number Generator -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0"
-                           Text="&#xf1b3;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
-                           VerticalOptions="Center"/>
+                    <Label Grid.Column="0" Text="&#xf1b3;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                         <Label Text="Random Number Generator" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Generate a random number between your chosen range."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Generate a random number between your chosen range." FontSize="12" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
@@ -33,23 +26,16 @@
             </Border>
 
             <!-- Coin Flip -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0"
-                           Text="&#xf042;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
-                           VerticalOptions="Center"/>
+                    <Label Grid.Column="0" Text="&#xf042;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                         <Label Text="Coin Flip" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Flip a virtual coin and get heads or tails."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Flip a virtual coin and get heads or tails." FontSize="12" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
@@ -58,27 +44,74 @@
             </Border>
 
             <!-- Dice -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0"
-                           Text="&#xf522;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
-                           VerticalOptions="Center"/>
+                    <Label Grid.Column="0" Text="&#xf522;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                         <Label Text="Dice" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Roll one or more dice and get a random result."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Roll one or more dice and get a random result." FontSize="12" TextColor="#888888"/>
                     </VerticalStackLayout>
                 </Grid>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnDiceTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Random Spinner -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Text="&#xf021;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Random Spinner" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Spin a customizable wheel to randomly select an option." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRandomSpinnerTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Roulette Wheel -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Text="&#xf140;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Roulette Wheel" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Spin the wheel of fortune and land on a random number." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRouletteTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Slot Machine -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Text="&#xf11b;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Slot Machine" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Pull the lever and see if you hit the jackpot." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSlotTapped"/>
                 </Border.GestureRecognizers>
             </Border>
 

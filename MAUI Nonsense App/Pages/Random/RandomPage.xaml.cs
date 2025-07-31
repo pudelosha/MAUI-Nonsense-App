@@ -30,4 +30,25 @@ public partial class RandomPage : ContentPage
         if (page is not null)
             await Navigation.PushAsync(page);
     }
+
+    private async void OnRandomSpinnerTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<RandomSpinnerPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
+
+    private async void OnRouletteTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<RouletteWheelPage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
+
+    private async void OnSlotTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<SlotMachinePage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
 }
