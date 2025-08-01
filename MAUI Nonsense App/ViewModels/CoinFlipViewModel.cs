@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using MAUI_Nonsense_App.Services;
 
-namespace MAUI_Nonsense_App.Models;
+namespace MAUI_Nonsense_App.ViewModels;
 
 public class CoinFlipViewModel : INotifyPropertyChanged
 {

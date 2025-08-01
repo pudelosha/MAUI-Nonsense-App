@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace MAUI_Nonsense_App.Models;
+namespace MAUI_Nonsense_App.ViewModels;
 
 public class RulerViewModel : INotifyPropertyChanged
 {

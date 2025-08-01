@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Office.ImageSelectionPage"
+             Title="Select Images">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <!-- Buttons -->
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+            <Button Text="Take Photo" Clicked="OnTakePhotoClicked" />
+            <Button Text="Pick from Gallery" Clicked="OnPickPhotosClicked" />
+        </HorizontalStackLayout>
+
+        <!-- Selected Images Preview -->
+        <Label Text="Selected Images:" FontAttributes="Bold" />
+
+        <CollectionView x:Name="SelectedImagesView"
+                        ItemsSource="{Binding SelectedImages}"
+                        HeightRequest="200"
+                        ItemsLayout="HorizontalList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Image Source="{Binding}" WidthRequest="100" HeightRequest="150" Margin="5" Aspect="AspectFill"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Next Button -->
+        <Button Text="Next"
+                Clicked="OnNextClicked"
+                IsEnabled="{Binding SelectedImages.Count, Converter={StaticResource GreaterThanZeroConverter}}" />
+    </VerticalStackLayout>
+</ContentPage>

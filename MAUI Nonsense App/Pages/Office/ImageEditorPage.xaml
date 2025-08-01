@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Office.ImageEditorPage"
+             Title="Edit Image">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <!-- Instructions -->
+        <Label Text="Adjust the image frame (cropping UI to come)"
+               FontAttributes="Bold"
+               FontSize="16"
+               HorizontalOptions="Center" />
+
+        <!-- Image Placeholder -->
+        <Border Stroke="Gray" StrokeThickness="1" Padding="5">
+            <Image x:Name="EditableImage"
+                   Aspect="AspectFit"
+                   HeightRequest="400" />
+        </Border>
+
+        <!-- Done Button -->
+        <Button Text="Done"
+                Clicked="OnDoneClicked"
+                BackgroundColor="#512BD4"
+                TextColor="White"
+                CornerRadius="8"
+                HorizontalOptions="Fill" />
+
+    </VerticalStackLayout>
+</ContentPage>

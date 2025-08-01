@@ -1,4 +1,4 @@
-﻿using MAUI_Nonsense_App.Models;
+﻿using MAUI_Nonsense_App.ViewModels;
 using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
 using MAUI_Nonsense_App.Pages.Random;
@@ -7,6 +7,7 @@ using MAUI_Nonsense_App.Pages.Tools;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
+using MAUI_Nonsense_App.Pages.Office;
 
 namespace MAUI_Nonsense_App
 {
@@ -56,6 +57,11 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<DicePage>();
             builder.Services.AddTransient<RandomSpinnerPage>();
             builder.Services.AddTransient<RouletteWheelPage>();
+            builder.Services.AddTransient<SavePdfPage>();
+            builder.Services.AddTransient<ImageArrangePage>();
+            builder.Services.AddTransient<ImageSelectionPage>();
+            builder.Services.AddTransient<ImageEditorPage>();
+            builder.Services.AddTransient<ImageToPdfPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -69,6 +75,9 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<DiceViewModel>();
             builder.Services.AddTransient<RouletteViewModel>();
             builder.Services.AddTransient<RandomSpinnerViewModel>();
+            builder.Services.AddTransient<SavePdfViewModel>();
+            builder.Services.AddTransient<ImageArrangeViewModel>();
+            builder.Services.AddTransient<ImageSelectionViewModel>();
 
 
 #if DEBUG

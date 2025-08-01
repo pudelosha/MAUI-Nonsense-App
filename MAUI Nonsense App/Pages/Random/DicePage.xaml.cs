@@ -1,4 +1,4 @@
-using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.ViewModels;
 using MAUI_Nonsense_App.Pages._Drawable;
 using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Graphics;

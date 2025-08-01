@@ -2,6 +2,8 @@
 using MAUI_Nonsense_App.Services;
 using System.ComponentModel;
 
+namespace MAUI_Nonsense_App.ViewModels;
+
 public class LightViewModel : INotifyPropertyChanged
 {
     private readonly ILightService _lightService;

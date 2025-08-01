@@ -1,4 +1,4 @@
-﻿namespace MAUI_Nonsense_App.Models;
+﻿namespace MAUI_Nonsense_App.ViewModels;
 
 public class QrScannerViewModel
 {

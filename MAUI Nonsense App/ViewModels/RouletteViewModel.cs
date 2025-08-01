@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using Microsoft.Maui.Graphics;
 
-namespace MAUI_Nonsense_App.Models;
+namespace MAUI_Nonsense_App.ViewModels;
 
 public class RouletteViewModel : INotifyPropertyChanged
 {

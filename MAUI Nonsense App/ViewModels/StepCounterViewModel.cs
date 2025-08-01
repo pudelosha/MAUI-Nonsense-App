@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Timers;
-using MAUI_Nonsense_App.Services;
 
-namespace MAUI_Nonsense_App.Models
-{
+namespace MAUI_Nonsense_App.ViewModels;
+
     public class StepDay
     {
         public string Date { get; set; }
@@ -113,4 +111,3 @@ namespace MAUI_Nonsense_App.Models
         private void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-}

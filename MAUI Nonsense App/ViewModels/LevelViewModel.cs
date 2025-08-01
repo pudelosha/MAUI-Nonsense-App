@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MAUI_Nonsense_App.Models;
+namespace MAUI_Nonsense_App.ViewModels;
 
 public class LevelViewModel : INotifyPropertyChanged
 {

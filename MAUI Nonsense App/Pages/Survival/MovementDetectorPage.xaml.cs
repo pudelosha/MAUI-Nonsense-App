@@ -1,4 +1,4 @@
-using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.ViewModels;
 
 namespace MAUI_Nonsense_App.Pages.Survival;
 

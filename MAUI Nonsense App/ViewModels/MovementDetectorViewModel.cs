@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace MAUI_Nonsense_App.Models
-{
+namespace MAUI_Nonsense_App.ViewModels;
+
     public class MovementDetectorViewModel : INotifyPropertyChanged
     {
         private readonly IMovementAlarmService _movementAlarmService;
@@ -150,4 +150,3 @@ namespace MAUI_Nonsense_App.Models
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-}
