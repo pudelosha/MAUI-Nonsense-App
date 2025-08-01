@@ -16,31 +16,32 @@ public partial class ImageArrangePage : ContentPage
         BindingContext = _viewModel;
     }
 
-    private void OnMoveUpClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ImagePageModel page)
-            _viewModel.MoveUp(page);
-    }
-
-    private void OnMoveDownClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ImagePageModel page)
-            _viewModel.MoveDown(page);
-    }
-
     private async void OnNextClicked(object sender, EventArgs e)
     {
         _session.Pages = _viewModel.Pages.ToList();
         await Navigation.PushAsync(new SavePdfPage(_session));
     }
 
-    private async void OnEditClicked(object sender, EventArgs e)
+    private async void OnBackClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is ImagePageModel page)
-        {
-            // Navigate to the image editor page with the selected image
-            await Navigation.PushAsync(new ImageEditorPage(page));
-        }
+        await Navigation.PopAsync();
     }
 
+    private void OnMoveUpTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ImagePageModel page)
+            _viewModel.MoveUp(page);
+    }
+
+    private void OnMoveDownTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ImagePageModel page)
+            _viewModel.MoveDown(page);
+    }
+
+    private async void OnEditTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ImagePageModel page)
+            await Navigation.PushAsync(new ImageEditorPage(page));
+    }
 }

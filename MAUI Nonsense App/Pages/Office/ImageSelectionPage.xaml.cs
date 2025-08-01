@@ -38,4 +38,9 @@ public partial class ImageSelectionPage : ContentPage
         if ((sender as Button)?.CommandParameter is ImagePageModel model)
             _viewModel.SelectedImages.Remove(model);
     }
+
+    private async void OnBackClicked(object sender, EventArgs e)
+    {
+        await Navigation.PopAsync();
+    }
 }
