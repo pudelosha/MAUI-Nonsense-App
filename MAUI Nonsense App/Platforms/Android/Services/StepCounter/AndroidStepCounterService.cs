@@ -1,7 +1,5 @@
 ﻿using Android.Content;
 using Android.Hardware;
-using MAUI_Nonsense_App.Services;
-using Microsoft.Maui.Storage;
 using System.Text.Json;
 using AApp = Android.App.Application;
 
@@ -44,7 +42,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             get
             {
                 var history = LoadStepHistory();
-                var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
+                var today = DateTime.Now.ToString("yyyy-MM-dd"); // Local date
 
                 // Always show live value for today
                 history[today] = GetAdjustedTotalSteps();
@@ -77,32 +75,35 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         private int GetAdjustedTotalSteps()
         {
             int bootBase = Preferences.Get("BootBaseStepValue", -1);
+
             if (bootBase < 0 || _lastSensorValue < bootBase)
             {
-                return _lastSensorValue;
+                // Likely reboot occurred and no valid base saved
+                Preferences.Set("BootBaseStepValue", _lastSensorValue);
+                return 0; // This is now the new baseline
             }
 
             return Math.Max(0, _lastSensorValue - bootBase);
         }
 
+
         public void SaveDailySnapshotIfNeeded(int adjustedSteps)
         {
-            var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var today = DateTime.Now.ToString("yyyy-MM-dd");
             var lastSavedDate = Preferences.Get("LastStepDate", "");
 
             if (today != lastSavedDate)
             {
                 var history = LoadStepHistory();
 
-                // Save the previous day's final step count using the old midnight snapshot
+                // Save previous day step count
                 if (!string.IsNullOrEmpty(lastSavedDate))
                 {
                     int previousMidnight = Preferences.Get("MidnightStepSensorValue", 0);
                     history[lastSavedDate] = previousMidnight;
                 }
 
-                // Store new day data
-                Preferences.Set("MidnightStepSensorValue", adjustedSteps); // snapshot of start-of-day
+                Preferences.Set("MidnightStepSensorValue", adjustedSteps); // new day's start value
                 Preferences.Set("LastStepDate", today);
                 Preferences.Set("StepHistory", JsonSerializer.Serialize(history));
             }

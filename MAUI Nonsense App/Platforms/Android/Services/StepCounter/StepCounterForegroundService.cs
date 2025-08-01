@@ -4,8 +4,8 @@ using Android.Content.PM;
 using Android.Hardware;
 using Android.OS;
 using AndroidX.Core.App;
+using MAUI_Nonsense_App.Platforms.Android.Helpers;
 using Microsoft.Maui.Storage;
-using System.Text.Json;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
@@ -35,6 +35,9 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             if (_stepSensor != null)
                 _sensorManager.RegisterListener(this, _stepSensor, SensorDelay.Ui);
+
+            // Schedule midnight snapshot
+            AlarmHelper.ScheduleNextMidnightSnapshot(this);
         }
 
         public override void OnDestroy()
@@ -49,38 +52,22 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         public void OnSensorChanged(SensorEvent e)
         {
-            int sensorValue = (int)e.Values[0];
-
-            // Get today's date
-            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
-            string lastDate = Preferences.Get("LastStepDate", today);
-
-            // First ever value
-            if (!Preferences.ContainsKey("FirstEverStepSensorValue"))
+            if (e?.Sensor?.Type == SensorType.StepCounter)
             {
-                Preferences.Set("FirstEverStepSensorValue", sensorValue);
-                Preferences.Set("LastStepDate", today);
-                Preferences.Set("MidnightStepSensorValue", sensorValue);
+                int sensorValue = (int)e.Values[0];
+
+                Preferences.Set("LastSensorValue", sensorValue);
+
+                int currentBase = Preferences.Get("BootBaseStepValue", -1);
+
+                // Only update boot base if:
+                // - Not yet set (fresh install), or
+                // - Sensor value is less than old base (rebooted with reset)
+                if (currentBase == -1 || sensorValue < currentBase)
+                {
+                    Preferences.Set("BootBaseStepValue", sensorValue);
+                }
             }
-
-            int firstEver = Preferences.Get("FirstEverStepSensorValue", sensorValue);
-            int midnight = Preferences.Get("MidnightStepSensorValue", sensorValue);
-
-            // If day has changed, reset midnight baseline
-            if (lastDate != today)
-            {
-                Preferences.Set("LastStepDate", today);
-                Preferences.Set("MidnightStepSensorValue", sensorValue);
-                midnight = sensorValue;
-            }
-
-            int totalSteps = sensorValue - firstEver;
-            int dailySteps = sensorValue - midnight;
-
-            Preferences.Set("AccumulatedSteps", totalSteps);
-            Preferences.Set("DailySteps", dailySteps);
-
-            UpdateStepHistory(today, dailySteps);
         }
 
         private void CreateNotificationChannel()
@@ -95,27 +82,6 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 var notificationManager = (NotificationManager)GetSystemService(NotificationService);
                 notificationManager.CreateNotificationChannel(channel);
             }
-        }
-
-        private void UpdateStepHistory(string date, int stepsToday)
-        {
-            var json = Preferences.Get("StepHistory", "{}");
-            var history = JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                          ?? new Dictionary<string, int>();
-
-            history[date] = stepsToday;
-
-            var updatedJson = JsonSerializer.Serialize(history);
-            Preferences.Set("StepHistory", updatedJson);
-        }
-
-        public Dictionary<string, int> GetStepHistory()
-        {
-            var json = Preferences.Get("StepHistory", "{}");
-            var history = JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                          ?? new Dictionary<string, int>();
-
-            return history;
         }
     }
 }

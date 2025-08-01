@@ -49,8 +49,8 @@ namespace MAUI_Nonsense_App.Models
             _refreshTimer.Elapsed += async (s, e) => await RefreshAsync();
             _refreshTimer.AutoReset = true;
 
-            _refreshTimer.Start(); // ensure it starts automatically
-            _ = RefreshAsync(); // immediate first refresh
+            _refreshTimer.Start();
+            _ = RefreshAsync();
         }
 
         public void StartTimer() => _refreshTimer.Start();
@@ -70,9 +70,8 @@ namespace MAUI_Nonsense_App.Models
             RawSensorValue = _service.RawSensorValue;
 
             var history = _service.StepHistory;
-            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            string today = DateTime.Now.Date.ToString("yyyy-MM-dd"); // LOCAL TIME
 
-            // Use live value for today, history for others
             int historicalTotal = history
                 .Where(kv => kv.Key != today)
                 .Sum(kv => kv.Value);
@@ -86,16 +85,17 @@ namespace MAUI_Nonsense_App.Models
         {
             Last7Days.Clear();
             var history = _service.StepHistory;
-            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            string today = DateTime.Now.Date.ToString("yyyy-MM-dd"); // LOCAL TIME
 
             for (int i = 0; i < 7; i++)
             {
-                var date = DateTime.UtcNow.Date.AddDays(-i).ToString("yyyy-MM-dd");
+                var dateObj = DateTime.Now.Date.AddDays(-i); // LOCAL TIME
+                var date = dateObj.ToString("yyyy-MM-dd");
 
                 int steps;
                 if (date == today)
                 {
-                    steps = _service.TotalSteps; // use live sensor value
+                    steps = _service.TotalSteps;
                 }
                 else
                 {
