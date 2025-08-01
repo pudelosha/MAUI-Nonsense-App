@@ -54,7 +54,13 @@
             </Button.Triggers>
         </Button>
 
-        <Button Text="Morse" Clicked="OnSendMorseClicked"
-                BackgroundColor="{Binding IsMorseOn, Converter={StaticResource BoolToColorConverter}}" />
+        <Button Text="Morse" Clicked="OnSendMorseClicked">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsMorseOn}" Value="true">
+                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
     </VerticalStackLayout>
 </ContentPage>
