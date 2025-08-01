@@ -1,14 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.Services;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App.ViewModels;
 
 public class ImageSelectionViewModel : INotifyPropertyChanged
 {
     private readonly IDocumentBuilderService _docService;
-    public ObservableCollection<string> SelectedImages { get; } = new();
+
+    public ObservableCollection<ImagePageModel> SelectedImages { get; } = new();
 
     public ImageSelectionViewModel(IDocumentBuilderService documentBuilderService)
     {
@@ -17,16 +19,34 @@ public class ImageSelectionViewModel : INotifyPropertyChanged
 
     public async Task AddFromCameraAsync()
     {
-        var photo = await _docService.CapturePhotoAsync();
-        if (!string.IsNullOrWhiteSpace(photo))
-            SelectedImages.Add(photo);
+        var photoPath = await _docService.CapturePhotoAsync();
+        if (!string.IsNullOrWhiteSpace(photoPath))
+        {
+            var fileInfo = new FileInfo(photoPath);
+            SelectedImages.Add(new ImagePageModel
+            {
+                FilePath = photoPath,
+                Source = "Camera",
+                CreatedAt = fileInfo.CreationTime,
+                FileSizeBytes = fileInfo.Length
+            });
+        }
     }
 
     public async Task AddFromGalleryAsync()
     {
         var images = await _docService.PickImagesAsync();
         foreach (var img in images)
-            SelectedImages.Add(img);
+        {
+            var fileInfo = new FileInfo(img);
+            SelectedImages.Add(new ImagePageModel
+            {
+                FilePath = img,
+                Source = "Gallery",
+                CreatedAt = fileInfo.CreationTime,
+                FileSizeBytes = fileInfo.Length
+            });
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

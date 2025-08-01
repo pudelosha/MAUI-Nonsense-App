@@ -28,11 +28,14 @@ public partial class ImageSelectionPage : ContentPage
     private async void OnNextClicked(object sender, EventArgs e)
     {
         var session = new PdfCreationSession();
-        foreach (var path in _viewModel.SelectedImages)
-        {
-            session.Pages.Add(new ImagePageModel { FilePath = path });
-        }
-
+        session.Pages.AddRange(_viewModel.SelectedImages);
         await Navigation.PushAsync(new ImageArrangePage(session));
+    }
+
+
+    private void OnDeleteClicked(object sender, EventArgs e)
+    {
+        if ((sender as Button)?.CommandParameter is ImagePageModel model)
+            _viewModel.SelectedImages.Remove(model);
     }
 }
