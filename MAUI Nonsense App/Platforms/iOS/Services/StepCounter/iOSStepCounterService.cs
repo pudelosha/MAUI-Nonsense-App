@@ -1,107 +1,94 @@
 ﻿using CoreMotion;
 using Foundation;
 using MAUI_Nonsense_App.Services;
-using Microsoft.Maui.Storage;
-using System.Text.Json;
+
 
 namespace MAUI_Nonsense_App.Platforms.iOS.Services.StepCounter
 {
     public class iOSStepCounterService : IStepCounterService
     {
-        private readonly CMPedometer _pedometer = new();
-        private int _currentSteps = 0;
+        private readonly CMPedometer _pedometer = new CMPedometer();
 
-        public int TotalSteps => _currentSteps;
-        public int RawSensorValue => _currentSteps;
-
-        public int Last24HoursSteps
-        {
-            get
-            {
-                int midnight = Preferences.Get("MidnightStepSensorValue", 0);
-                return Math.Max(0, TotalSteps - midnight);
-            }
-        }
-
+        public int TotalSteps => Preferences.Get("AccumulatedSteps", 0);
+        public int Last24HoursSteps => Preferences.Get("DailySteps", 0);
         public Dictionary<string, int> StepHistory => GetStepHistory();
 
-        public Task StartAsync() => Task.CompletedTask;
-        public Task StopAsync() => Task.CompletedTask;
+        public event EventHandler? StepsUpdated;
 
-        public void ResetAll()
-        {
-            Preferences.Remove("MidnightStepSensorValue");
-            Preferences.Remove("LastStepDate");
-            Preferences.Set("StepHistory", "{}");
-        }
-
-        public async Task<int> FetchCurrentStepsAsync()
+        public async Task StartAsync()
         {
             if (!CMPedometer.IsStepCountingAvailable)
-                return 0;
+                return;
 
             var now = NSDate.Now;
+
             var calendar = NSCalendar.CurrentCalendar;
             var components = calendar.Components(NSCalendarUnit.Year | NSCalendarUnit.Month | NSCalendarUnit.Day, now);
             var midnight = calendar.DateFromComponents(components);
 
-            var tcs = new TaskCompletionSource<int>();
+            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            string storedDate = Preferences.Get("StepCounterDate", today);
 
-            _pedometer.QueryPedometerData(midnight, now, (data, error) =>
+            if (storedDate != today)
             {
-                if (error != null || data?.NumberOfSteps == null)
-                {
-                    tcs.SetResult(0);
-                }
-                else
-                {
-                    tcs.SetResult(data.NumberOfSteps.Int32Value);
-                }
-            });
-
-            _currentSteps = await tcs.Task;
-
-            SaveDailySnapshotIfNeeded(_currentSteps);
-            return _currentSteps;
-        }
-
-        // ✅ Implementing the missing interface method
-        public void SaveDailySnapshotIfNeeded(int currentSensorValue)
-        {
-            UpdateDailySnapshot(currentSensorValue);
-        }
-
-        private void UpdateDailySnapshot(int currentValue)
-        {
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
-            string lastSavedDate = Preferences.Get("LastStepDate", "");
-
-            var history = GetStepHistory();
-
-            // Save yesterday’s value if missed
-            if (!string.IsNullOrEmpty(lastSavedDate) && lastSavedDate != today)
-            {
-                if (!history.ContainsKey(lastSavedDate))
-                {
-                    int yesterdaySteps = Preferences.Get("MidnightStepSensorValue", 0);
-                    history[lastSavedDate] = yesterdaySteps;
-                }
+                Preferences.Set("StepCounterDate", today);
+                Preferences.Set("DailySteps", 0);
+                UpdateStepHistory(storedDate, Preferences.Get("DailySteps", 0));
             }
 
-            Preferences.Set("MidnightStepSensorValue", currentValue);
-            Preferences.Set("LastStepDate", today);
+            _pedometer.StartPedometerUpdates(midnight, (data, error) =>
+            {
+                if (data != null)
+                {
+                    int dailySteps = data.NumberOfSteps?.Int32Value ?? 0;
+                    int previousDaily = Preferences.Get("DailySteps", 0);
+                    int accumulated = Preferences.Get("AccumulatedSteps", 0);
 
-            // Update today’s count
-            history[today] = currentValue;
+                    int delta = dailySteps - previousDaily;
 
-            Preferences.Set("StepHistory", JsonSerializer.Serialize(history));
+                    accumulated += delta;
+
+                    Preferences.Set("AccumulatedSteps", accumulated);
+                    Preferences.Set("DailySteps", dailySteps);
+                    UpdateStepHistory(today, dailySteps);
+
+                    StepsUpdated?.Invoke(this, EventArgs.Empty);
+                }
+            });
+        }
+
+        public Task StopAsync()
+        {
+            _pedometer.StopPedometerUpdates();
+            return Task.CompletedTask;
+        }
+
+        public void ResetAll()
+        {
+            Preferences.Set("AccumulatedSteps", 0);
+            Preferences.Set("DailySteps", 0);
+            Preferences.Set("StepHistory", "{}");
+            Preferences.Set("StepCounterDate", DateTime.UtcNow.ToString("yyyy-MM-dd"));
         }
 
         private Dictionary<string, int> GetStepHistory()
         {
             var json = Preferences.Get("StepHistory", "{}");
-            return JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                   ?? new Dictionary<string, int>();
+            var history = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json)
+                          ?? new Dictionary<string, int>();
+            return history;
+        }
+
+        private void UpdateStepHistory(string date, int stepsToday)
+        {
+            var json = Preferences.Get("StepHistory", "{}");
+            var history = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(json)
+                          ?? new Dictionary<string, int>();
+
+            history[date] = stepsToday;
+
+            var updatedJson = System.Text.Json.JsonSerializer.Serialize(history);
+            Preferences.Set("StepHistory", updatedJson);
         }
     }
 }

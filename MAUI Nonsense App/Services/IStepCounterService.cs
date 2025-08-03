@@ -1,13 +1,15 @@
-﻿public interface IStepCounterService
+﻿namespace MAUI_Nonsense_App.Services
 {
-    int TotalSteps { get; }
-    int Last24HoursSteps { get; }
-    Dictionary<string, int> StepHistory { get; }
+    public interface IStepCounterService
+    {
+        int TotalSteps { get; }
+        int Last24HoursSteps { get; }
+        Dictionary<string, int> StepHistory { get; }
 
-    int RawSensorValue { get; } // NEW (optional for debugging)
+        event EventHandler StepsUpdated;
 
-    void SaveDailySnapshotIfNeeded(int currentSensorValue);
-    Task StartAsync();
-    Task StopAsync();
-    void ResetAll();
+        Task StartAsync();
+        Task StopAsync();
+        void ResetAll();
+    }
 }

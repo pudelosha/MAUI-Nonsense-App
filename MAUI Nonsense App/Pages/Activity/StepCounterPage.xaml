@@ -5,41 +5,22 @@
              x:Class="MAUI_Nonsense_App.Pages.Activity.StepCounterPage"
              Title="Step Counter">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Step Counter"
-                   FontSize="24"
-                   HorizontalOptions="Center" />
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <Label Text="Step Counter" FontSize="24" HorizontalOptions="Center" />
+        <Label Text="{Binding TotalSteps, StringFormat='Steps: {0}'}" FontSize="18" />
+        <Label Text="{Binding Last24HoursSteps, StringFormat='Last 24h: {0}'}" FontSize="18" />
 
-            <Label Text="{Binding AccumulatedSteps, StringFormat='Total Accumulated Steps: {0}'}"
-                   FontSize="18" />
 
-            <Label Text="{Binding TodaySteps, StringFormat='Today: {0}'}"
-                   FontSize="18" />
-
-            <Label Text="{Binding RawSensorValue, StringFormat='[Debug] Raw Sensor Value: {0}'}"
-                   FontSize="14"
-                   TextColor="Gray"
-                   IsVisible="True" />
-
-            <Label Text="Step History (Last 7 Days)"
-                   FontSize="20"
-                   Margin="0,20,0,0"
-                   FontAttributes="Bold" />
-
-            <CollectionView ItemsSource="{Binding Last7Days}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <HorizontalStackLayout Padding="5,0">
-                            <Label Text="{Binding Date}"
-                                   FontSize="16"
-                                   WidthRequest="120" />
-                            <Label Text="{Binding Steps}"
-                                   FontSize="16" />
-                        </HorizontalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+        <Label Text="Last 7 Days" FontSize="20" Margin="0,20,0,0"/>
+        <CollectionView ItemsSource="{Binding Last7Days}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <HorizontalStackLayout>
+                        <Label Text="{Binding Date}" WidthRequest="120"/>
+                        <Label Text="{Binding Steps}" />
+                    </HorizontalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
 </ContentPage>

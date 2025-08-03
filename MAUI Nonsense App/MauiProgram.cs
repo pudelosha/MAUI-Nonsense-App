@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
 using MAUI_Nonsense_App.Pages.Office;
+using MAUI_Nonsense_App.ViewModels;
 
 namespace MAUI_Nonsense_App
 {
