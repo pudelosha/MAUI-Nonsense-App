@@ -1,12 +1,15 @@
 ﻿using Android;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Provider;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using MAUI_Nonsense_App.Services;
-using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
 
 namespace MAUI_Nonsense_App
 {
@@ -20,6 +23,7 @@ namespace MAUI_Nonsense_App
         {
             base.OnCreate(savedInstanceState);
 
+            // Request runtime permissions
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
             {
                 if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ActivityRecognition) != Permission.Granted)
@@ -36,11 +40,27 @@ namespace MAUI_Nonsense_App
                 }
             }
 
-            RegisterMovementAlarmNotificationChannel();
+            // Register all notification channels
+            RegisterAllNotificationChannels();
 
+            // Delayed logic on UI thread
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await Task.Delay(1000); // slight delay to let MAUI initialize
+                await Task.Delay(1000); // Let MAUI stabilize
+
+                if (!AreNotificationsEnabled())
+                {
+                    bool goToSettings = await App.Current.MainPage.DisplayAlert(
+                        "Enable Notifications",
+                        "Notifications are disabled. Please enable them in system settings to receive step updates.",
+                        "Go to Settings",
+                        "Later");
+
+                    if (goToSettings)
+                        OpenAppNotificationSettings();
+                }
+
+                // Start step counter service
                 var serviceProvider = MauiApplication.Current.Services;
                 var service = serviceProvider.GetService(typeof(IStepCounterService)) as IStepCounterService;
                 if (service != null)
@@ -50,18 +70,55 @@ namespace MAUI_Nonsense_App
             });
         }
 
-        private void RegisterMovementAlarmNotificationChannel()
+        private void RegisterAllNotificationChannels()
         {
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                var channel = new NotificationChannel(
+                var movementChannel = new NotificationChannel(
                     "movement_alarm_channel",
-                    "Movement Alarm",
-                    NotificationImportance.Default);
+                    "Step Movement Alerts",
+                    NotificationImportance.Default)
+                {
+                    Description = "Step detection notifications"
+                };
 
-                var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-                notificationManager.CreateNotificationChannel(channel);
+                var stepCounterChannel = new NotificationChannel(
+                    "step_counter_channel",
+                    "Step Counter Background Service",
+                    NotificationImportance.Low)
+                {
+                    Description = "Persistent step tracking service"
+                };
+
+                var manager = (NotificationManager)GetSystemService(NotificationService);
+                manager.CreateNotificationChannel(movementChannel);
+                manager.CreateNotificationChannel(stepCounterChannel);
             }
+        }
+
+        private bool AreNotificationsEnabled()
+        {
+            var manager = NotificationManagerCompat.From(this);
+            return manager.AreNotificationsEnabled();
+        }
+
+        private void OpenAppNotificationSettings()
+        {
+            Intent intent = new Intent();
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                intent.SetAction(Settings.ActionAppNotificationSettings);
+                intent.PutExtra(Settings.ExtraAppPackage, PackageName);
+            }
+            else
+            {
+                intent.SetAction(Settings.ActionApplicationDetailsSettings);
+                intent.SetData(Android.Net.Uri.Parse("package:" + PackageName));
+            }
+
+            intent.AddFlags(ActivityFlags.NewTask);
+            StartActivity(intent);
         }
     }
 }

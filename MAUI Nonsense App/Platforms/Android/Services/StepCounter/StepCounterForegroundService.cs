@@ -16,6 +16,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         private SensorManager _sensorManager;
         private Sensor _stepSensor;
         private bool _isUsingStepCounter = true;
+        private int _lastNotifiedSteps = -1;
 
         public override void OnCreate()
         {
@@ -97,8 +98,14 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
                 Preferences.Set("AccumulatedSteps", runningTotal);
                 Preferences.Set("DailySteps", dailySteps);
-
                 UpdateStepHistory(today, dailySteps);
+
+                // Update the persistent notification every 10 steps
+                if (dailySteps >= 0 && dailySteps != _lastNotifiedSteps && dailySteps % 10 == 0)
+                {
+                    UpdateNotification(dailySteps);
+                    _lastNotifiedSteps = dailySteps;
+                }
             }
             else
             {
@@ -116,8 +123,13 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 Preferences.Set("RunningTotalSteps", runningTotal);
                 Preferences.Set("AccumulatedSteps", runningTotal);
                 Preferences.Set("DailySteps", dailySteps);
-
                 UpdateStepHistory(today, dailySteps);
+
+                if (dailySteps != _lastNotifiedSteps && dailySteps % 10 == 0)
+                {
+                    UpdateNotification(dailySteps);
+                    _lastNotifiedSteps = dailySteps;
+                }
             }
 
             AndroidStepCounterService.Instance?.RaiseStepsUpdated();
@@ -135,6 +147,19 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 var notificationManager = (NotificationManager)GetSystemService(NotificationService);
                 notificationManager.CreateNotificationChannel(channel);
             }
+        }
+
+        private void UpdateNotification(int steps)
+        {
+            var notification = new NotificationCompat.Builder(this, "step_counter_channel")
+                .SetContentTitle("Step Counter")
+                .SetContentText($"Today's steps: {steps}")
+                .SetSmallIcon(Resource.Mipmap.appicon)
+                .SetOngoing(true)
+                .Build();
+
+            var notificationManager = NotificationManagerCompat.From(this);
+            notificationManager.Notify(101, notification); // same ID = update
         }
 
         private void UpdateStepHistory(string date, int stepsToday)
