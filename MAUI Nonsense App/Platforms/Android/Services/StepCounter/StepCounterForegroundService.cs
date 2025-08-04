@@ -4,9 +4,9 @@ using Android.Content.PM;
 using Android.Hardware;
 using Android.OS;
 using AndroidX.Core.App;
-
 using Microsoft.Maui.Storage;
 using System.Text.Json;
+using Android.Util;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
@@ -15,6 +15,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
     {
         private SensorManager _sensorManager;
         private Sensor _stepSensor;
+        private bool _isUsingStepCounter = true;
 
         public override void OnCreate()
         {
@@ -22,6 +23,14 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             _sensorManager = (SensorManager)GetSystemService(Context.SensorService);
             _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
+            _isUsingStepCounter = true;
+
+            if (_stepSensor == null)
+            {
+                _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepDetector);
+                _isUsingStepCounter = false;
+                Log.Warn("StepCounter", "StepCounter sensor not available. Using StepDetector instead.");
+            }
 
             CreateNotificationChannel();
 
@@ -36,9 +45,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             if (_stepSensor != null)
                 _sensorManager.RegisterListener(this, _stepSensor, SensorDelay.Ui);
-
-
-
+            else
+                Log.Error("StepCounter", "No step sensor available on this device.");
         }
 
         public override void OnDestroy()
@@ -53,42 +61,66 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         public void OnSensorChanged(SensorEvent e)
         {
-            int sensorValue = (int)e.Values[0];
+            Log.Info("StepCounter", $"Sensor value: {e.Values[0]}");
 
-            // Get today's date
             string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
             string lastDate = Preferences.Get("LastStepDate", today);
 
-            // First ever value
-            if (!Preferences.ContainsKey("FirstEverStepSensorValue"))
+            if (_isUsingStepCounter)
             {
-                Preferences.Set("FirstEverStepSensorValue", sensorValue);
-                Preferences.Set("LastStepDate", today);
-                Preferences.Set("MidnightStepSensorValue", sensorValue);
+                int currentValue = (int)e.Values[0];
+                int lastValue = Preferences.Get("LastSensorReading", currentValue);
+                int delta = Math.Max(0, currentValue - lastValue);
+
+                int runningTotal = Preferences.Get("RunningTotalSteps", 0);
+                runningTotal += delta;
+
+                Preferences.Set("RunningTotalSteps", runningTotal);
+                Preferences.Set("LastSensorReading", currentValue);
+
+                if (lastDate != today || !Preferences.ContainsKey("MidnightStepSensorValue"))
+                {
+                    Preferences.Set("MidnightStepSensorValue", currentValue);
+                    Preferences.Set("LastStepDate", today);
+                }
+
+                int midnight = Preferences.Get("MidnightStepSensorValue", currentValue);
+                int dailySteps = currentValue - midnight;
+
+                if (dailySteps < 0)
+                {
+                    midnight = currentValue;
+                    dailySteps = 0;
+                    Preferences.Set("MidnightStepSensorValue", currentValue);
+                    Preferences.Set("LastStepDate", today);
+                }
+
+                Preferences.Set("AccumulatedSteps", runningTotal);
+                Preferences.Set("DailySteps", dailySteps);
+
+                UpdateStepHistory(today, dailySteps);
+            }
+            else
+            {
+                int runningTotal = Preferences.Get("RunningTotalSteps", 0) + 1;
+                int dailySteps = Preferences.Get("DailySteps", 0);
+
+                if (lastDate != today)
+                {
+                    Preferences.Set("LastStepDate", today);
+                    dailySteps = 0;
+                }
+
+                dailySteps += 1;
+
+                Preferences.Set("RunningTotalSteps", runningTotal);
+                Preferences.Set("AccumulatedSteps", runningTotal);
+                Preferences.Set("DailySteps", dailySteps);
+
+                UpdateStepHistory(today, dailySteps);
             }
 
-            int firstEver = Preferences.Get("FirstEverStepSensorValue", sensorValue);
-            int midnight = Preferences.Get("MidnightStepSensorValue", sensorValue);
-
-            // If day has changed, reset midnight baseline
-            if (lastDate != today)
-            {
-                Preferences.Set("LastStepDate", today);
-                Preferences.Set("MidnightStepSensorValue", sensorValue);
-                midnight = sensorValue;
-            }
-
-            int totalSteps = sensorValue - firstEver;
-            int dailySteps = sensorValue - midnight;
-
-            Preferences.Set("AccumulatedSteps", totalSteps);
-            Preferences.Set("DailySteps", dailySteps);
-
-            UpdateStepHistory(today, dailySteps);
-
-
-
-
+            AndroidStepCounterService.Instance?.RaiseStepsUpdated();
         }
 
         private void CreateNotificationChannel()
@@ -112,18 +144,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                           ?? new Dictionary<string, int>();
 
             history[date] = stepsToday;
-
-            var updatedJson = JsonSerializer.Serialize(history);
-            Preferences.Set("StepHistory", updatedJson);
-        }
-
-        public Dictionary<string, int> GetStepHistory()
-        {
-            var json = Preferences.Get("StepHistory", "{}");
-            var history = JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                          ?? new Dictionary<string, int>();
-
-            return history;
+            Preferences.Set("StepHistory", JsonSerializer.Serialize(history));
         }
     }
 }

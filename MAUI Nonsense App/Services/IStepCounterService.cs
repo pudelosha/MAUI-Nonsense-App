@@ -11,5 +11,7 @@
         Task StartAsync();
         Task StopAsync();
         void ResetAll();
+
+        void RaiseStepsUpdated();
     }
 }
