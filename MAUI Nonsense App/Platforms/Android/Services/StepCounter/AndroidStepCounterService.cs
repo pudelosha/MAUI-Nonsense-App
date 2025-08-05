@@ -28,37 +28,17 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         public async Task StartAsync()
         {
-            if (!IsSafeToStartForegroundService())
-            {
-                Console.WriteLine("[StepCounter] Unsafe to start foreground service. Will retry in 1 second.");
-                await Task.Delay(1000);
-                if (!IsSafeToStartForegroundService())
-                {
-                    Console.WriteLine("[StepCounter] Still unsafe. Skipping foreground service start.");
-                    return;
-                }
-            }
+            Console.WriteLine("[StepCounter] StartAsync called");
 
+            // Wait briefly to allow system to stabilize after boot
+            await Task.Delay(1000);
+
+            Console.WriteLine("[StepCounter] Starting foreground service");
             StartForegroundService();
+
             ScheduleMidnightReset();
             RaiseStepsUpdated();
         }
-
-        private bool IsSafeToStartForegroundService()
-        {
-            if (Build.VERSION.SdkInt < BuildVersionCodes.S)
-                return true;
-
-            var activityManager = (ActivityManager)_context.GetSystemService(Context.ActivityService);
-            var appProcesses = activityManager?.RunningAppProcesses;
-
-            var myPid = Process.MyPid();
-            var isInForeground = appProcesses?.Any(p =>
-                p.Pid == myPid && p.Importance == Importance.Foreground) ?? false;
-
-            return isInForeground;
-        }
-
 
         public Task StopAsync()
         {
@@ -104,6 +84,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         private void StartForegroundService()
         {
+            Console.WriteLine("[StepCounter] StartForegroundService invoked");
+
             var intent = new Intent(_context, typeof(StepCounterForegroundService));
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
                 _context.StartForegroundService(intent);

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.companyname.mauinonsenseapp">
 
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
@@ -24,19 +25,19 @@
     android:label="MAUI Nonsense App">
 
     <service
-      android:name="MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.StepCounterForegroundService"
+      android:name="com.companyname.mauinonsenseapp.Platforms.Android.Services.StepCounter.StepCounterForegroundService"
       android:enabled="true"
       android:exported="false"
       android:foregroundServiceType="specialUse|connectedDevice|dataSync" />
 
-    <receiver
-      android:name="MAUI_Nonsense_App.Platforms.Android.Receivers.BootReceiver"
-      android:enabled="true"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-      </intent-filter>
-    </receiver>
+	<receiver
+	  android:name="com.companyname.mauinonsenseapp.BootReceiver"
+	  android:enabled="true"
+	  android:exported="true">
+	  <intent-filter>
+		<action android:name="android.intent.action.BOOT_COMPLETED" />
+	  </intent-filter>
+	</receiver>
 
   </application>
 

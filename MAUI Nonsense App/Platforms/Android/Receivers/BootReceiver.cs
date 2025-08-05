@@ -1,30 +1,35 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Preferences;
 using Microsoft.Maui.Storage;
+using System.Threading;
+using MAUI_Nonsense_App.Platforms.Android.Services.StepCounter;
+using Android.Util;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Receivers
 {
-    [BroadcastReceiver(Enabled = true, Exported = true)]
     [IntentFilter(new[] { Intent.ActionBootCompleted })]
+    [BroadcastReceiver(Enabled = true, Exported = true, Name = "com.companyname.mauinonsenseapp.BootReceiver")]
     public class BootReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)
         {
             if (intent?.Action == Intent.ActionBootCompleted)
             {
-                // Optional: Reset boot base step value after reboot
+                // Reset step values or any other boot-time data
                 Preferences.Set("BootBaseStepValue", 0);
 
-                // Only proceed on real boot (exclude shutdown broadcasts)
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+                // Optional: respect toggle if user disabled boot-start
+                bool startOnBoot = Preferences.Get("StartServiceOnBoot", true);
+                if (!startOnBoot) return;
+
+                // Delay to avoid "unsafe to start foreground service" error
+                new Thread(() =>
                 {
-                    // Start MainActivity to make the app visible
-                    Intent startIntent = new Intent(context, typeof(MainActivity));
-                    startIntent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ClearTop);
-                    context.StartActivity(startIntent);
-                }
+                    Thread.Sleep(10000); // 10 seconds delay
+                    Log.Debug("BootReceiver", "Attempting to start AndroidStepCounterService after delay");
+                    _ = new AndroidStepCounterService().StartAsync();
+                }).Start();
             }
         }
     }
