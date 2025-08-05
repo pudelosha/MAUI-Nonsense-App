@@ -23,51 +23,51 @@ namespace MAUI_Nonsense_App
         {
             base.OnCreate(savedInstanceState);
 
-            // Request runtime permissions
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+            // Permissions
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q &&
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.ActivityRecognition) != Permission.Granted)
             {
-                if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ActivityRecognition) != Permission.Granted)
-                {
-                    ActivityCompat.RequestPermissions(this, new[] { Manifest.Permission.ActivityRecognition }, 0);
-                }
+                ActivityCompat.RequestPermissions(this, new[] { Manifest.Permission.ActivityRecognition }, 0);
             }
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.S &&
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.ForegroundServiceConnectedDevice) != Permission.Granted)
             {
-                if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ForegroundServiceConnectedDevice) != Permission.Granted)
-                {
-                    ActivityCompat.RequestPermissions(this, new[] { Manifest.Permission.ForegroundServiceConnectedDevice }, 1);
-                }
+                ActivityCompat.RequestPermissions(this, new[] { Manifest.Permission.ForegroundServiceConnectedDevice }, 1);
             }
 
-            // Register all notification channels
             RegisterAllNotificationChannels();
+        }
 
-            // Delayed logic on UI thread
-            MainThread.BeginInvokeOnMainThread(async () =>
+        private bool _serviceStarted = false;
+
+        protected override async void OnResume()
+        {
+            base.OnResume();
+
+            if (_serviceStarted) return;
+            _serviceStarted = true;
+
+            await Task.Delay(500); // ensure UI is visible
+
+            if (!AreNotificationsEnabled())
             {
-                await Task.Delay(1000); // Let MAUI stabilize
+                bool goToSettings = await App.Current.MainPage.DisplayAlert(
+                    "Enable Notifications",
+                    "Notifications are disabled. Please enable them in system settings to receive step updates.",
+                    "Go to Settings",
+                    "Later");
 
-                if (!AreNotificationsEnabled())
-                {
-                    bool goToSettings = await App.Current.MainPage.DisplayAlert(
-                        "Enable Notifications",
-                        "Notifications are disabled. Please enable them in system settings to receive step updates.",
-                        "Go to Settings",
-                        "Later");
+                if (goToSettings)
+                    OpenAppNotificationSettings();
+            }
 
-                    if (goToSettings)
-                        OpenAppNotificationSettings();
-                }
-
-                // Start step counter service
-                var serviceProvider = MauiApplication.Current.Services;
-                var service = serviceProvider.GetService(typeof(IStepCounterService)) as IStepCounterService;
-                if (service != null)
-                {
-                    await service.StartAsync();
-                }
-            });
+            var serviceProvider = MauiApplication.Current.Services;
+            var service = serviceProvider.GetService(typeof(IStepCounterService)) as IStepCounterService;
+            if (service != null)
+            {
+                await service.StartAsync();
+            }
         }
 
         private void RegisterAllNotificationChannels()

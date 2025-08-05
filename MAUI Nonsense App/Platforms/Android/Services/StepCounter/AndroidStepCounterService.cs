@@ -26,13 +26,39 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Instance = this;
         }
 
-        public Task StartAsync()
+        public async Task StartAsync()
         {
+            if (!IsSafeToStartForegroundService())
+            {
+                Console.WriteLine("[StepCounter] Unsafe to start foreground service. Will retry in 1 second.");
+                await Task.Delay(1000);
+                if (!IsSafeToStartForegroundService())
+                {
+                    Console.WriteLine("[StepCounter] Still unsafe. Skipping foreground service start.");
+                    return;
+                }
+            }
+
             StartForegroundService();
             ScheduleMidnightReset();
             RaiseStepsUpdated();
-            return Task.CompletedTask;
         }
+
+        private bool IsSafeToStartForegroundService()
+        {
+            if (Build.VERSION.SdkInt < BuildVersionCodes.S)
+                return true;
+
+            var activityManager = (ActivityManager)_context.GetSystemService(Context.ActivityService);
+            var appProcesses = activityManager?.RunningAppProcesses;
+
+            var myPid = Process.MyPid();
+            var isInForeground = appProcesses?.Any(p =>
+                p.Pid == myPid && p.Importance == Importance.Foreground) ?? false;
+
+            return isInForeground;
+        }
+
 
         public Task StopAsync()
         {

@@ -21,6 +21,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         public override void OnCreate()
         {
             base.OnCreate();
+            Log.Info("StepCounter", "StepCounterForegroundService started");
 
             _sensorManager = (SensorManager)GetSystemService(Context.SensorService);
             _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
@@ -52,6 +53,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         public override void OnDestroy()
         {
+            Log.Info("StepCounter", "StepCounterForegroundService stopped");
+
             _sensorManager?.UnregisterListener(this, _stepSensor);
             base.OnDestroy();
         }
@@ -100,8 +103,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 Preferences.Set("DailySteps", dailySteps);
                 UpdateStepHistory(today, dailySteps);
 
-                // Update the persistent notification every 10 steps
-                if (dailySteps >= 0 && dailySteps != _lastNotifiedSteps && dailySteps % 10 == 0)
+                // Update the persistent notification
+                if (dailySteps != _lastNotifiedSteps)
                 {
                     UpdateNotification(dailySteps);
                     _lastNotifiedSteps = dailySteps;
@@ -125,7 +128,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 Preferences.Set("DailySteps", dailySteps);
                 UpdateStepHistory(today, dailySteps);
 
-                if (dailySteps != _lastNotifiedSteps && dailySteps % 10 == 0)
+                if (dailySteps != _lastNotifiedSteps)
                 {
                     UpdateNotification(dailySteps);
                     _lastNotifiedSteps = dailySteps;
