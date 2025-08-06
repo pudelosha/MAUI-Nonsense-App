@@ -23,6 +23,13 @@ namespace MAUI_Nonsense_App
         {
             base.OnCreate(savedInstanceState);
 
+            // Ignore if the intent is from BOOT_COMPLETED or system startup
+            if (Intent?.Action == Intent.ActionBootCompleted)
+            {
+                Finish(); // Immediately close the UI if mistakenly started from boot
+                return;
+            }
+
             // Permissions
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q &&
                 ContextCompat.CheckSelfPermission(this, Manifest.Permission.ActivityRecognition) != Permission.Granted)

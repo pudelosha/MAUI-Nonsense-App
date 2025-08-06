@@ -22,12 +22,20 @@ namespace MAUI_Nonsense_App.Platforms.Android.Receivers
 
                 Log.Info("BootReceiver", "Boot completed. Attempting to start StepCounterForegroundService...");
 
-                var serviceIntent = new Intent(context, typeof(MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.StepCounterForegroundService));
+                try
+                {
+                    var serviceIntent = new Intent(context, typeof(MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.StepCounterForegroundService));
+                    serviceIntent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ExcludeFromRecents);
 
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                    context.StartForegroundService(serviceIntent);
-                else
-                    context.StartService(serviceIntent);
+                    if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+                        context.StartForegroundService(serviceIntent);
+                    else
+                        context.StartService(serviceIntent);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("BootReceiver", $"Failed to start service: {ex}");
+                }
             }
         }
     }
