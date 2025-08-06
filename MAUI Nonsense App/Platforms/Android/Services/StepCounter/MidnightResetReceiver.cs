@@ -4,7 +4,7 @@ using System;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
-    [BroadcastReceiver(Enabled = true, Exported = true)]
+    [BroadcastReceiver(Enabled = true, Exported = false, Name = "com.companyname.mauinonsenseapp.MidnightResetReceiver")]
     public class MidnightResetReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)

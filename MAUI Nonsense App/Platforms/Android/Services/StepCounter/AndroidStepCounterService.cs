@@ -29,16 +29,35 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         public async Task StartAsync()
         {
             Console.WriteLine("[StepCounter] StartAsync called");
-
-            // Wait briefly to allow system to stabilize after boot
-            await Task.Delay(1000);
+            await Task.Delay(1000); // Give system time after reboot
 
             Console.WriteLine("[StepCounter] Starting foreground service");
             StartForegroundService();
 
+            InitializeMidnightBaselineIfMissing();
+
             ScheduleMidnightReset();
             RaiseStepsUpdated();
         }
+
+        private void InitializeMidnightBaselineIfMissing()
+        {
+            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            string lastDate = Preferences.Get("LastStepDate", "");
+
+            if (lastDate != today || !Preferences.ContainsKey("MidnightStepSensorValue"))
+            {
+                int currentValue = Preferences.Get("LastSensorReading", 0);
+                Preferences.Set("MidnightStepSensorValue", currentValue);
+                Preferences.Set("LastStepDate", today);
+
+                // You may also want to zero out daily steps here:
+                Preferences.Set("DailySteps", 0);
+
+                Console.WriteLine($"[Init] MidnightStepSensorValue initialized: {currentValue}");
+            }
+        }
+
 
         public Task StopAsync()
         {

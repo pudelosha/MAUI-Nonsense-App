@@ -13,7 +13,7 @@ using Microsoft.Maui.Storage;
 
 namespace MAUI_Nonsense_App
 {
-    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop,
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = false, LaunchMode = LaunchMode.SingleTop,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode |
                               ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density,
         ScreenOrientation = ScreenOrientation.Portrait)]
@@ -22,13 +22,6 @@ namespace MAUI_Nonsense_App
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Ignore if the intent is from BOOT_COMPLETED or system startup
-            if (Intent?.Action == Intent.ActionBootCompleted)
-            {
-                Finish(); // Immediately close the UI if mistakenly started from boot
-                return;
-            }
 
             // Permissions
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q &&

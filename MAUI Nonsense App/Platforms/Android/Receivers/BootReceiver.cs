@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Util;
+using Microsoft.Maui.Storage;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Receivers
 {
@@ -11,9 +12,12 @@ namespace MAUI_Nonsense_App.Platforms.Android.Receivers
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            if (intent?.Action == Intent.ActionBootCompleted)
+            if (intent == null || intent.Action != Intent.ActionBootCompleted)
+                return;
+
+            try
             {
-                bool startOnBoot = Microsoft.Maui.Storage.Preferences.Get("StartServiceOnBoot", true);
+                bool startOnBoot = Preferences.Get("StartServiceOnBoot", true);
                 if (!startOnBoot)
                 {
                     Log.Info("BootReceiver", "StartServiceOnBoot is disabled. Aborting.");
@@ -22,20 +26,17 @@ namespace MAUI_Nonsense_App.Platforms.Android.Receivers
 
                 Log.Info("BootReceiver", "Boot completed. Attempting to start StepCounterForegroundService...");
 
-                try
-                {
-                    var serviceIntent = new Intent(context, typeof(MAUI_Nonsense_App.Platforms.Android.Services.StepCounter.StepCounterForegroundService));
-                    serviceIntent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ExcludeFromRecents);
+                var serviceIntent = new Intent(context, typeof(Services.StepCounter.StepCounterForegroundService));
+                serviceIntent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ExcludeFromRecents);
 
-                    if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                        context.StartForegroundService(serviceIntent);
-                    else
-                        context.StartService(serviceIntent);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("BootReceiver", $"Failed to start service: {ex}");
-                }
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+                    context.StartForegroundService(serviceIntent);
+                else
+                    context.StartService(serviceIntent);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("BootReceiver", $"BootReceiver error: {ex}");
             }
         }
     }
