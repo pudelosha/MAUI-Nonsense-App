@@ -39,9 +39,9 @@ namespace MAUI_Nonsense_App
             await Navigation.PushAsync(page);
         }
 
-        private async void OnFinanceTapped(object sender, EventArgs e)
+        private async void OnGamesTapped(object sender, EventArgs e)
         {
-            var page = _services.GetRequiredService<FinancePage>();
+            var page = _services.GetRequiredService<GamesPage>();
             await Navigation.PushAsync(page);
         }
 

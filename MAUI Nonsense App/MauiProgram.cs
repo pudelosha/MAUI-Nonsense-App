@@ -41,7 +41,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<SurvivalPage>();
             builder.Services.AddTransient<ToolsPage>();
             builder.Services.AddTransient<OfficePage>();
-            builder.Services.AddTransient<FinancePage>();
+            builder.Services.AddTransient<GamesPage>();
             builder.Services.AddTransient<QrScannerPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<SettingsPage>();

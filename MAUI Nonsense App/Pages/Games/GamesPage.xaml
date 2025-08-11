@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.GamesPage"
+             Title="Games">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Snake -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-route -->
+                    <Label Grid.Column="0" Text="&#xf4d7;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Snake" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Guide the snake, eat food, don't hit walls or yourself." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSnakeTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Tetris -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-th-large -->
+                    <Label Grid.Column="0" Text="&#xf009;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Tetris" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Fit falling blocks to clear lines and score." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTetrisTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Arkanoid / Breakout -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-shapes -->
+                    <Label Grid.Column="0" Text="&#xf61f;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Arkanoid" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Bounce the ball with the paddle to break all bricks." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnArkanoidTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Pong -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-table-tennis-paddle-ball -->
+                    <Label Grid.Column="0" Text="&#xf45d;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Pong" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Classic paddle vs. paddle. Keep the ball in play." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnPongTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Space Invaders -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-rocket -->
+                    <Label Grid.Column="0" Text="&#xf135;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Space Invaders" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Move and shoot to stop the advancing alien waves." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSpaceInvadersTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- 2048 -->
+            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- fa-th (grid) -->
+                    <Label Grid.Column="0" Text="&#xf00a;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="2048" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Slide tiles to merge numbers and reach 2048." FontSize="12" TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="On2048Tapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
