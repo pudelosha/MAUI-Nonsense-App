@@ -2,61 +2,84 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.SettingsPage"
-             Title="SettingsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="data urodzenia "
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             Title="Settings">
 
-        <Label 
-            Text="wzrost"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="24">
 
-        <Label 
-            Text="waga"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            <!-- Measurements (step accuracy) -->
+            <Label Text="Measurements (accuracy)"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+            <Grid ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  ColumnSpacing="12"
+                  RowSpacing="12">
+                <Label Grid.Row="0" Text="Date of Birth" FontSize="16" VerticalTextAlignment="Center" />
+                <DatePicker Grid.Row="0" Grid.Column="1" Date="{Binding BirthDate}" />
 
-        <Label 
-            Text="płec"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                <Label Grid.Row="1" Text="Sex" FontSize="16" VerticalTextAlignment="Center" />
+                <Picker Grid.Row="1" Grid.Column="1"
+                        ItemsSource="{Binding SexOptions}"
+                        SelectedItem="{Binding Sex}" />
 
-        <Label 
-            Text="długość kroku"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                <Label Grid.Row="2" Text="{Binding HeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
+                <Entry Grid.Row="2" Grid.Column="1" Keyboard="Numeric" Text="{Binding HeightCm}" />
 
-        <Label 
-            Text="data urodzenia "
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                <Label Grid.Row="3" Text="{Binding WeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
+                <Entry Grid.Row="3" Grid.Column="1" Keyboard="Numeric" Text="{Binding WeightKg}" />
 
-        <Label 
-            Text="cel dzienny"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                <Label Grid.Row="4" Text="{Binding StrideLabel}" FontSize="16" VerticalTextAlignment="Center" />
+                <Entry Grid.Row="4" Grid.Column="1" Keyboard="Numeric" Placeholder="auto" Text="{Binding StrideLengthCm}" />
 
-        <Label 
-            Text="jednostki miary"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            </Grid>
 
-        <Label 
-            Text="przypominacz data"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            <!-- Goals and reminders -->
+            <Label Text="Goals and Reminders"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+            <Grid ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto"
+                  ColumnSpacing="12"
+                  RowSpacing="12">
+                <Label Grid.Row="0" Text="Daily Goal (steps)" FontSize="16" VerticalTextAlignment="Center" />
+                <Entry Grid.Row="0" Grid.Column="1" Keyboard="Numeric" Text="{Binding DailyGoal}" />
 
-        <Label 
-            Text="poczatek tygodnia"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+                <Label Grid.Row="1" Text="Reminder Time" FontSize="16" VerticalTextAlignment="Center" />
+                <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding ReminderTime}" />
+            </Grid>
 
-        <Label 
-            Text="język"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+            <!-- Display and language -->
+            <Label Text="Display and Language"
+                   FontSize="18"
+                   FontAttributes="Bold" />
+            <Grid ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnSpacing="12"
+                  RowSpacing="12">
+                <Label Grid.Row="0" Text="Units of Measurement" FontSize="16" VerticalTextAlignment="Center" />
+                <Picker Grid.Row="0" Grid.Column="1"
+                        ItemsSource="{Binding UnitsOptions}"
+                        SelectedItem="{Binding Units}" />
+
+                <Label Grid.Row="1" Text="Week Start Day" FontSize="16" VerticalTextAlignment="Center" />
+                <Picker Grid.Row="1" Grid.Column="1"
+                        ItemsSource="{Binding WeekStartOptions}"
+                        SelectedItem="{Binding WeekStart}" />
+
+                <Label Grid.Row="2" Text="Language" FontSize="16" VerticalTextAlignment="Center" />
+                <Picker Grid.Row="2" Grid.Column="1"
+                        ItemsSource="{Binding LanguageOptions}"
+                        SelectedItem="{Binding Language}" />
+
+                <Label Grid.Row="3" Text="Date Format" FontSize="16" VerticalTextAlignment="Center" />
+                <Picker Grid.Row="3" Grid.Column="1"
+                        ItemsSource="{Binding DateFormatOptions}"
+                        SelectedItem="{Binding DateFormat}" />
+            </Grid>
+
+            <!-- Save -->
+            <Button Text="Save" Command="{Binding SaveCommand}" Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

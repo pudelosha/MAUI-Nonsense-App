@@ -1,14 +1,16 @@
-﻿using MAUI_Nonsense_App.ViewModels;
+﻿using CommunityToolkit.Maui;
 using MAUI_Nonsense_App.Pages;
 using MAUI_Nonsense_App.Pages.Activity;
+using MAUI_Nonsense_App.Pages.Office;
 using MAUI_Nonsense_App.Pages.Random;
 using MAUI_Nonsense_App.Pages.Survival;
 using MAUI_Nonsense_App.Pages.Tools;
+using MAUI_Nonsense_App.ViewModels;
+using MAUI_Nonsense_App.ViewModels;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
-using MAUI_Nonsense_App.Pages.Office;
-using MAUI_Nonsense_App.ViewModels;
+using CommunityToolkit.Maui;
 
 namespace MAUI_Nonsense_App
 {
@@ -20,6 +22,7 @@ namespace MAUI_Nonsense_App
             builder
                 .UseMauiApp<App>()
                 .UseBarcodeReader()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Bold.ttf", "OpenSansBold");

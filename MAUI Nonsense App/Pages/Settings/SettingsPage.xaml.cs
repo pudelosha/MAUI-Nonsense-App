@@ -1,9 +1,13 @@
-namespace MAUI_Nonsense_App.Pages;
+using MAUI_Nonsense_App.ViewModels;
 
-public partial class SettingsPage : ContentPage
+namespace MAUI_Nonsense_App.Pages
 {
-	public SettingsPage()
-	{
-		InitializeComponent();
-	}
+    public partial class SettingsPage : ContentPage
+    {
+        public SettingsPage()
+        {
+            InitializeComponent();
+            BindingContext = new SettingsViewModel();
+        }
+    }
 }
