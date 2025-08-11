@@ -52,6 +52,10 @@ namespace MAUI_Nonsense_App.ViewModels
         private string _language;
         private string _dateFormat;
 
+        // Imperial height text fields
+        private string _heightFeetText = "";
+        private string _heightInchesText = "";
+
         private readonly IAsyncRelayCommand _saveCommand;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -75,13 +79,14 @@ namespace MAUI_Nonsense_App.ViewModels
             _language = SafeGetString(KeyLanguage, "English");
             _dateFormat = SafeGetString(KeyDateFormat, "yyyy-MM-dd");
 
+            RefreshImperialHeightTextFromCm();
             MaybeAutoComputeStride();
             _saveCommand = new AsyncRelayCommand(SaveAsync);
         }
 
         // ---- Derived flags & dynamic labels
         public bool IsImperial => _units.StartsWith("Imperial", StringComparison.OrdinalIgnoreCase);
-        public string HeightLabel => $"Height ({(IsImperial ? "ft" : "cm")})";
+        public string HeightLabel => IsImperial ? "Height (ft, in)" : "Height (cm)";
         public string WeightLabel => $"Weight ({(IsImperial ? "lb" : "kg")})";
         public string StrideLabel => $"Stride Length ({(IsImperial ? "in" : "cm")})";
 
@@ -90,13 +95,31 @@ namespace MAUI_Nonsense_App.ViewModels
         public DateTime BirthDate
         {
             get => _birthDate;
-            set { if (_birthDate != value) { _birthDate = value; OnChanged(nameof(BirthDate)); MaybeAutoComputeStride(); } }
+            set
+            {
+                if (_birthDate != value)
+                {
+                    _birthDate = value;
+                    _manualStrideOverride = false;         // Option A: re-enable auto on driver fields
+                    OnChanged(nameof(BirthDate));
+                    MaybeAutoComputeStride();
+                }
+            }
         }
 
         public string Sex
         {
             get => _sex;
-            set { if (_sex != value) { _sex = value; OnChanged(nameof(Sex)); MaybeAutoComputeStride(); } }
+            set
+            {
+                if (_sex != value)
+                {
+                    _sex = value;
+                    _manualStrideOverride = false;         // Option A
+                    OnChanged(nameof(Sex));
+                    MaybeAutoComputeStride();
+                }
+            }
         }
 
         // Height: GET displays 1 decimal (ft or cm). SET accepts current unit, stores cm rounded to 0.1.
@@ -122,8 +145,41 @@ namespace MAUI_Nonsense_App.ViewModels
                 if (!NullableEquals(_heightCm, cm))
                 {
                     _heightCm = cm;
+                    _manualStrideOverride = false;         // Option A
+                    RefreshImperialHeightTextFromCm();
                     OnChanged(nameof(HeightCm));
-                    MaybeAutoComputeStride(); // auto-recalc if not overridden
+                    OnChanged(nameof(HeightFeetText));
+                    OnChanged(nameof(HeightInchesText));
+                    MaybeAutoComputeStride();
+                }
+            }
+        }
+
+        // Imperial height text boxes
+        public string HeightFeetText
+        {
+            get => _heightFeetText;
+            set
+            {
+                if (_heightFeetText != value)
+                {
+                    _heightFeetText = value ?? "";
+                    RecomputeHeightFromImperialTexts();     // will also reset manual flag (Option A)
+                    OnChanged(nameof(HeightFeetText));
+                }
+            }
+        }
+
+        public string HeightInchesText
+        {
+            get => _heightInchesText;
+            set
+            {
+                if (_heightInchesText != value)
+                {
+                    _heightInchesText = value ?? "";
+                    RecomputeHeightFromImperialTexts();     // will also reset manual flag (Option A)
+                    OnChanged(nameof(HeightInchesText));
                 }
             }
         }
@@ -218,6 +274,11 @@ namespace MAUI_Nonsense_App.ViewModels
                     OnChanged(nameof(HeightLabel));
                     OnChanged(nameof(WeightLabel));
                     OnChanged(nameof(StrideLabel));
+
+                    // Update height presentation
+                    RefreshImperialHeightTextFromCm();
+                    OnChanged(nameof(HeightFeetText));
+                    OnChanged(nameof(HeightInchesText));
                     OnChanged(nameof(HeightCm));
                     OnChanged(nameof(WeightKg));
                     OnChanged(nameof(StrideLengthCm));
@@ -278,6 +339,64 @@ namespace MAUI_Nonsense_App.ViewModels
             }
         }
 
+        private void RefreshImperialHeightTextFromCm()
+        {
+            if (!_heightCm.HasValue)
+            {
+                _heightFeetText = "";
+                _heightInchesText = "";
+                return;
+            }
+
+            var totalInches = _heightCm.Value / 2.54;
+            var feet = (int)Math.Floor(totalInches / 12.0);
+            var inches = (int)Math.Round(totalInches - feet * 12, MidpointRounding.AwayFromZero);
+            if (inches >= 12) { feet += 1; inches = 0; }
+
+            _heightFeetText = feet.ToString(CultureInfo.InvariantCulture);
+            _heightInchesText = inches.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private void RecomputeHeightFromImperialTexts()
+        {
+            // Called whenever ft/in text changes
+            int? feet = ParseNonNegativeInt(_heightFeetText);
+            int? inches = ParseNonNegativeInt(_heightInchesText);
+
+            if (!feet.HasValue && !inches.HasValue)
+            {
+                if (_heightCm != null)
+                {
+                    _heightCm = null;
+                    _manualStrideOverride = false; // Option A: enable auto
+                    OnChanged(nameof(HeightCm));
+                    MaybeAutoComputeStride();
+                }
+                return;
+            }
+
+            int f = Math.Max(0, feet ?? 0);
+            int i = Math.Max(0, inches ?? 0);
+            if (i >= 12)
+            {
+                f += i / 12;
+                i = i % 12;
+                _heightFeetText = f.ToString(CultureInfo.InvariantCulture);
+                _heightInchesText = i.ToString(CultureInfo.InvariantCulture);
+                OnChanged(nameof(HeightFeetText));
+                OnChanged(nameof(HeightInchesText));
+            }
+
+            var cm = Round1(f * 30.48 + i * 2.54);
+            if (!NullableEquals(_heightCm, cm))
+            {
+                _heightCm = cm;
+                _manualStrideOverride = false; // Option A
+                OnChanged(nameof(HeightCm));
+                MaybeAutoComputeStride();
+            }
+        }
+
         /// <summary>Estimate step length (cm) using height & sex (male≈0.413*height, female≈0.415*height).</summary>
         private static double? EstimateStepLengthCm(string sex, double heightCm)
         {
@@ -288,8 +407,7 @@ namespace MAUI_Nonsense_App.ViewModels
 
         private void HandleUnitsChange(string oldUnits, string newUnits)
         {
-            // Internal storage stays metric. Unit switch doesn't change stored numbers.
-            // Auto stride remains based on internal cm height.
+            // Internal storage stays metric. Auto stride remains based on internal cm height.
             MaybeAutoComputeStride();
         }
 
@@ -404,11 +522,9 @@ namespace MAUI_Nonsense_App.ViewModels
             var s = Convert.ToString(v, CultureInfo.CurrentCulture)?.Trim();
             if (string.IsNullOrEmpty(s)) return null;
 
-            // Try current culture first (handles comma in PL)
             if (double.TryParse(s, NumberStyles.Float, CultureInfo.CurrentCulture, out var cur) && double.IsFinite(cur))
                 return cur;
 
-            // Replace comma with dot as a quick fallback
             var s2 = s.Replace(',', '.');
             if (double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out var inv) && double.IsFinite(inv))
                 return inv;
@@ -424,20 +540,28 @@ namespace MAUI_Nonsense_App.ViewModels
             var s = Convert.ToString(v, CultureInfo.CurrentCulture)?.Trim();
             if (string.IsNullOrEmpty(s)) return null;
 
-            // try int with current culture digits
             if (int.TryParse(s, NumberStyles.Integer, CultureInfo.CurrentCulture, out var xi) && xi >= 0)
                 return xi;
 
-            // try float and round
             if (double.TryParse(s, NumberStyles.Float, CultureInfo.CurrentCulture, out var xd) && xd >= 0)
                 return (int)Math.Round(xd, MidpointRounding.AwayFromZero);
 
-            // fallback invariant
             if (int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var yi) && yi >= 0)
                 return yi;
+
             if (double.TryParse(s.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var yd) && yd >= 0)
                 return (int)Math.Round(yd, MidpointRounding.AwayFromZero);
 
+            return null;
+        }
+
+        private static int? ParseNonNegativeInt(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            if (int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.CurrentCulture, out var v) && v >= 0)
+                return v;
+            if (int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out v) && v >= 0)
+                return v;
             return null;
         }
 

@@ -15,6 +15,7 @@
                   RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                   ColumnSpacing="12"
                   RowSpacing="12">
+
                 <Label Grid.Row="0" Text="Date of Birth" FontSize="16" VerticalTextAlignment="Center" />
                 <DatePicker Grid.Row="0" Grid.Column="1" Date="{Binding BirthDate}" />
 
@@ -23,8 +24,46 @@
                         ItemsSource="{Binding SexOptions}"
                         SelectedItem="{Binding Sex}" />
 
+                <!-- Height row -->
                 <Label Grid.Row="2" Text="{Binding HeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
-                <Entry Grid.Row="2" Grid.Column="1" Keyboard="Numeric" Text="{Binding HeightCm}" />
+
+                <!-- Metric: single textbox (cm) -->
+                <Entry x:Name="MetricHeightEntry"
+                       Grid.Row="2" Grid.Column="1"
+                       Keyboard="Numeric"
+                       IsVisible="True"
+                       Text="{Binding HeightCm}">
+                    <Entry.Triggers>
+                        <DataTrigger TargetType="Entry"
+                                     Binding="{Binding IsImperial}"
+                                     Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Entry.Triggers>
+                </Entry>
+
+                <!-- Imperial: two textboxes (ft + in) in one row -->
+                <HorizontalStackLayout x:Name="ImperialHeightPanel"
+                                       Grid.Row="2" Grid.Column="1"
+                                       Spacing="8"
+                                       IsVisible="False">
+                    <HorizontalStackLayout.Triggers>
+                        <DataTrigger TargetType="HorizontalStackLayout"
+                                     Binding="{Binding IsImperial}"
+                                     Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </HorizontalStackLayout.Triggers>
+
+                    <Entry WidthRequest="90"
+                           Keyboard="Numeric"
+                           Placeholder="ft"
+                           Text="{Binding HeightFeetText}" />
+                    <Entry WidthRequest="90"
+                           Keyboard="Numeric"
+                           Placeholder="in"
+                           Text="{Binding HeightInchesText}" />
+                </HorizontalStackLayout>
 
                 <Label Grid.Row="3" Text="{Binding WeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
                 <Entry Grid.Row="3" Grid.Column="1" Keyboard="Numeric" Text="{Binding WeightKg}" />
