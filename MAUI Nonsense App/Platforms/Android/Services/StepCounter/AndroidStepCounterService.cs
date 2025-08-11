@@ -3,6 +3,9 @@ using Android.Content;
 using Android.OS;
 using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Storage;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using AApp = Android.App.Application;
 
@@ -45,19 +48,19 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
             string lastDate = Preferences.Get("LastStepDate", "");
 
-            if (lastDate != today || !Preferences.ContainsKey("MidnightStepSensorValue"))
+            if (lastDate != today)
+            {
+                // We moved into a new day without a midnight tick (e.g., device was off).
+                // Re-align the date; do NOT wipe DailySteps here—MidnightResetReceiver handles proper reset.
+                Preferences.Set("LastStepDate", today);
+            }
+
+            if (!Preferences.ContainsKey("MidnightStepSensorValue"))
             {
                 int currentValue = Preferences.Get("LastSensorReading", 0);
                 Preferences.Set("MidnightStepSensorValue", currentValue);
-                Preferences.Set("LastStepDate", today);
-
-                // You may also want to zero out daily steps here:
-                Preferences.Set("DailySteps", 0);
-
-                Console.WriteLine($"[Init] MidnightStepSensorValue initialized: {currentValue}");
             }
         }
-
 
         public Task StopAsync()
         {
@@ -73,6 +76,9 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Preferences.Remove("MidnightStepSensorValue");
             Preferences.Set("StepHistory", "{}");
             Preferences.Set("LastStepDate", DateTime.UtcNow.ToString("yyyy-MM-dd"));
+            Preferences.Set("RebootDailyOffset", 0);
+            Preferences.Set("RunningTotalSteps", 0);
+            Preferences.Set("LastSensorReading", 0);
         }
 
         public void RaiseStepsUpdated()

@@ -7,6 +7,8 @@ using AndroidX.Core.App;
 using Microsoft.Maui.Storage;
 using System.Text.Json;
 using Android.Util;
+using System;
+using System.Collections.Generic;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
@@ -72,7 +74,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             if (_isUsingStepCounter)
             {
-                int currentValue = (int)e.Values[0];
+                int currentValue = (int)e.Values[0]; // steps since last boot
                 int lastValue = Preferences.Get("LastSensorReading", currentValue);
                 int delta = Math.Max(0, currentValue - lastValue);
 
@@ -82,22 +84,21 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 Preferences.Set("RunningTotalSteps", runningTotal);
                 Preferences.Set("LastSensorReading", currentValue);
 
+                // If date changed or baseline missing, set baseline relative to current counter
                 if (lastDate != today || !Preferences.ContainsKey("MidnightStepSensorValue"))
                 {
                     Preferences.Set("MidnightStepSensorValue", currentValue);
                     Preferences.Set("LastStepDate", today);
+                    // Also clear reboot offset on day change
+                    if (lastDate != today)
+                        Preferences.Set("RebootDailyOffset", 0);
                 }
 
                 int midnight = Preferences.Get("MidnightStepSensorValue", currentValue);
-                int dailySteps = currentValue - midnight;
+                int rebootOffset = Preferences.Get("RebootDailyOffset", 0);
 
-                if (dailySteps < 0)
-                {
-                    midnight = currentValue;
-                    dailySteps = 0;
-                    Preferences.Set("MidnightStepSensorValue", currentValue);
-                    Preferences.Set("LastStepDate", today);
-                }
+                long rawDaily = (long)rebootOffset + Math.Max(0, currentValue - midnight);
+                int dailySteps = rawDaily < 0 ? 0 : (rawDaily > int.MaxValue ? int.MaxValue : (int)rawDaily);
 
                 Preferences.Set("AccumulatedSteps", runningTotal);
                 Preferences.Set("DailySteps", dailySteps);
@@ -112,6 +113,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             }
             else
             {
+                // StepDetector emits 1 per step; reboot doesn't reset the logic here,
+                // but we still respect date changes and history.
                 int runningTotal = Preferences.Get("RunningTotalSteps", 0) + 1;
                 int dailySteps = Preferences.Get("DailySteps", 0);
 
@@ -119,6 +122,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 {
                     Preferences.Set("LastStepDate", today);
                     dailySteps = 0;
+                    Preferences.Set("RebootDailyOffset", 0);
                 }
 
                 dailySteps += 1;

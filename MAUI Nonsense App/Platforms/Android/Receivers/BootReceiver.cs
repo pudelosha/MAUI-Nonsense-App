@@ -3,6 +3,7 @@ using Android.Content;
 using Android.OS;
 using Android.Util;
 using Microsoft.Maui.Storage;
+using System;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Receivers
 {
@@ -24,7 +25,28 @@ namespace MAUI_Nonsense_App.Platforms.Android.Receivers
                     return;
                 }
 
-                Log.Info("BootReceiver", "Boot completed. Attempting to start StepCounterForegroundService...");
+                string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+                string lastDate = Preferences.Get("LastStepDate", today);
+                int lastDaily = Preferences.Get("DailySteps", 0);
+
+                // If we reboot during the same calendar day, carry today's steps forward
+                if (lastDate == today)
+                {
+                    Preferences.Set("RebootDailyOffset", Math.Max(0, lastDaily));
+                }
+                else
+                {
+                    // New day already: no carry
+                    Preferences.Set("RebootDailyOffset", 0);
+                    Preferences.Set("LastStepDate", today);
+                    // Midnight baseline will be rebuilt on first tick from the (now fresh) counter
+                }
+
+                // The hardware counter restarts from 0 after reboot. Make that explicit.
+                Preferences.Set("MidnightStepSensorValue", 0);
+                Preferences.Set("LastSensorReading", 0);
+
+                Log.Info("BootReceiver", "Boot completed. Starting StepCounterForegroundService...");
 
                 var serviceIntent = new Intent(context, typeof(Services.StepCounter.StepCounterForegroundService));
                 serviceIntent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ExcludeFromRecents);
