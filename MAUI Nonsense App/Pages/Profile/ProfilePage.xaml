@@ -2,31 +2,71 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.ProfilePage"
-             Title="ProfilePage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Create and account / login"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        
-        <Label 
-            Text="Synchronise"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             Title="Profile">
 
-        <Label 
-            Text="sign out"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <ScrollView>
+        <Grid Padding="20">
 
-        <Label 
-            Text="Delete account"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            <!-- lay cards in rows -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Label 
-            Text="Language"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+            <!-- ACCOUNT -->
+            <Frame Grid.Row="0" Padding="16" HasShadow="False" BorderColor="{DynamicResource Gray200}" CornerRadius="12">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Account" FontSize="18" FontAttributes="Bold" />
+
+                    <!-- Not logged in -->
+                    <VerticalStackLayout Spacing="10" IsVisible="{Binding IsLoggedIn, Converter={StaticResource InverseBoolConverter}}">
+                        <Entry Placeholder="Email" Keyboard="Email" Text="{Binding Email}" />
+                        <Entry Placeholder="Password" IsPassword="True" Text="{Binding Password}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0" Text="Register" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button Grid.Column="1" Text="Login"    Command="{Binding LoginCommand}"    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Logged in -->
+                    <VerticalStackLayout Spacing="10" IsVisible="{Binding IsLoggedIn}">
+                        <Label Text="{Binding Email}" FontAttributes="Bold" />
+                        <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0" Text="Sign Out"       Command="{Binding SignOutCommand}"       IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button Grid.Column="1" Text="Delete Account"  Command="{Binding DeleteAccountCommand}" TextColor="{DynamicResource Red500}" BorderColor="{DynamicResource Red500}" BorderWidth="1" BackgroundColor="Transparent" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Error -->
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{DynamicResource Red500}"
+                           FontSize="12"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- SYNC -->
+            <Frame Grid.Row="1" Padding="16" HasShadow="False" BorderColor="{DynamicResource Gray200}" CornerRadius="12" Margin="0,16,0,0">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Synchronisation" FontSize="18" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="Last sync:" VerticalTextAlignment="Center" />
+                        <Label Grid.Column="1" Text="{Binding LastSyncDisplay}" />
+                    </Grid>
+                    <Button Text="Sync Now" Command="{Binding SyncNowCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Busy overlay (sits on top of the grid) -->
+            <Grid Grid.RowSpan="3" InputTransparent="True">
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+            </Grid>
+
+        </Grid>
+    </ScrollView>
 </ContentPage>
