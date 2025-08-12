@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Games._2048Page"
+             Title="2048">
+
+    <Grid RowDefinitions="7*,3*" Padding="20">
+        <!-- Playfield (no outer frame) -->
+        <GraphicsView x:Name="GameCanvas"
+                      Grid.Row="0"
+                      BackgroundColor="Transparent">
+            <GraphicsView.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Up"    Swiped="OnSwipe" />
+                <SwipeGestureRecognizer Direction="Down"  Swiped="OnSwipe" />
+                <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
+                <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
+            </GraphicsView.GestureRecognizers>
+        </GraphicsView>
+
+        <!-- Controls -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
+
+            <!-- Score / Best -->
+            <Grid ColumnDefinitions="*,*" HorizontalOptions="FillAndExpand">
+                <Label Grid.Column="0"
+                       Text="{Binding Score, StringFormat='Score: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Start" />
+                <Label Grid.Column="1"
+                       Text="{Binding Best, StringFormat='Best: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="End" />
+            </Grid>
+
+            <!-- Up -->
+            <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="⬆ Up" Clicked="OnUpClicked" HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Left / Down / Right -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="⬅ Left"  Clicked="OnLeftClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="⬇ Down"  Clicked="OnDownClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="2" Text="Right ➡" Clicked="OnRightClicked" HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Start -->
+            <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="Start" Clicked="OnStartClicked" HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Tiny tip -->
+            <Label Text="Tip: best with your finger — swipe on the board. Buttons also work."
+                   FontSize="12"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

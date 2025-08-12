@@ -72,6 +72,9 @@
 	  <Compile Update="Pages\Games\GamesPage.xaml.cs">
 	    <DependentUpon>GamesPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\Games\SpaceInvadersPage.xaml.cs">
+	    <DependentUpon>SpaceInvadersPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\Random\RandomSpinnerPage.xaml.cs">
 	    <DependentUpon>RandomSpinnerPage.xaml</DependentUpon>
 	  </Compile>
@@ -84,6 +87,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Pages\Games\2048Page.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\Games\ArkanoidPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -91,6 +97,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Games\SnakePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Games\SpaceInvadersPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Games\TetrisPage.xaml">

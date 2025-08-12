@@ -65,7 +65,14 @@ public partial class GamesPage : ContentPage
 
     private async void On2048Tapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new Game2048Page());
-        await DisplayAlert("2048", "Open 2048 (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games._2048Page>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("2048", "2048Page isn't registered in DI.", "OK");
+        }
     }
 }
