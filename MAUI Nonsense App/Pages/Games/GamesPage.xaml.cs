@@ -53,14 +53,28 @@ public partial class GamesPage : ContentPage
 
     private async void OnPongTapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new PongPage());
-        await DisplayAlert("Pong", "Open Pong (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games.PongGame>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("Pong", "PongGame isn't registered in DI.", "OK");
+        }
     }
 
     private async void OnSpaceInvadersTapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new SpaceInvadersPage());
-        await DisplayAlert("Space Invaders", "Open Space Invaders (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games.SpaceInvadersPage>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("SpaceInvaders", "SpaceInvadersPage isn't registered in DI.", "OK");
+        }
     }
 
     private async void On2048Tapped(object sender, EventArgs e)
