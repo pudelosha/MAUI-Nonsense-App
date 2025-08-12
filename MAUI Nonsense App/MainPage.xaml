@@ -1,8 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.MainPage"
-             Title="MAUI Nonsense App">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="MAUI Nonsense App">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- same pale-gray theme as Activity page -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity page -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <Grid Padding="20" RowSpacing="20" ColumnSpacing="20">
@@ -18,104 +37,104 @@
             </Grid.ColumnDefinitions>
 
             <!-- Row 1 -->
-            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="0" Grid.Column="0">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf554;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Activity" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf554;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Activity" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnStepCounterTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="0" Grid.Column="1">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf1bb;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Survival" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf1bb;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Survival" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSurvivalTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Row 2 -->
-            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="1" Grid.Column="0">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf0ad;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Tools" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf0ad;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Tools" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnToolsTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="1" Grid.Column="1">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf15b;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Office" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf15b;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Office" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnOfficeTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Row 3 -->
-            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="2" Grid.Column="0">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf11b;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Games" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf11b;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Games" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnGamesTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-            <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="2" Grid.Column="1">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf074;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-               TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Random" FontSize="Medium" HorizontalOptions="Center"
-               TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf074;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Random" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRandomTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Row 4 -->
-            <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="3" Grid.Column="0">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf007;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Profile" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf007;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Profile" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnProfileTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-            <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource TileBorder}" Padding="20">
+            <Frame Grid.Row="3" Grid.Column="1">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                    <Label Text="&#xf013;" FontFamily="FASolid" FontSize="48" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,10,0,5"/>
-                    <Label Text="Settings" FontSize="Medium" HorizontalOptions="Center"
-                           TextColor="#888888" Margin="0,5,0,10"/>
+                    <Label Text="&#xf013;" FontFamily="FASolid" FontSize="48"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextSecondary}" Margin="0,10,0,5"/>
+                    <Label Text="Settings" FontSize="Medium"
+                           HorizontalOptions="Center" TextColor="{StaticResource TextPrimary}" Margin="0,5,0,10"/>
                 </VerticalStackLayout>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSettingsTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
         </Grid>
     </ScrollView>

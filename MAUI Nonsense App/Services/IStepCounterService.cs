@@ -4,14 +4,12 @@
     {
         int TotalSteps { get; }
         int Last24HoursSteps { get; }
+        long ActiveSecondsToday { get; }
         Dictionary<string, int> StepHistory { get; }
-
-        event EventHandler StepsUpdated;
-
+        event EventHandler? StepsUpdated;
         Task StartAsync();
         Task StopAsync();
         void ResetAll();
-
         void RaiseStepsUpdated();
     }
 }

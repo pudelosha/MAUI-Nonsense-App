@@ -16,6 +16,8 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             // Set the new baseline at midnight (relative to whatever the sensor is reporting now)
             Preferences.Set("MidnightStepSensorValue", currentSensorValue);
             Preferences.Set("LastStepDate", today);
+            Preferences.Set("ActiveSecondsToday", 0L);
+            Preferences.Set("LastStepUnixMs", 0L);
 
             // Ensure history entry exists for today (starts at 0 after midnight)
             var json = Preferences.Get("StepHistory", "{}");

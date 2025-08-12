@@ -69,6 +69,10 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         {
             Log.Info("StepCounter", $"Sensor value: {e.Values[0]}");
 
+            // Timestamp for active-time accumulation
+            var nowMs = Java.Lang.JavaSystem.CurrentTimeMillis();
+            long lastTickMs = Preferences.Get("LastStepUnixMs", 0L);
+
             string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
             string lastDate = Preferences.Get("LastStepDate", today);
 
@@ -89,9 +93,11 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 {
                     Preferences.Set("MidnightStepSensorValue", currentValue);
                     Preferences.Set("LastStepDate", today);
-                    // Also clear reboot offset on day change
-                    if (lastDate != today)
-                        Preferences.Set("RebootDailyOffset", 0);
+                    Preferences.Set("RebootDailyOffset", 0);
+
+                    // Reset active-time accumulation on day change
+                    Preferences.Set("ActiveSecondsToday", 0L);
+                    lastTickMs = 0L;
                 }
 
                 int midnight = Preferences.Get("MidnightStepSensorValue", currentValue);
@@ -121,8 +127,13 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 if (lastDate != today)
                 {
                     Preferences.Set("LastStepDate", today);
-                    dailySteps = 0;
                     Preferences.Set("RebootDailyOffset", 0);
+
+                    // Reset active-time accumulation on day change
+                    Preferences.Set("ActiveSecondsToday", 0L);
+                    lastTickMs = 0L;
+
+                    dailySteps = 0;
                 }
 
                 dailySteps += 1;
@@ -138,6 +149,20 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                     _lastNotifiedSteps = dailySteps;
                 }
             }
+
+            // ---- Active time accumulation (shared) ----
+            if (lastTickMs > 0)
+            {
+                var deltaSec = (nowMs - lastTickMs) / 1000;
+                // Treat short gaps as continuous walking
+                if (deltaSec > 0 && deltaSec <= 10)
+                {
+                    long secs = Preferences.Get("ActiveSecondsToday", 0L);
+                    secs += deltaSec;
+                    Preferences.Set("ActiveSecondsToday", secs);
+                }
+            }
+            Preferences.Set("LastStepUnixMs", nowMs);
 
             AndroidStepCounterService.Instance?.RaiseStepsUpdated();
         }

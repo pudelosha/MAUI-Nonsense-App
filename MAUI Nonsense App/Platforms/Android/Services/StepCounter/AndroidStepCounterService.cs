@@ -68,10 +68,13 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             return Task.CompletedTask;
         }
 
+        public long ActiveSecondsToday => Preferences.Get("ActiveSecondsToday", 0L);
+
         public void ResetAll()
         {
             Preferences.Set("AccumulatedSteps", 0);
             Preferences.Set("DailySteps", 0);
+            Preferences.Set("ActiveSecondsToday", 0L);
             Preferences.Remove("FirstEverStepSensorValue");
             Preferences.Remove("MidnightStepSensorValue");
             Preferences.Set("StepHistory", "{}");
@@ -79,6 +82,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Preferences.Set("RebootDailyOffset", 0);
             Preferences.Set("RunningTotalSteps", 0);
             Preferences.Set("LastSensorReading", 0);
+            Preferences.Set("LastStepUnixMs", 0L);
         }
 
         public void RaiseStepsUpdated()
