@@ -6,11 +6,11 @@ using MAUI_Nonsense_App.Pages.Random;
 using MAUI_Nonsense_App.Pages.Survival;
 using MAUI_Nonsense_App.Pages.Tools;
 using MAUI_Nonsense_App.ViewModels;
-using MAUI_Nonsense_App.ViewModels;
 using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;
 using ZXing.Net.Maui.Controls;
 using CommunityToolkit.Maui;
+using MAUI_Nonsense_App.Pages.Games;
 
 namespace MAUI_Nonsense_App
 {
@@ -66,6 +66,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<ImageSelectionPage>();
             builder.Services.AddTransient<ImageEditorPage>();
             builder.Services.AddTransient<ImageToPdfPage>();
+            builder.Services.AddTransient<SnakePage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -82,6 +83,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<SavePdfViewModel>();
             builder.Services.AddTransient<ImageArrangeViewModel>();
             builder.Services.AddTransient<ImageSelectionViewModel>();
+            builder.Services.AddTransient<SnakeViewModel>();
 
 
 #if DEBUG

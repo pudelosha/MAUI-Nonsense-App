@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Games.SnakePage"
+             Title="Snake">
+
+    <Grid RowDefinitions="7*,3*" Padding="20">
+        <!-- Playfield with frame -->
+        <Border Grid.Row="0"
+                Stroke="Gray"
+                StrokeThickness="2"
+                BackgroundColor="LightGray"
+                StrokeShape="RoundRectangle 8">
+            <GraphicsView x:Name="SnakeCanvas"
+                          BackgroundColor="Transparent">
+                <GraphicsView.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
+                    <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
+        </Border>
+
+        <!-- Controls -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
+
+            <!-- Score / Status / Speed (bound) -->
+            <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand">
+                <Label Grid.Column="0"
+                       Text="{Binding Score, StringFormat='Score: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Start" />
+
+                <Label Grid.Column="1"
+                       Text="{Binding State}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Grid.Column="2"
+                       Text="{Binding SpeedMultiplier, StringFormat='Speed: {0:0.0}x'}"
+                       HorizontalTextAlignment="End" />
+            </Grid>
+
+            <!-- Direction (2 equal full-width buttons) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0"
+                        Text="⟲ Left"
+                        Clicked="OnTurnLeftClicked"
+                        HorizontalOptions="Fill" />
+                <Button Grid.Column="1"
+                        Text="⟳ Right"
+                        Clicked="OnTurnRightClicked"
+                        HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Start / Pause / Reset (3 equal full-width buttons) -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="Start"  Clicked="OnStartClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="Pause"  Clicked="OnPauseClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="2" Text="Reset"  Clicked="OnResetClicked"  HorizontalOptions="Fill" />
+            </Grid>
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

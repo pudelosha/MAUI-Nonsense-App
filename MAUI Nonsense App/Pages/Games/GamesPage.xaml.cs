@@ -4,15 +4,25 @@ namespace MAUI_Nonsense_App.Pages;
 
 public partial class GamesPage : ContentPage
 {
-    public GamesPage()
+    private readonly IServiceProvider _serviceProvider; // already in your parent page
+
+    public GamesPage(IServiceProvider serviceProvider)
     {
         InitializeComponent();
+        _serviceProvider = serviceProvider;
     }
 
     private async void OnSnakeTapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new SnakePage());
-        await DisplayAlert("Snake", "Open Snake (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games.SnakePage>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("Snake", "SnakePage isn't registered in DI.", "OK");
+        }
     }
 
     private async void OnTetrisTapped(object sender, EventArgs e)
