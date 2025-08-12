@@ -1,211 +1,222 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.ToolsPage"
-             Title="Tools">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.ToolsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Tools">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- same pale-gray theme as Activity page -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity page -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="16" Spacing="16">
 
             <!-- Level -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf2d0;" 
+                           Text="&#xf2d0;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Level" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Check if a surface is level or measure tilt angle." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Level" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Check if a surface is level or measure tilt angle."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnLevelTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Unit Converter -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf0ec;" 
+                           Text="&#xf0ec;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Unit Converter" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Convert between units: length, weight, temperature, and more." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Unit Converter" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Convert between units: length, weight, temperature, and more."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnUnitConverterTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Ruler -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf0cb;" 
+                           Text="&#xf0cb;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Ruler" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Measure small distances directly on your screen." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Ruler" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Measure small distances directly on your screen."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRulerTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Protractor -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf10c;" 
+                           Text="&#xf10c;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Protractor" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Measure angles on screen with precision." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Protractor" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Measure angles on screen with precision."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnProtractorTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Mirror -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf2d1;" 
+                           Text="&#xf2d1;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Mirror" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Use your front camera as a quick mirror." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Mirror" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Use your front camera as a quick mirror."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMirrorTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Vibrometer -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf2f1;" 
+                           Text="&#xf2f1;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Vibrometer" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Measure vibrations and tremors using sensors." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Vibrometer" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Measure vibrations and tremors using sensors."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnVibrometerTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Metal Detector -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf076;" 
+                           Text="&#xf076;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Metal Detector" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Detect magnetic fields near your device." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Metal Detector" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Detect magnetic fields near your device."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMetalDetectorTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Voice Measure -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0"
-                           Text="&#xf130;" 
+                           Text="&#xf130;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Voice Measure" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Measure sound level and visualize your voice." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Voice Measure" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Measure sound level and visualize your voice."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnVoiceMeasureTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

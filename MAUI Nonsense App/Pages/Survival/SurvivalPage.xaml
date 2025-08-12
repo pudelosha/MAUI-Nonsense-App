@@ -1,136 +1,150 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Survival.SurvivalPage"
-             Title="Survival Tools">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Survival.SurvivalPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Survival Tools">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- same pale-gray theme as Activity page -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity page -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-            <!-- Light Button -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <!-- Light -->
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf0eb;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
+                           Text="&#xf0eb;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Light" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Turn on your flashlight, including SOS and emergency signaling modes." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Light" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Turn on your flashlight, including SOS and emergency signaling modes."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnLightTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-            <!-- Compass Button -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <!-- Compass -->
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf14e;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
+                           Text="&#xf14e;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Compass" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Find directions easily using your device's built-in compass sensor." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Compass" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Find directions easily using your device's built-in compass sensor."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCompassTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Movement Detector -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf2f2;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
+                           Text="&#xf2f2;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Movement Detector" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Protect your tent or bag with an alarm when motion is detected." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Movement Detector" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Protect your tent or bag with an alarm when motion is detected."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMovementDetectorTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Mark Point -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf041;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
+                           Text="&#xf041;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Mark Point" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Save your current location so you can return later." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Mark Point" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Save your current location so you can return later."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMarkPointTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Checklist -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf0ae;" 
-                           FontFamily="FASolid"
-                           FontSize="42"
-                           TextColor="#888888"
+                           Text="&#xf0ae;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Checklist" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Plan and check your gear before departure." 
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                        <Label Text="Checklist" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Plan and check your gear before departure."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnChecklistTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

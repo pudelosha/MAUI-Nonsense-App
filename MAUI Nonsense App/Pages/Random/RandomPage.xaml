@@ -1,119 +1,162 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Random.RandomPage"
-             Title="Random">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Random.RandomPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Random">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- same pale-gray theme as Activity page -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity page -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="16" Spacing="16">
 
             <!-- Random Number Generator -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf1b3;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf1b3;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Random Number Generator" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Generate a random number between your chosen range." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Random Number Generator" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Generate a random number between your chosen range."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRandomNumberTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Coin Flip -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf042;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf042;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Coin Flip" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Flip a virtual coin and get heads or tails." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Coin Flip" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Flip a virtual coin and get heads or tails."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCoinFlipTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Dice -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf522;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf522;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Dice" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Roll one or more dice and get a random result." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Dice" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Roll one or more dice and get a random result."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnDiceTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Random Spinner -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf021;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf021;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Random Spinner" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Spin a customizable wheel to randomly select an option." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Random Spinner" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Spin a customizable wheel to randomly select an option."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRandomSpinnerTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Roulette Wheel -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf140;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf140;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Roulette Wheel" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Spin the wheel of fortune and land on a random number." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Roulette Wheel" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Spin the wheel of fortune and land on a random number."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRouletteTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Slot Machine -->
-            <Border Style="{StaticResource TileBorder}" Padding="20" HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="&#xf11b;" FontFamily="FASolid" FontSize="42" TextColor="#888888" VerticalOptions="Center"/>
+                    <Label Grid.Column="0"
+                           Text="&#xf11b;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Slot Machine" FontSize="Medium" TextColor="#888888"/>
-                        <Label Text="Pull the lever and see if you hit the jackpot." FontSize="12" TextColor="#888888"/>
+                        <Label Text="Slot Machine" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Pull the lever and see if you hit the jackpot."
+                               FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSlotTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

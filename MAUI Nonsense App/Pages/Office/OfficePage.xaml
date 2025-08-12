@@ -1,86 +1,108 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.OfficePage"
-             Title="Office">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.OfficePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Office">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- same pale-gray theme as Activity page -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity page -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="16" Spacing="16">
 
             <!-- Image to PDF -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf1c1;" 
+                           Text="&#xf1c1;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Image to PDF" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Image to PDF" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
                         <Label Text="Capture or select images and save them as a PDF document."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageToPdfTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- Image to Text -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf02d;" 
+                           Text="&#xf02d;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="Image to Text (OCR)" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="Image to Text (OCR)" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
                         <Label Text="Extract text content from an image using OCR."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageToTextTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <!-- QR Code Scanner -->
-            <Border Style="{StaticResource TileBorder}" Padding="20"
-                    HorizontalOptions="Fill" HeightRequest="110">
+            <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+
                     <Label Grid.Column="0"
-                           Text="&#xf029;" 
+                           Text="&#xf029;"
                            FontFamily="FASolid"
                            FontSize="42"
-                           TextColor="#888888"
+                           TextColor="{StaticResource TextSecondary}"
                            VerticalOptions="Center"/>
+
                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="QR Code Scanner" FontSize="Medium" TextColor="#888888"/>
+                        <Label Text="QR Code Scanner" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
                         <Label Text="Scan QR codes using your camera."
-                               FontSize="12" LineBreakMode="WordWrap" TextColor="#888888"/>
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Grid>
-                <Border.GestureRecognizers>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnQrScannerTapped"/>
-                </Border.GestureRecognizers>
-            </Border>
+                </Frame.GestureRecognizers>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>
