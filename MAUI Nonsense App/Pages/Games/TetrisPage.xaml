@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Nonsense_App.Pages.Games.TetrisPage"
+             Title="Tetris">
+
+    <Grid RowDefinitions="7*,3*" Padding="20">
+        <!-- Playfield (no outer frame) -->
+        <GraphicsView x:Name="TetrisCanvas"
+                      Grid.Row="0"
+                      BackgroundColor="Transparent">
+            <GraphicsView.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
+                <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
+                <SwipeGestureRecognizer Direction="Down"  Swiped="OnSwipe" />
+            </GraphicsView.GestureRecognizers>
+        </GraphicsView>
+
+        <!-- Controls (unchanged) -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
+            <Grid ColumnDefinitions="*,*" HorizontalOptions="FillAndExpand">
+                <Label Grid.Column="0"
+                       Text="{Binding Score, StringFormat='Score: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Start" />
+                <Label Grid.Column="1"
+                       Text="{Binding Level, StringFormat='Level: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="End" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="⟸" Clicked="OnMoveLeftClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="⟳"  Clicked="OnRotateClicked"    HorizontalOptions="Fill" />
+                <Button Grid.Column="2" Text="⟹" Clicked="OnMoveRightClicked" HorizontalOptions="Fill" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="⬇ Drop" Clicked="OnDropClicked"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="Pause"  Clicked="OnPauseClicked" HorizontalOptions="Fill" />
+                <Button Grid.Column="2" Text="Start"  Clicked="OnStartClicked" HorizontalOptions="Fill" />
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

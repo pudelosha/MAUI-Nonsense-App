@@ -27,8 +27,15 @@ public partial class GamesPage : ContentPage
 
     private async void OnTetrisTapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new TetrisPage());
-        await DisplayAlert("Tetris", "Open Tetris (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games.TetrisPage>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("Tetris", "TetrisPage isn't registered in DI.", "OK");
+        }
     }
 
     private async void OnArkanoidTapped(object sender, EventArgs e)
