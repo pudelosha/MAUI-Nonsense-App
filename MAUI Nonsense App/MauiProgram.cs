@@ -68,6 +68,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<ImageToPdfPage>();
             builder.Services.AddTransient<SnakePage>();
             builder.Services.AddTransient<TetrisPage>();
+            builder.Services.AddTransient<ArkanoidPage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -86,6 +87,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<ImageSelectionViewModel>();
             builder.Services.AddTransient<SnakeViewModel>();
             builder.Services.AddTransient<TetrisViewModel>();
+            builder.Services.AddTransient<ArkanoidViewModel>();
 
 
 #if DEBUG

@@ -40,8 +40,15 @@ public partial class GamesPage : ContentPage
 
     private async void OnArkanoidTapped(object sender, EventArgs e)
     {
-        // TODO: await Navigation.PushAsync(new ArkanoidPage());
-        await DisplayAlert("Arkanoid", "Open Arkanoid (coming soon)", "OK");
+        var page = _serviceProvider.GetService<MAUI_Nonsense_App.Pages.Games.ArkanoidPage>();
+        if (page is not null)
+        {
+            await Navigation.PushAsync(page);
+        }
+        else
+        {
+            await DisplayAlert("Arkanoid", "ArkanoidPage isn't registered in DI.", "OK");
+        }
     }
 
     private async void OnPongTapped(object sender, EventArgs e)
