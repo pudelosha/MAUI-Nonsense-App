@@ -36,10 +36,7 @@ public class PongViewModel : INotifyPropertyChanged
     private const int WinScore = 7;
 
     // Bounce shaping
-    //private const float MinHorizFrac = 0.85f; // at least 85% of total speed must be horizontal
     private const float MinHorizFrac = 0.7f;
-    //private const float PaddleMinDeg = 5f;    // min angle from horizontal on paddle bounce
-    //private const float PaddleMaxDeg = 20f;   // max angle from horizontal on paddle bounce
     private const float PaddleMinDeg = 4f;
     private const float PaddleMaxDeg = 16f;
 

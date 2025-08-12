@@ -2,11 +2,57 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Games.SpaceInvadersPage"
-             Title="SpaceInvaders">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Space Invaders">
+
+    <Grid RowDefinitions="7*,3*" Padding="20">
+
+        <!-- Playfield (no outer frame) -->
+        <GraphicsView x:Name="GameCanvas"
+                      Grid.Row="0"
+                      BackgroundColor="Transparent">
+            <GraphicsView.GestureRecognizers>
+                <PanGestureRecognizer PanUpdated="OnPan" />
+                <TapGestureRecognizer Tapped="OnTap" />
+            </GraphicsView.GestureRecognizers>
+        </GraphicsView>
+
+        <!-- Controls -->
+        <VerticalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="FillAndExpand">
+
+            <!-- Score / Lives / Wave -->
+            <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand">
+                <Label Grid.Column="0"
+                       Text="{Binding Score, StringFormat='Score: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Start" />
+                <Label Grid.Column="1"
+                       Text="{Binding Lives, StringFormat='Lives: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+                <Label Grid.Column="2"
+                       Text="{Binding Wave, StringFormat='Wave: {0}'}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="End" />
+            </Grid>
+
+            <!-- Move -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="⟸ Left"  Clicked="OnLeft"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="Right ⟹" Clicked="OnRight" HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Fire / Pause / Start -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                <Button Grid.Column="0" Text="🔥 Fire" Clicked="OnFire"  HorizontalOptions="Fill" />
+                <Button Grid.Column="1" Text="Pause"   Clicked="OnPause" HorizontalOptions="Fill" />
+                <Button Grid.Column="2" Text="Start"   Clicked="OnStart" HorizontalOptions="Fill" />
+            </Grid>
+
+            <!-- Tiny tip -->
+            <Label Text="Tip: drag on the board to move, tap to fire. Buttons also work."
+                   FontSize="12"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>
