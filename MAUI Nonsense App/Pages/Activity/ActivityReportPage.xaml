@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Activity.ActivityReportPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Week">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Pale-gray card style as elsewhere -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="ArrowEnabled">#9CA3AF</Color>
+            <Color x:Key="ArrowDisabled">#D1D5DB</Color>
+
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+
+            <Style x:Key="ArrowBtn" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Padding" Value="6" />
+                <Setter Property="TextColor" Value="{StaticResource ArrowEnabled}" />
+            </Style>
+
+            <Style x:Key="PillButton" TargetType="Button">
+                <Setter Property="CornerRadius" Value="18"/>
+                <Setter Property="Padding" Value="16,10"/>
+                <Setter Property="BackgroundColor" Value="#E5E7EB"/>
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- rows: header, chart, selector -->
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16" RowSpacing="16">
+
+        <!-- HEADER CARD (3 rows) -->
+        <Frame Grid.Row="0">
+            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <!-- Row 0: today's steps centered -->
+                <Label Grid.Row="0" Grid.ColumnSpan="3"
+                       Text="{Binding TodayStepsText}"
+                       FontSize="28" FontAttributes="Bold"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"
+                       TextColor="{StaticResource TextPrimary}" />
+
+                <!-- Row 1: average for selected week so far -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="3" ColumnDefinitions="Auto,Auto" ColumnSpacing="6"
+                      HorizontalOptions="Center">
+                    <Label Grid.Column="0" Text="Daily average:" FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Label Grid.Column="1" Text="{Binding DailyAverageSoFarText}" FontSize="12"
+                           FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                </Grid>
+
+                <!-- Row 2: arrows + week range -->
+                <Button Grid.Row="2" Grid.Column="0" Text="◀" Style="{StaticResource ArrowBtn}"
+                        Clicked="PrevWeek_Clicked"/>
+                <Label  Grid.Row="2" Grid.Column="1" Text="{Binding WeekRangeText}"
+                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                        TextColor="{StaticResource TextSecondary}" />
+                <Button Grid.Row="2" Grid.Column="2" Text="▶" Style="{StaticResource ArrowBtn}"
+                        Clicked="NextWeek_Clicked" IsEnabled="{Binding CanGoForward}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding CanGoForward}" Value="False">
+                            <Setter Property="TextColor" Value="{StaticResource ArrowDisabled}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </Frame>
+
+        <!-- CHART CARD (fills height, swipe to change week) -->
+        <Frame Grid.Row="1" Padding="12" x:Name="ChartCard">
+            <Grid>
+                <!-- Slightly non-transparent background to ensure touch hit-testing -->
+                <GraphicsView x:Name="Chart"
+                              BackgroundColor="#01000000"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="FillAndExpand">
+                    <GraphicsView.GestureRecognizers>
+                        <SwipeGestureRecognizer Direction="Left"  Swiped="OnChartSwipedLeft"/>
+                        <SwipeGestureRecognizer Direction="Right" Swiped="OnChartSwipedRight"/>
+                        <PanGestureRecognizer PanUpdated="OnChartPanUpdated"/>
+                    </GraphicsView.GestureRecognizers>
+                </GraphicsView>
+            </Grid>
+        </Frame>
+
+        <!-- METRIC SELECTOR -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+            <Button Grid.Column="0" Text="STEPS"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetModeCommand}" CommandParameter="Steps">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedMode}" Value="Steps">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="1" Text="CALORIES"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetModeCommand}" CommandParameter="Calories">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedMode}" Value="Calories">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="2" Text="TIME"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetModeCommand}" CommandParameter="Time">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedMode}" Value="Time">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="3" Text="DISTANCE"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetModeCommand}" CommandParameter="Distance">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedMode}" Value="Distance">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+
+    </Grid>
+</ContentPage>

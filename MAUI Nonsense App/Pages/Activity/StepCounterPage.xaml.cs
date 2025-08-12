@@ -41,6 +41,11 @@ public partial class StepCounterPage : ContentPage
         _refreshTimer.Stop();
     }
 
+    private async void OnOpenReport(object? sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new ActivityReportPage(_stepService));
+    }
+
     private void RefreshStepData()
     {
         MainThread.BeginInvokeOnMainThread(() =>

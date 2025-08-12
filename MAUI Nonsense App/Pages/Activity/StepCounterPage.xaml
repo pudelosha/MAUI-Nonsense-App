@@ -99,6 +99,9 @@
                         </VerticalStackLayout>
                     </Grid>
                 </Grid>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOpenReport"/>
+                </Frame.GestureRecognizers>
             </Frame>
 
             <!-- DAILY AVERAGE -->
@@ -107,6 +110,9 @@
                     <Label Text="Daily average" FontSize="16" TextColor="{StaticResource TextSecondary}" />
                     <Label Text="{Binding SevenDayAverage}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
                 </HorizontalStackLayout>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOpenReport"/>
+                </Frame.GestureRecognizers>
             </Frame>
 
             <!-- THIS WEEK (circles + labels stacked, labels pushed down, circles nudged left) -->
@@ -157,6 +163,9 @@
                         </VerticalStackLayout>
                     </Grid>
                 </VerticalStackLayout>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOpenReport"/>
+                </Frame.GestureRecognizers>
             </Frame>
 
         </VerticalStackLayout>
