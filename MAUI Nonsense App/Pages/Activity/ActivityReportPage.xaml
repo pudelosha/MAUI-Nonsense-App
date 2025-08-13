@@ -7,7 +7,6 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <!-- Pale-gray card style as elsewhere -->
             <Color x:Key="CardBg">#F3F4F6</Color>
             <Color x:Key="TextPrimary">#111827</Color>
             <Color x:Key="TextSecondary">#6B7280</Color>
@@ -38,29 +37,29 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!-- rows: header, chart, selector -->
     <Grid RowDefinitions="Auto,*,Auto" Padding="16" RowSpacing="16">
 
-        <!-- HEADER CARD (3 rows) -->
+        <!-- HEADER -->
         <Frame Grid.Row="0">
             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                <!-- Row 0: today's steps centered -->
+                <!-- Today, selected metric -->
                 <Label Grid.Row="0" Grid.ColumnSpan="3"
-                       Text="{Binding TodayStepsText}"
+                       Text="{Binding TopPrimaryValueText}"
                        FontSize="28" FontAttributes="Bold"
                        HorizontalOptions="Center" HorizontalTextAlignment="Center"
                        TextColor="{StaticResource TextPrimary}" />
 
-                <!-- Row 1: average for selected week so far -->
-                <Grid Grid.Row="1" Grid.ColumnSpan="3" ColumnDefinitions="Auto,Auto" ColumnSpacing="6"
+                <!-- Average for selected week so far -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="3"
+                      ColumnDefinitions="Auto,Auto" ColumnSpacing="6"
                       HorizontalOptions="Center">
                     <Label Grid.Column="0" Text="Daily average:" FontSize="12"
                            TextColor="{StaticResource TextSecondary}" />
-                    <Label Grid.Column="1" Text="{Binding DailyAverageSoFarText}" FontSize="12"
+                    <Label Grid.Column="1" Text="{Binding TopAverageText}" FontSize="12"
                            FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                 </Grid>
 
-                <!-- Row 2: arrows + week range -->
+                <!-- Arrows + week range -->
                 <Button Grid.Row="2" Grid.Column="0" Text="◀" Style="{StaticResource ArrowBtn}"
                         Clicked="PrevWeek_Clicked"/>
                 <Label  Grid.Row="2" Grid.Column="1" Text="{Binding WeekRangeText}"
@@ -77,10 +76,10 @@
             </Grid>
         </Frame>
 
-        <!-- CHART CARD (fills height, swipe to change week) -->
+        <!-- CHART -->
         <Frame Grid.Row="1" Padding="12" x:Name="ChartCard">
             <Grid>
-                <!-- Slightly non-transparent background to ensure touch hit-testing -->
+                <!-- tiny background so gestures always hit -->
                 <GraphicsView x:Name="Chart"
                               BackgroundColor="#01000000"
                               HorizontalOptions="Fill"

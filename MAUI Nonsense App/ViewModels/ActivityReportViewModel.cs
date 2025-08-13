@@ -15,19 +15,18 @@ public class DayStat
     public DateTime Date { get; set; }
     public string Abbrev => Date.ToString("ddd", CultureInfo.InvariantCulture);
     public int Steps { get; set; }
-    public double DistanceKm { get; set; }   // derived
-    public double Calories { get; set; }     // derived
-    public double Minutes { get; set; }      // derived
+    public double DistanceKm { get; set; }
+    public double Calories { get; set; }
+    public double Minutes { get; set; }
     public bool IsToday { get; set; }
-    public bool IsFuture { get; set; }       // used to hide future labels
+    public bool IsFuture { get; set; }
 }
 
 public class ActivityReportViewModel : INotifyPropertyChanged
 {
     private readonly IStepCounterService _service;
 
-    // preference keys (match SettingsViewModel)
-    private const string KeyWeekStart = "Settings.WeekStart";     // "Monday" | "Sunday"
+    private const string KeyWeekStart = "Settings.WeekStart";
     private const string KeyDailyGoal = "Settings.DailyGoal";
     private const string KeyStrideLengthCm = "Settings.StrideLengthCm";
     private const string KeyWeightKg = "Settings.WeightKg";
@@ -37,40 +36,58 @@ public class ActivityReportViewModel : INotifyPropertyChanged
 
     public ObservableCollection<DayStat> Days { get; } = new();
 
-    // week window
     public DateTime WeekStart { get; private set; }
     public DateTime WeekEnd => WeekStart.AddDays(6);
 
-    // header: today’s steps (centered)
-    public string TodayStepsText => _service.Last24HoursSteps.ToString("N0");
+    // ---- Top card (uses selected metric)
+    public string TopPrimaryValueText
+    {
+        get
+        {
+            var steps = _service.Last24HoursSteps;
+            return SelectedMode switch
+            {
+                MetricMode.Steps => steps.ToString("N0"),
+                MetricMode.Distance => (steps * _strideCm / 100_000.0).ToString("F2"),
+                MetricMode.Time => (steps / 100.0).ToString("N0"),
+                _ => MinutesToCalories(steps / 100.0).ToString("F0")
+            };
+        }
+    }
 
-    // header: average for selected week so far (steps only)
-    public string DailyAverageSoFarText
+    public string TopAverageText
     {
         get
         {
             var today = DateTime.UtcNow.Date;
-            // end day for averaging: if current week -> today; if past week -> week end; if future (blocked) -> none
             var end = WeekEnd <= today ? WeekEnd : (today < WeekStart ? WeekStart.AddDays(-1) : today);
 
             int daysCount = 0;
-            int sum = 0;
+            double sum = 0;
             foreach (var d in Days)
             {
                 if (d.Date >= WeekStart && d.Date <= end)
                 {
                     daysCount++;
-                    sum += d.Steps;
+                    sum += ValueOf(d);
                 }
             }
             if (daysCount <= 0) return "0";
-            return (sum / (double)daysCount).ToString("N0");
+
+            var avg = sum / daysCount;
+            return SelectedMode switch
+            {
+                MetricMode.Steps => avg.ToString("N0"),
+                MetricMode.Distance => avg.ToString("F2"),
+                MetricMode.Time => avg.ToString("N0"),
+                _ => avg.ToString("F0")
+            };
         }
     }
 
     public string WeekRangeText => $"{WeekStart:dd.MM} - {WeekEnd:dd.MM}";
 
-    // navigate enablement (block moving into future)
+    // navigation guard (no future)
     public bool CanGoForward
     {
         get
@@ -80,7 +97,7 @@ public class ActivityReportViewModel : INotifyPropertyChanged
         }
     }
 
-    // metric selection (used by chart; header stays in steps)
+    // ---- Selected metric for chart + top card
     private MetricMode _selectedMode = MetricMode.Steps;
     public MetricMode SelectedMode
     {
@@ -89,33 +106,30 @@ public class ActivityReportViewModel : INotifyPropertyChanged
         {
             if (_selectedMode == value) return;
             _selectedMode = value;
-            NotifyModeChanged();
+            OnPropertyChanged(nameof(SelectedMode));
+            OnPropertyChanged(nameof(TopPrimaryValueText));
+            OnPropertyChanged(nameof(TopAverageText));
+            RedrawRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    public bool StepsSelected => SelectedMode == MetricMode.Steps;
-    public bool CaloriesSelected => SelectedMode == MetricMode.Calories;
-    public bool TimeSelected => SelectedMode == MetricMode.Time;
-    public bool DistanceSelected => SelectedMode == MetricMode.Distance;
-
     public IRelayCommand SetModeCommand { get; }
 
-    // weekly totals (if needed elsewhere)
+    // ---- Totals (optional)
     public int WeeklySumSteps => Days.Sum(d => d.Steps);
     public double WeeklySumDistanceKm => Days.Sum(d => d.DistanceKm);
     public double WeeklySumMinutes => Days.Sum(d => d.Minutes);
     public double WeeklySumCalories => Days.Sum(d => d.Calories);
 
-    // conversions / goals
+    // ---- Goals / conversions
     private double _strideCm;
     private double _weightKg;
 
     public int DailyGoalSteps { get; private set; }
     public double GoalDistanceKm => DailyGoalSteps * _strideCm / 100_000.0;
-    public double GoalMinutes => DailyGoalSteps / 100.0;               // 100 steps/min
+    public double GoalMinutes => DailyGoalSteps / 100.0; // 100 steps/min
     public double GoalCalories => MinutesToCalories(GoalMinutes);
 
-    // week-start rule (true => Monday-first)
     private readonly bool _isMondayStart;
 
     public ActivityReportViewModel(IStepCounterService service)
@@ -125,8 +139,7 @@ public class ActivityReportViewModel : INotifyPropertyChanged
         _isMondayStart = Preferences.Get(KeyWeekStart, "Monday")
                                     .Equals("Monday", StringComparison.OrdinalIgnoreCase);
 
-        var today = DateTime.UtcNow.Date;
-        WeekStart = GetWeekStartOf(today);
+        WeekStart = GetWeekStartOf(DateTime.UtcNow.Date);
 
         DailyGoalSteps = Preferences.Get(KeyDailyGoal, 10000);
         _strideCm = Preferences.ContainsKey(KeyStrideLengthCm) ? Preferences.Get(KeyStrideLengthCm, 75) : 75;
@@ -138,12 +151,12 @@ public class ActivityReportViewModel : INotifyPropertyChanged
                 SelectedMode = m;
         });
 
-        // live updates -> keep header & chart in sync when showing current week
         _service.StepsUpdated += (_, __) =>
         {
             if (DateTime.UtcNow.Date >= WeekStart && DateTime.UtcNow.Date <= WeekEnd)
                 LoadWeek();
-            OnPropertyChanged(nameof(TodayStepsText));
+            OnPropertyChanged(nameof(TopPrimaryValueText));
+            OnPropertyChanged(nameof(TopAverageText));
         };
 
         LoadWeek();
@@ -161,20 +174,10 @@ public class ActivityReportViewModel : INotifyPropertyChanged
         LoadWeek();
     }
 
-    private void NotifyModeChanged()
-    {
-        OnPropertyChanged(nameof(SelectedMode));
-        OnPropertyChanged(nameof(StepsSelected));
-        OnPropertyChanged(nameof(CaloriesSelected));
-        OnPropertyChanged(nameof(TimeSelected));
-        OnPropertyChanged(nameof(DistanceSelected));
-        RedrawRequested?.Invoke(this, EventArgs.Empty);
-    }
-
     private void LoadWeek()
     {
         Days.Clear();
-        var history = _service.StepHistory; // date "yyyy-MM-dd" -> steps
+        var history = _service.StepHistory;
         var today = DateTime.UtcNow.Date;
 
         for (int i = 0; i < 7; i++)
@@ -199,14 +202,22 @@ public class ActivityReportViewModel : INotifyPropertyChanged
         }
 
         OnPropertyChanged(nameof(WeekRangeText));
-        OnPropertyChanged(nameof(DailyAverageSoFarText));
+        OnPropertyChanged(nameof(TopAverageText));
         OnPropertyChanged(nameof(CanGoForward));
         RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    private double ValueOf(DayStat d) => SelectedMode switch
+    {
+        MetricMode.Steps => d.Steps,
+        MetricMode.Distance => d.DistanceKm,
+        MetricMode.Time => d.Minutes,
+        _ => d.Calories
+    };
+
     private double MinutesToCalories(double minutes)
     {
-        // Walking easy MET ~ 3.5; kcal/min = MET * 3.5 * kg / 200
+        // kcal/min = MET * 3.5 * kg / 200 ; walking easy MET ~ 3.5
         var kcalPerMin = 3.5 * 3.5 * _weightKg / 200.0;
         return minutes * kcalPerMin;
     }
