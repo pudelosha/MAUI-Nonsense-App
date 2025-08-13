@@ -1,5 +1,4 @@
 using MAUI_Nonsense_App.ViewModels;
-using MAUI_Nonsense_App.Services;
 using MAUI_Nonsense_App.Pages._Drawable;
 
 namespace MAUI_Nonsense_App.Pages.Random;
@@ -16,6 +15,8 @@ public partial class RandomSpinnerPage : ContentPage
         _drawable = new SpinnerDrawable(_viewModel);
         SpinnerCanvas.Drawable = _drawable;
         BindingContext = _viewModel;
+
+        ResultLabel.Text = "Result: -";
     }
 
     private async void OnSpinClicked(object sender, EventArgs e)
@@ -42,6 +43,7 @@ public partial class RandomSpinnerPage : ContentPage
             {
                 _viewModel.SetOptions(newOptions);
                 SpinnerCanvas.Invalidate();
+                ResultLabel.Text = "Result: -"; // clear after edit
             }
             else
             {

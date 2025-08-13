@@ -4,21 +4,65 @@
              x:Class="MAUI_Nonsense_App.Pages.Random.RandomSpinnerPage"
              Title="Random Spinner">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
-        <!-- Spinner Canvas -->
-        <GraphicsView x:Name="SpinnerCanvas" HeightRequest="300"/>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
 
-        <!-- Result -->
-        <Label x:Name="ResultLabel"
-               Text="Result: "
-               FontSize="18"
-               FontAttributes="Bold"
-               HorizontalOptions="Center"/>
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
 
-        <!-- Spin Button -->
-        <Button Text="Spin" Clicked="OnSpinClicked" />
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Edit Button -->
-        <Button Text="Edit Options" Clicked="OnEditClicked" />
+    <VerticalStackLayout Padding="16" Spacing="16">
+
+        <!-- Spinner wheel (no frame around it) -->
+        <GraphicsView x:Name="SpinnerCanvas"
+                      HeightRequest="300"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="FillAndExpand" />
+
+        <!-- Controls in a grey card -->
+        <Frame>
+            <VerticalStackLayout Spacing="12">
+
+                <!-- Single fixed label -->
+                <Label x:Name="ResultLabel"
+                       Text="Result: -"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{StaticResource TextPrimary}" />
+
+                <!-- Buttons -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="Spin"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnSpinClicked"/>
+                    <Button Grid.Column="1"
+                            Text="Edit Options"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnEditClicked"/>
+                </Grid>
+
+            </VerticalStackLayout>
+        </Frame>
+
     </VerticalStackLayout>
 </ContentPage>

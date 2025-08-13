@@ -28,6 +28,7 @@ public partial class CoinFlipPage : ContentPage
         _timer.Interval = TimeSpan.FromMilliseconds(16); // ~60 fps
         _timer.Tick += OnAnimationStep;
 
+        ResultLabel.Text = "Result: -";
         UpdateStats();
     }
 
@@ -37,7 +38,7 @@ public partial class CoinFlipPage : ContentPage
         _steps = 60;
         _resultIsHeads = _rng.Next(2) == 0;
 
-        ResultLabel.Text = "Tossing…";
+        ResultLabel.Text = "Result: Tossing…";
         _timer.Start();
     }
 
@@ -60,7 +61,7 @@ public partial class CoinFlipPage : ContentPage
         _drawable.CurrentAngle = 0;
         CoinCanvas.Invalidate();
 
-        ResultLabel.Text = finalResult;
+        ResultLabel.Text = $"Result: {finalResult}";
 
         if (finalResult == "Heads") _headsCount++; else _tailsCount++;
         _lastResults.Enqueue(finalResult);

@@ -15,6 +15,9 @@ public partial class RouletteWheelPage : ContentPage
         _drawable = new RouletteDrawable(_viewModel);
         WheelCanvas.Drawable = _drawable;
         BindingContext = _viewModel;
+
+        // Ensure initial label
+        ResultLabel.Text = "Result: -";
     }
 
     private async void OnSpinClicked(object sender, EventArgs e)
