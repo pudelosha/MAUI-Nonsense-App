@@ -1,48 +1,93 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Random.CoinFlipPage"
-             Title="Coin Flip">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Random.CoinFlipPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Coin Flip">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="BtnBgActive">#D1D5DB</Color>
 
-        <!-- Coin canvas -->
-        <GraphicsView x:Name="CoinCanvas"
-                      HeightRequest="300"
-                      HorizontalOptions="Center" />
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-        <!-- Result label -->
-        <Label x:Name="ResultLabel"
-               Text="Result: "
-               FontSize="18"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
 
-        <!-- Toss button -->
-        <Button Text="Toss Coin"
-                Clicked="OnTossClicked" />
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Split stats -->
-        <Label Text="Heads/Tails Split:"
-               FontSize="16"
-               FontAttributes="Bold"
-               TextColor="#444" />
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <Label x:Name="SplitLabel"
-               Text="0% Heads, 0% Tails"
-               FontSize="14"
-               TextColor="#444" />
+            <!-- COIN (no frame around it) -->
+            <GraphicsView x:Name="CoinCanvas"
+                          HeightRequest="300"
+                          WidthRequest="300"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center" />
 
-        <!-- Last results -->
-        <Label Text="Last 5 Results:"
-               FontSize="16"
-               FontAttributes="Bold"
-               TextColor="#444" />
+            <!-- RESULT -->
+            <Frame>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Result" Style="{StaticResource SectionTitle}" />
+                    <Label x:Name="ResultLabel"
+                           Text="—"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+            </Frame>
 
-        <Label x:Name="LastResultsLabel"
-               Text="-"
-               FontSize="14"
-               LineBreakMode="WordWrap"
-               TextColor="#444" />
-    </VerticalStackLayout>
+            <!-- TOSS BUTTON -->
+            <Button x:Name="TossBtn"
+                    Text="Toss Coin"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnTossClicked" />
+
+            <!-- SPLIT -->
+            <Frame>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Heads/Tails Split" Style="{StaticResource SectionTitle}" />
+                    <Label x:Name="SplitLabel"
+                           Text="0% Heads, 0% Tails"
+                           FontSize="14"
+                           TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- LAST RESULTS -->
+            <Frame>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Last 5 Results" Style="{StaticResource SectionTitle}" />
+                    <Label x:Name="LastResultsLabel"
+                           Text="-"
+                           FontSize="14"
+                           LineBreakMode="WordWrap"
+                           TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
