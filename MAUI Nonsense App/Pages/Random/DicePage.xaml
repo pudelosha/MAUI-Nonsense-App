@@ -1,39 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Random.DicePage"
              Title="Dice">
 
-    <Grid RowDefinitions="7*,3*" Padding="20">
-        <!-- 70% height area -->
-        <GraphicsView x:Name="DiceCanvas"
-                      Grid.Row="0"
-                      BackgroundColor="LightGray" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
 
-        <!-- 30% control panel -->
-        <VerticalStackLayout Grid.Row="1" Spacing="15">
-            <!-- Dice controls -->
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
-                <Button Text="-" Clicked="OnDecreaseClicked" />
-                <Label x:Name="DiceCountLabel" Text="1 Dice" FontAttributes="Bold" VerticalOptions="Center" />
-                <Button Text="+" Clicked="OnIncreaseClicked" />
-            </HorizontalStackLayout>
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
 
-            <!-- Roll Button -->
-            <Button Text="Roll Dices" Clicked="OnRollClicked" />
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Result -->
-            <Label x:Name="ResultLabel"
-                   Text="Result: "
-                   FontAttributes="Bold"
-                   FontSize="Medium"
-                   HorizontalOptions="Center" />
+    <Grid RowDefinitions="7*,3*" Padding="16" RowSpacing="16">
 
-            <!-- Sum -->
-            <Label x:Name="SumLabel"
-                   Text="Sum: "
-                   FontAttributes="Bold"
-                   FontSize="Medium"
-                   HorizontalOptions="Center" />
-        </VerticalStackLayout>
+        <!-- PLAYFIELD CARD (adds a safe inset so dice don't get clipped by the rounded corners) -->
+        <Frame Grid.Row="0" Padding="0" IsClippedToBounds="False">
+            <!-- Safe inset for the drawing area; increase if your dice are larger -->
+            <Grid Padding="18">
+                <GraphicsView x:Name="DiceCanvas"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="FillAndExpand"
+                              BackgroundColor="Transparent"/>
+            </Grid>
+        </Frame>
+
+        <!-- CONTROLS CARD (extra bottom padding to avoid overlap with rounded corner) -->
+        <Frame Grid.Row="1" Padding="16,16,16,24">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- Dice count row -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Button Grid.Column="0" Text="−" Style="{StaticResource PillGrey}" Clicked="OnDecreaseClicked"/>
+                    <Label Grid.Column="1" x:Name="DiceCountLabel"
+                           Text="1 Dice"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"
+                           TextColor="{StaticResource TextPrimary}"/>
+                    <Button Grid.Column="2" Text="+" Style="{StaticResource PillGrey}" Clicked="OnIncreaseClicked"/>
+                </Grid>
+
+                <!-- Roll button -->
+                <Button Text="Roll Dice" Style="{StaticResource PillGrey}" Clicked="OnRollClicked"/>
+
+                <!-- Results -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,2,0,0">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="ResultLabel" Text="Result: " FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                        <Label x:Name="SumLabel" Text="Sum: " FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+            </VerticalStackLayout>
+        </Frame>
+
     </Grid>
 </ContentPage>
