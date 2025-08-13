@@ -20,7 +20,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
         public double Minutes { get; set; }
         public bool IsToday { get; set; }
         public bool IsFuture { get; set; }
-        public bool HasData { get; set; }     // <-- NEW: day exists in history (or is today)
+        public bool HasData { get; set; }     // day exists in history (or is today)
     }
 
     public class ActivityReportViewModel : INotifyPropertyChanged
@@ -40,23 +40,17 @@ namespace MAUI_Nonsense_App.Pages.Activity
         public DateTime WeekStart { get; private set; }
         public DateTime WeekEnd => WeekStart.AddDays(6);
 
-        // ---- Top card (uses selected metric)
-        public string TopPrimaryValueText
-        {
-            get
+        // ---------- Header (WEEK TOTAL for selected metric) ----------
+        public string TopPrimaryValueText =>
+            SelectedMode switch
             {
-                var steps = _service.Last24HoursSteps;
-                return SelectedMode switch
-                {
-                    MetricMode.Steps => steps.ToString("N0"),
-                    MetricMode.Distance => (steps * _strideCm / 100_000.0).ToString("F2"),
-                    MetricMode.Time => (steps / 100.0).ToString("N0"),
-                    _ => MinutesToCalories(steps / 100.0).ToString("F0")
-                };
-            }
-        }
+                MetricMode.Steps => WeeklySumSteps.ToString("N0"),
+                MetricMode.Distance => WeeklySumDistanceKm.ToString("F2"),
+                MetricMode.Time => WeeklySumMinutes.ToString("N0"),
+                _ => WeeklySumCalories.ToString("F0")
+            };
 
-        // Average for the current week **only over days that have data**
+        // Weekly average so far — only over days that have data
         public string TopAverageText
         {
             get
@@ -101,7 +95,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
             }
         }
 
-        // ---- Selected metric for chart + top card
+        // ---- Selected metric
         private MetricMode _selectedMode = MetricMode.Steps;
         public MetricMode SelectedMode
         {
@@ -111,15 +105,15 @@ namespace MAUI_Nonsense_App.Pages.Activity
                 if (_selectedMode == value) return;
                 _selectedMode = value;
                 OnPropertyChanged(nameof(SelectedMode));
-                OnPropertyChanged(nameof(TopPrimaryValueText));
-                OnPropertyChanged(nameof(TopAverageText));
+                OnPropertyChanged(nameof(TopPrimaryValueText)); // weekly total
+                OnPropertyChanged(nameof(TopAverageText));      // weekly avg
                 RedrawRequested?.Invoke(this, EventArgs.Empty);
             }
         }
 
         public IRelayCommand SetModeCommand { get; }
 
-        // ---- Totals (optional)
+        // ---- Weekly totals (used by header + chart calculations)
         public int WeeklySumSteps => Days.Sum(d => d.Steps);
         public double WeeklySumDistanceKm => Days.Sum(d => d.DistanceKm);
         public double WeeklySumMinutes => Days.Sum(d => d.Minutes);
@@ -189,7 +183,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
                 var day = WeekStart.AddDays(i);
                 var key = day.ToString("yyyy-MM-dd");
 
-                bool has = history.ContainsKey(key) || day == today; // <-- NEW: only count if present (or today)
+                bool has = history.ContainsKey(key) || day == today;
                 history.TryGetValue(key, out var steps);
 
                 var distKm = steps * _strideCm / 100000.0;
@@ -209,9 +203,12 @@ namespace MAUI_Nonsense_App.Pages.Activity
                 });
             }
 
-            OnPropertyChanged(nameof(WeekRangeText));
+            // header refresh
+            OnPropertyChanged(nameof(TopPrimaryValueText)); // << weekly total
             OnPropertyChanged(nameof(TopAverageText));
+            OnPropertyChanged(nameof(WeekRangeText));
             OnPropertyChanged(nameof(CanGoForward));
+
             RedrawRequested?.Invoke(this, EventArgs.Empty);
         }
 
