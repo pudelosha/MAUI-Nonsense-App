@@ -1,66 +1,191 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:helpers="clr-namespace:MAUI_Nonsense_App.Helpers"
              x:Class="MAUI_Nonsense_App.Pages.Survival.LightPage"
              Title="Light">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <helpers:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <!-- same pale-gray theme as the other pages -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="CardBgActive">#D1D5DB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- identical Frame styling to Activity/Survival cards -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <VerticalStackLayout Padding="20" Spacing="20">
-        <Label Text="Light Control" FontSize="24" HorizontalOptions="Center" />
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <Button Text="Flashlight" Clicked="OnToggleLightClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+            <!-- Flashlight -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-        <Button Text="Lighthouse" Clicked="OnToggleLighthouseClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsLighthouseOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+                    <!-- fa-lightbulb -->
+                    <Label Grid.Column="0"
+                           Text="&#xf0eb;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
 
-        <Button Text="Police" Clicked="OnTogglePoliceClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsPoliceOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Flashlight" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Turn on the device torch for constant light."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
 
-        <Button Text="Strobe" Clicked="OnToggleStrobeClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsStrobeOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+                <!-- active state -->
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding IsOn}" Value="true">
+                        <Setter Property="BackgroundColor" Value="{StaticResource CardBgActive}" />
+                    </DataTrigger>
+                </Frame.Triggers>
 
-        <Button Text="SOS" Clicked="OnToggleSOSClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsSOSOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnToggleLightClicked"/>
+                </Frame.GestureRecognizers>
+            </Frame>
 
-        <Button Text="Morse" Clicked="OnSendMorseClicked">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsMorseOn}" Value="true">
-                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+            <!-- Lighthouse (slow pulse) -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-    </VerticalStackLayout>
+                    <!-- fa-broadcast-tower -->
+                    <Label Grid.Column="0"
+                           Text="&#xf519;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Lighthouse" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Slow, periodic beam for long-distance visibility."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding IsLighthouseOn}" Value="true">
+                        <Setter Property="BackgroundColor" Value="{StaticResource CardBgActive}" />
+                    </DataTrigger>
+                </Frame.Triggers>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnToggleLighthouseClicked"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+            <!-- Police (alternating flashes + page tint) -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- fa-bullhorn (proxy for siren) -->
+                    <Label Grid.Column="0"
+                           Text="&#xf0a1;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Police" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Rapid alternating flashes for emergency signaling."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding IsPoliceOn}" Value="true">
+                        <Setter Property="BackgroundColor" Value="{StaticResource CardBgActive}" />
+                    </DataTrigger>
+                </Frame.Triggers>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTogglePoliceClicked"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+            <!-- Strobe (fast flashes) -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- fa-bolt -->
+                    <Label Grid.Column="0"
+                           Text="&#xf0e7;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Strobe" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="High-frequency flashes for maximum attention grabbing."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding IsStrobeOn}" Value="true">
+                        <Setter Property="BackgroundColor" Value="{StaticResource CardBgActive}" />
+                    </DataTrigger>
+                </Frame.Triggers>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnToggleStrobeClicked"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+            <!-- SOS (Morse SOS) -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- fa-life-ring -->
+                    <Label Grid.Column="0"
+                           Text="&#xf1cd;" FontFamily="FASolid" FontSize="42"
+                           TextColor="{StaticResource TextSecondary}"
+                           VerticalOptions="Center"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="SOS" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Automatic SOS pattern for distress signaling."
+                               FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Frame.Triggers>
+                    <DataTrigger TargetType="Frame" Binding="{Binding IsSOSOn}" Value="true">
+                        <Setter Property="BackgroundColor" Value="{StaticResource CardBgActive}" />
+                    </DataTrigger>
+                </Frame.Triggers>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnToggleSOSClicked"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

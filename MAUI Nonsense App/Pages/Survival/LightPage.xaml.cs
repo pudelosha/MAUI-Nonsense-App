@@ -34,24 +34,12 @@ public partial class LightPage : ContentPage
     private async void OnTogglePoliceClicked(object sender, EventArgs e) =>
         await _vm.TogglePoliceAsync();
 
-    private async void OnSendMorseClicked(object sender, EventArgs e)
-    {
-        var modal = new SendMorseModal(_vm);
-        await Navigation.PushModalAsync(modal);
-    }
-
     private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(_vm.IsPoliceOn))
         {
-            if (_vm.IsPoliceOn)
-            {
-                StartPoliceEffect();
-            }
-            else
-            {
-                StopPoliceEffect();
-            }
+            if (_vm.IsPoliceOn) StartPoliceEffect();
+            else StopPoliceEffect();
         }
     }
 
@@ -75,14 +63,8 @@ public partial class LightPage : ContentPage
 
                 index = (index + 1) % colors.Length;
 
-                try
-                {
-                    await Task.Delay(500, token);
-                }
-                catch (TaskCanceledException)
-                {
-                    break;
-                }
+                try { await Task.Delay(500, token); }
+                catch (TaskCanceledException) { break; }
             }
 
             MainThread.BeginInvokeOnMainThread(() =>
@@ -106,17 +88,13 @@ public partial class LightPage : ContentPage
     protected override async void OnDisappearing()
     {
         base.OnDisappearing();
-
-        // stop all effects and release torch on exit
-        await _vm.TurnOffAllAsync();
-
+        await _vm.TurnOffAllAsync();   // stop all effects and release torch
         StopPoliceEffect();
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
         await _vm.ResetAsync();
     }
 }
