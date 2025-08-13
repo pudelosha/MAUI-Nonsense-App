@@ -56,7 +56,7 @@ public partial class StepCounterPage : ContentPage
         MainThread.BeginInvokeOnMainThread(() =>
         {
             _viewModel.TodaySteps = _stepService.Last24HoursSteps;
-            _viewModel.ActiveSeconds = _stepService.ActiveSecondsToday;
+            _viewModel.ActiveSeconds = _stepService.ActiveSecondsToday; // not used in calc anymore, but kept
             _viewModel.ReloadLast7Days();
 
             var hv = this.FindByName<GraphicsView>("HourlyChart");
@@ -83,8 +83,6 @@ public partial class StepCounterPage : ContentPage
         catch { }
         return new int[24];
     }
-
-    // --- NEW: reset buttons with confirmation ---
 
     private async void OnResetTodayClicked(object? sender, EventArgs e)
     {
