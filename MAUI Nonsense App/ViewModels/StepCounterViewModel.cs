@@ -1,8 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using MAUI_Nonsense_App.Services;
 using Microsoft.Maui.Storage;
-using System.Globalization;
 
 namespace MAUI_Nonsense_App.ViewModels
 {
@@ -37,7 +40,7 @@ namespace MAUI_Nonsense_App.ViewModels
 
         // ---- binding
         public int TodaySteps { get => _todaySteps; set { if (_todaySteps != value) { _todaySteps = value; OnChanged(nameof(TodaySteps)); RecalcDerived(); } } }
-        public int DailyGoal { get => _dailyGoal; set { if (_dailyGoal != value) { _dailyGoal = value; OnChanged(nameof(DailyGoal)); RecalcDerived(); } } }
+        public int DailyGoal { get => _dailyGoal; set { if (_dailyGoal != value) { _dailyGoal = value; OnChanged(nameof(DailyGoal)); RecalcDerived(); BuildWeekStrip(); } } }
         public long ActiveSeconds { get => _activeSeconds; set { if (_activeSeconds != value) { _activeSeconds = value; OnChanged(nameof(ActiveSeconds)); RecalcDerived(); } } }
 
         public double DistanceKm { get => _distanceKm; private set { if (Math.Abs(_distanceKm - value) > 1e-6) { _distanceKm = value; OnChanged(nameof(DistanceKm)); } } }
@@ -45,18 +48,24 @@ namespace MAUI_Nonsense_App.ViewModels
         public double GoalProgress { get => _goalProgress; private set { if (Math.Abs(_goalProgress - value) > 1e-6) { _goalProgress = value; OnChanged(nameof(GoalProgress)); OnChanged(nameof(GoalProgressPctWidth)); } } }
         public string ActiveTimeText { get => _activeTimeText; private set { if (_activeTimeText != value) { _activeTimeText = value; OnChanged(nameof(ActiveTimeText)); } } }
 
-        // width helper for top progress bar (updated in code-behind according to actual width)
-        // We'll compute it as percentage of an assumed 100 pixels; the Grid stretches it.
-        public double GoalProgressPctWidth => Math.Clamp(GoalProgress, 0, 1) * 300; // 300px "virtual" width
+        // width helper for top progress bar (kept)
+        public double GoalProgressPctWidth => Math.Clamp(GoalProgress, 0, 1) * 300;
 
         public ObservableCollection<StepDay> Last7Days { get; } = new();
         public ObservableCollection<WeekDayItem> WeekDays { get; } = new();
 
         public int SevenDayAverage { get; private set; }
 
-        // ---- constants & settings keys
+        // ---- new public helpers ----
+        public DateTime InstallDate => _service.InstallDate;
+        public int[] GetHourlySteps(DateTime localDate) => _service.GetHourlySteps(localDate);
+
+        /// <summary>All weekly totals from install date to today (local) for "steps".</summary>
+        public IEnumerable<(DateTime WeekStart, int TotalSteps)> AllWeeks(DayOfWeek weekStart)
+            => _service.EnumerateWeeklyTotals(weekStart);
+
+        // ---- settings keys
         private const string KeyStrideLengthCm = "Settings.StrideLengthCm";
-        private const string KeyManualStrideOverride = "Settings.ManualStrideOverride";
         private const string KeyDailyGoal = "Settings.DailyGoal";
         private const string KeyWeightKg = "Settings.WeightKg";
 
@@ -85,7 +94,7 @@ namespace MAUI_Nonsense_App.ViewModels
 
         public void ReloadSettings()
         {
-            DailyGoal = Preferences.Get(KeyDailyGoal, 5000);
+            DailyGoal = Preferences.Get(KeyDailyGoal, 10000);
             RecalcDerived();
         }
 
@@ -94,15 +103,15 @@ namespace MAUI_Nonsense_App.ViewModels
         private void LoadLast7Days()
         {
             Last7Days.Clear();
-            var history = _service.StepHistory;
+            var history = _service.StepHistoryDaily;
 
             int sum = 0;
             for (int i = 0; i < 7; i++)
             {
-                var date = DateTime.UtcNow.Date.AddDays(-i).ToString("yyyy-MM-dd");
-                history.TryGetValue(date, out int steps);
+                var key = DateTime.Now.Date.AddDays(-i).ToString("yyyy-MM-dd");
+                history.TryGetValue(key, out int steps);
 
-                Last7Days.Add(new StepDay { Date = date, Steps = steps });
+                Last7Days.Add(new StepDay { Date = key, Steps = steps });
                 sum += steps;
             }
             SevenDayAverage = (int)Math.Round(sum / 7.0, MidpointRounding.AwayFromZero);
@@ -113,23 +122,20 @@ namespace MAUI_Nonsense_App.ViewModels
         {
             WeekDays.Clear();
 
-            var cultureForStart = CultureInfo.CurrentCulture;
-            var abbrevCulture = new CultureInfo("en-US");   // force English labels
-
-            var firstDay = cultureForStart.DateTimeFormat.FirstDayOfWeek;
-            var dt = StartOfWeek(DateTime.UtcNow.Date, firstDay);
+            var start = StartOfWeek(DateTime.Now.Date, CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek);
+            var abbrevCulture = new CultureInfo("en-US");
 
             for (int i = 0; i < 7; i++)
             {
-                var day = dt.AddDays(i);
+                var day = start.AddDays(i);
                 var key = day.ToString("yyyy-MM-dd");
-                _service.StepHistory.TryGetValue(key, out int steps);
+                _service.StepHistoryDaily.TryGetValue(key, out int steps);
 
                 var prog = DailyGoal > 0 ? Math.Clamp(steps / (double)DailyGoal, 0, 1) : 0;
 
                 WeekDays.Add(new WeekDayItem
                 {
-                    Abbrev = abbrevCulture.DateTimeFormat.GetAbbreviatedDayName(day.DayOfWeek), // Mon, Tue...
+                    Abbrev = abbrevCulture.DateTimeFormat.GetAbbreviatedDayName(day.DayOfWeek),
                     Steps = steps,
                     Progress = prog,
                     Achieved = steps >= DailyGoal
@@ -141,18 +147,13 @@ namespace MAUI_Nonsense_App.ViewModels
         private static DateTime StartOfWeek(DateTime dt, DayOfWeek start)
         {
             int diff = (7 + (dt.DayOfWeek - start)) % 7;
-            return dt.AddDays(-1 * diff).Date;
+            return dt.AddDays(-diff).Date;
         }
 
         private void RecalcDerived()
         {
-            // stride length (cm) -> distance
-            int strideCm;
-            if (Preferences.ContainsKey(KeyStrideLengthCm))
-                strideCm = Preferences.Get(KeyStrideLengthCm, 75);
-            else
-                strideCm = 75; // default
-
+            // stride length
+            int strideCm = Preferences.Get(KeyStrideLengthCm, 75);
             var meters = TodaySteps * (strideCm / 100.0);
             DistanceKm = meters / 1000.0;
 
@@ -162,10 +163,10 @@ namespace MAUI_Nonsense_App.ViewModels
             var m = (secs % 3600) / 60;
             ActiveTimeText = $"{h}h {m}m";
 
-            // calories: MET * kg * hours ; MET estimated from speed = distance / time
+            // calories: MET * kg * hours
             var kg = Preferences.Get(KeyWeightKg, 70.0);
             var hours = secs / 3600.0;
-            double met = 3.5; // default moderate walk
+            double met = 3.5; // moderate walking
             if (hours > 0.0)
             {
                 var kmh = DistanceKm / hours;

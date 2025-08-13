@@ -3,12 +3,12 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Hardware;
 using Android.OS;
+using Android.Util;
 using AndroidX.Core.App;
 using Microsoft.Maui.Storage;
-using System.Text.Json;
-using Android.Util;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 {
@@ -27,90 +27,74 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             _sensorManager = (SensorManager)GetSystemService(Context.SensorService);
             _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepCounter);
-            _isUsingStepCounter = true;
+            _isUsingStepCounter = _stepSensor != null;
 
             if (_stepSensor == null)
             {
                 _stepSensor = _sensorManager?.GetDefaultSensor(SensorType.StepDetector);
-                _isUsingStepCounter = false;
-                Log.Warn("StepCounter", "StepCounter sensor not available. Using StepDetector instead.");
+                Log.Warn("StepCounter", "No StepCounter; using StepDetector.");
             }
 
             CreateNotificationChannel();
-
-            var notification = new NotificationCompat.Builder(this, "step_counter_channel")
+            var ntf = new NotificationCompat.Builder(this, "step_counter_channel")
                 .SetContentTitle("Step Counter")
                 .SetContentText("Counting steps in background")
                 .SetSmallIcon(Resource.Mipmap.appicon)
                 .SetOngoing(true)
                 .Build();
-
-            StartForeground(101, notification);
+            StartForeground(101, ntf);
 
             if (_stepSensor != null)
                 _sensorManager.RegisterListener(this, _stepSensor, SensorDelay.Ui);
-            else
-                Log.Error("StepCounter", "No step sensor available on this device.");
         }
 
         public override void OnDestroy()
         {
-            Log.Info("StepCounter", "StepCounterForegroundService stopped");
-
             _sensorManager?.UnregisterListener(this, _stepSensor);
             base.OnDestroy();
         }
 
         public override IBinder OnBind(Intent intent) => null;
-
         public void OnAccuracyChanged(Sensor sensor, SensorStatus accuracy) { }
 
         public void OnSensorChanged(SensorEvent e)
         {
-            Log.Info("StepCounter", $"Sensor value: {e.Values[0]}");
-
-            // Timestamp for active-time accumulation
+            var nowLocal = DateTime.Now;                      // local time everywhere
+            var todayKey = nowLocal.Date.ToString("yyyy-MM-dd");
+            var lastDate = Preferences.Get("LastStepDate", todayKey);
             var nowMs = Java.Lang.JavaSystem.CurrentTimeMillis();
             long lastTickMs = Preferences.Get("LastStepUnixMs", 0L);
 
-            string today = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
-            string lastDate = Preferences.Get("LastStepDate", today);
+            int deltaSteps = 0;
 
             if (_isUsingStepCounter)
             {
-                int currentValue = (int)e.Values[0]; // steps since last boot
+                int currentValue = (int)e.Values[0]; // steps since boot
                 int lastValue = Preferences.Get("LastSensorReading", currentValue);
-                int delta = Math.Max(0, currentValue - lastValue);
+                deltaSteps = Math.Max(0, currentValue - lastValue);
 
-                int runningTotal = Preferences.Get("RunningTotalSteps", 0);
-                runningTotal += delta;
-
+                int runningTotal = Preferences.Get("RunningTotalSteps", 0) + deltaSteps;
                 Preferences.Set("RunningTotalSteps", runningTotal);
                 Preferences.Set("LastSensorReading", currentValue);
 
-                // If date changed or baseline missing, set baseline relative to current counter
-                if (lastDate != today || !Preferences.ContainsKey("MidnightStepSensorValue"))
+                if (lastDate != todayKey || !Preferences.ContainsKey("MidnightStepSensorValue"))
                 {
                     Preferences.Set("MidnightStepSensorValue", currentValue);
-                    Preferences.Set("LastStepDate", today);
+                    Preferences.Set("LastStepDate", todayKey);
                     Preferences.Set("RebootDailyOffset", 0);
-
-                    // Reset active-time accumulation on day change
                     Preferences.Set("ActiveSecondsToday", 0L);
                     lastTickMs = 0L;
                 }
 
                 int midnight = Preferences.Get("MidnightStepSensorValue", currentValue);
                 int rebootOffset = Preferences.Get("RebootDailyOffset", 0);
-
                 long rawDaily = (long)rebootOffset + Math.Max(0, currentValue - midnight);
                 int dailySteps = rawDaily < 0 ? 0 : (rawDaily > int.MaxValue ? int.MaxValue : (int)rawDaily);
 
                 Preferences.Set("AccumulatedSteps", runningTotal);
                 Preferences.Set("DailySteps", dailySteps);
-                UpdateStepHistory(today, dailySteps);
+                UpdateHistory(todayKey, dailySteps, nowLocal, deltaSteps);
 
-                // Update the persistent notification
                 if (dailySteps != _lastNotifiedSteps)
                 {
                     UpdateNotification(dailySteps);
@@ -119,20 +103,18 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             }
             else
             {
-                // StepDetector emits 1 per step; reboot doesn't reset the logic here,
-                // but we still respect date changes and history.
+                // StepDetector: +1 for each event
+                deltaSteps = 1;
+
                 int runningTotal = Preferences.Get("RunningTotalSteps", 0) + 1;
                 int dailySteps = Preferences.Get("DailySteps", 0);
 
-                if (lastDate != today)
+                if (lastDate != todayKey)
                 {
-                    Preferences.Set("LastStepDate", today);
+                    Preferences.Set("LastStepDate", todayKey);
                     Preferences.Set("RebootDailyOffset", 0);
-
-                    // Reset active-time accumulation on day change
                     Preferences.Set("ActiveSecondsToday", 0L);
                     lastTickMs = 0L;
-
                     dailySteps = 0;
                 }
 
@@ -141,7 +123,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 Preferences.Set("RunningTotalSteps", runningTotal);
                 Preferences.Set("AccumulatedSteps", runningTotal);
                 Preferences.Set("DailySteps", dailySteps);
-                UpdateStepHistory(today, dailySteps);
+                UpdateHistory(todayKey, dailySteps, nowLocal, deltaSteps);
 
                 if (dailySteps != _lastNotifiedSteps)
                 {
@@ -150,12 +132,11 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 }
             }
 
-            // ---- Active time accumulation (shared) ----
+            // ---- Active-time accumulation ----
             if (lastTickMs > 0)
             {
                 var deltaSec = (nowMs - lastTickMs) / 1000;
-                // Treat short gaps as continuous walking
-                if (deltaSec > 0 && deltaSec <= 10)
+                if (deltaSec > 0 && deltaSec <= 10) // gaps ≤10s count as continuous
                 {
                     long secs = Preferences.Get("ActiveSecondsToday", 0L);
                     secs += deltaSec;
@@ -175,33 +156,51 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                     "step_counter_channel",
                     "Step Counter Channel",
                     NotificationImportance.Low);
-
-                var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-                notificationManager.CreateNotificationChannel(channel);
+                var nm = (NotificationManager)GetSystemService(NotificationService);
+                nm.CreateNotificationChannel(channel);
             }
         }
 
         private void UpdateNotification(int steps)
         {
-            var notification = new NotificationCompat.Builder(this, "step_counter_channel")
+            var ntf = new NotificationCompat.Builder(this, "step_counter_channel")
                 .SetContentTitle("Step Counter")
                 .SetContentText($"Today's steps: {steps}")
                 .SetSmallIcon(Resource.Mipmap.appicon)
                 .SetOngoing(true)
                 .Build();
-
-            var notificationManager = NotificationManagerCompat.From(this);
-            notificationManager.Notify(101, notification); // same ID = update
+            NotificationManagerCompat.From(this).Notify(101, ntf);
         }
 
-        private void UpdateStepHistory(string date, int stepsToday)
+        private void UpdateHistory(string dayKey, int stepsToday, DateTime nowLocal, int delta)
         {
-            var json = Preferences.Get("StepHistory", "{}");
-            var history = JsonSerializer.Deserialize<Dictionary<string, int>>(json)
-                          ?? new Dictionary<string, int>();
+            // ---- Daily (absolute) ----
+            var dailyJson = Preferences.Get("StepHistoryDaily",
+                              Preferences.Get("StepHistory", "{}")); // migrate
+            var daily = JsonSerializer.Deserialize<Dictionary<string, int>>(dailyJson)
+                        ?? new Dictionary<string, int>();
+            daily[dayKey] = stepsToday;
+            Preferences.Set("StepHistoryDaily", JsonSerializer.Serialize(daily));
 
-            history[date] = stepsToday;
-            Preferences.Set("StepHistory", JsonSerializer.Serialize(history));
+            // ---- Hourly (per-hour totals) ----
+            var hourlyJson = Preferences.Get("StepHistoryHourly", "{}");
+            var hourly = JsonSerializer.Deserialize<Dictionary<string, int[]>>(hourlyJson)
+                         ?? new Dictionary<string, int[]>();
+            if (!hourly.TryGetValue(dayKey, out var arr) || arr == null || arr.Length != 24)
+            {
+                arr = new int[24];
+            }
+
+            if (delta > 0)
+            {
+                int h = nowLocal.Hour;
+                long v = arr[h];
+                v += delta;
+                arr[h] = v > int.MaxValue ? int.MaxValue : (int)v;
+            }
+
+            hourly[dayKey] = arr;
+            Preferences.Set("StepHistoryHourly", JsonSerializer.Serialize(hourly));
         }
     }
 }

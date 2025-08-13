@@ -25,6 +25,17 @@
                 <Setter Property="Padding" Value="16"/>
             </Style>
 
+            <!-- pale, rounded buttons to match cards -->
+            <Style x:Key="ResetButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#E5E7EB"/>
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="Padding" Value="18,12"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+            </Style>
+
             <helpers:MultiplyConverter x:Key="MultiplyConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -33,23 +44,19 @@
         <VerticalStackLayout Padding="16" Spacing="16">
 
             <!-- TOP CARD -->
-            <!-- split into 4 rows to avoid overlap -->
             <Frame>
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*">
-                    <!-- Big count -->
                     <Label Grid.Row="0"
                            Text="{Binding TodaySteps}"
                            FontSize="56"
                            FontAttributes="Bold"
                            TextColor="{StaticResource TextPrimary}"/>
 
-                    <!-- Daily goal line now on its own row -->
                     <Label Grid.Row="1" Margin="0,2,0,0"
                            Text="{Binding DailyGoal, StringFormat='/ {0} Steps'}"
                            TextColor="{StaticResource TextSecondary}"
                            FontSize="13"/>
 
-                    <!-- progress bar -->
                     <Grid Grid.Row="2" Margin="0,10,0,0">
                         <Border x:Name="ProgressHost"
                                 HeightRequest="12"
@@ -60,7 +67,6 @@
                                 <RoundRectangle CornerRadius="6" />
                             </Border.StrokeShape>
 
-                            <!-- filled portion -->
                             <Border Background="{StaticResource TrackFill}" HorizontalOptions="Start">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="6" />
@@ -75,7 +81,6 @@
                         </Border>
                     </Grid>
 
-                    <!-- metrics row -->
                     <Grid Grid.Row="3" Margin="0,14,0,0" ColumnDefinitions="*,*,*">
                         <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
                             <Label Text="{Binding DistanceKm, StringFormat='{0:F2}'}"
@@ -115,48 +120,46 @@
                 </Frame.GestureRecognizers>
             </Frame>
 
-            <!-- THIS WEEK (circles + labels stacked, labels pushed down, circles nudged left) -->
+            <!-- TODAY ACTIVITY (hourly split) -->
+            <Frame>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Today activity" FontSize="16" TextColor="{StaticResource TextSecondary}" />
+                    <GraphicsView x:Name="HourlyChart" HeightRequest="160"/>
+                </VerticalStackLayout>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOpenReport"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+            <!-- THIS WEEK -->
             <Frame>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="This week" FontSize="16" TextColor="{StaticResource TextSecondary}" />
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="8">
-                        <!-- Mon -->
                         <VerticalStackLayout Grid.Column="0" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[0].Progress}" Achieved="{Binding WeekDays[0].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[0].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Tue -->
                         <VerticalStackLayout Grid.Column="1" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[1].Progress}" Achieved="{Binding WeekDays[1].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[1].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Wed -->
                         <VerticalStackLayout Grid.Column="2" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[2].Progress}" Achieved="{Binding WeekDays[2].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[2].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Thu -->
                         <VerticalStackLayout Grid.Column="3" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[3].Progress}" Achieved="{Binding WeekDays[3].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[3].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Fri -->
                         <VerticalStackLayout Grid.Column="4" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[4].Progress}" Achieved="{Binding WeekDays[4].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[4].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Sat -->
                         <VerticalStackLayout Grid.Column="5" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[5].Progress}" Achieved="{Binding WeekDays[5].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[5].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
-
-                        <!-- Sun -->
                         <VerticalStackLayout Grid.Column="6" Spacing="0" HorizontalOptions="Center">
                             <controls:RadialGoalIcon Progress="{Binding WeekDays[6].Progress}" Achieved="{Binding WeekDays[6].Achieved}" Size="32" TranslationX="-6"/>
                             <Label Text="{Binding WeekDays[6].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
@@ -167,6 +170,18 @@
                     <TapGestureRecognizer Tapped="OnOpenReport"/>
                 </Frame.GestureRecognizers>
             </Frame>
+
+            <!-- RESET ROW (50/50 and full width) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0">
+                <Button Grid.Column="0"
+                        Text="Reset today"
+                        Style="{StaticResource ResetButton}"
+                        Clicked="OnResetTodayClicked"/>
+                <Button Grid.Column="1"
+                        Text="Reset all data"
+                        Style="{StaticResource ResetButton}"
+                        Clicked="OnResetAllClicked"/>
+            </Grid>
 
         </VerticalStackLayout>
     </ScrollView>
