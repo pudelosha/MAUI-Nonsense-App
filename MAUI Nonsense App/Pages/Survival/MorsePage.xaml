@@ -2,11 +2,125 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Survival.MorsePage"
-             Title="MorsePage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Morse">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="BtnBgActive">#D1D5DB</Color>
+
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+
+        <!-- CONTENT -->
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Header -->
+                <Frame>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Send Morse Message"
+                               FontSize="18"
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Label Text="Type a message (max 100 chars), choose speed, then SEND. If the torch is unavailable, the screen will flash instead."
+                               FontSize="12"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Message -->
+                <Frame>
+                    <VerticalStackLayout Spacing="12">
+                        <Entry x:Name="MessageEntry"
+                               Placeholder="Message (max 100 chars)..."
+                               MaxLength="100"
+                               TextChanged="OnMessageChanged" />
+                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                            <Label Grid.Column="0"
+                                   x:Name="CharCount"
+                                   Text="0 / 100"
+                                   FontSize="12"
+                                   TextColor="{StaticResource TextSecondary}" />
+                            <Button Grid.Column="1"
+                                    Text="SOS"
+                                    Style="{StaticResource PillGrey}"
+                                    Clicked="OnFillSOS" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Speed -->
+                <Frame>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Speed (WPM)"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Slider x:Name="SpeedSlider"
+                                Minimum="5" Maximum="25" Value="10"
+                                Margin="0,8,0,0"
+                                ValueChanged="OnSpeedChanged" />
+                        <Label x:Name="SpeedLabel"
+                               Text="Speed: 15 WPM"
+                               FontSize="12"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Controls -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            x:Name="SendBtn"
+                            Text="Send"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnSendClicked" />
+                    <Button Grid.Column="1"
+                            x:Name="StopBtn"
+                            Text="Stop"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnStopClicked" />
+                </Grid>
+
+                <!-- Preview -->
+                <Frame>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Preview"
+                               FontSize="14"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Label x:Name="PreviewLabel"
+                               Text="· · ·   — — —   · · ·"
+                               FontSize="14"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Screen-flash fallback overlay (TOP) -->
+        <BoxView x:Name="ScreenFlash"
+                 ZIndex="999"
+                 BackgroundColor="White"
+                 Opacity="0"
+                 IsVisible="False"
+                 InputTransparent="True" />
+    </Grid>
 </ContentPage>

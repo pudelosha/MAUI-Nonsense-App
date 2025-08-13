@@ -17,6 +17,13 @@ public partial class SurvivalPage : ContentPage
             await Navigation.PushAsync(page);
     }
 
+    private async void OnMorseTapped(object sender, EventArgs e)
+    {
+        var page = _serviceProvider.GetService<MorsePage>();
+        if (page is not null)
+            await Navigation.PushAsync(page);
+    }
+
     private async void OnCompassTapped(object sender, EventArgs e)
     {
         var page = _serviceProvider.GetService<CompassPage>();

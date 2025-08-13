@@ -50,6 +50,31 @@
                 </Frame.GestureRecognizers>
             </Frame>
 
+            <!-- Morse -->
+            <Frame HeightRequest="110">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- fa-comment-dots (message/morse) -->
+                    <Label Grid.Column="0"
+               Text="&#xf4ad;" FontFamily="FASolid" FontSize="42"
+               TextColor="{StaticResource TextSecondary}"
+               VerticalOptions="Center"/>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Morse" FontSize="Medium" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Type a message and blink it in Morse using the torch (or screen fallback)."
+                   FontSize="12" LineBreakMode="WordWrap" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnMorseTapped"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+
             <!-- Compass -->
             <Frame HeightRequest="110">
                 <Grid ColumnSpacing="10">

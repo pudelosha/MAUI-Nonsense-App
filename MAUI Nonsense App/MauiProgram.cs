@@ -72,6 +72,7 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<_2048Page>();
             builder.Services.AddTransient<SpaceInvadersPage>();
             builder.Services.AddTransient<PongGame>();
+            builder.Services.AddTransient<MorsePage>();
 
             builder.Services.AddTransient<MovementDetectorViewModel>();
             builder.Services.AddTransient<LightViewModel>();
@@ -93,6 +94,9 @@ namespace MAUI_Nonsense_App
             builder.Services.AddTransient<ArkanoidViewModel>();
             builder.Services.AddTransient<Game2048ViewModel>();
             builder.Services.AddTransient<PongViewModel>();
+            builder.Services.AddTransient<SpaceInvadersViewModel>();
+            builder.Services.AddTransient<MorseViewModel>();
+
 
 
 #if DEBUG
