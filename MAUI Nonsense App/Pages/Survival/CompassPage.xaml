@@ -1,45 +1,85 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Survival.CompassPage"
-             Title="Compass"
-             BackgroundColor="White">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Survival.CompassPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Compass">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Same neutral palette used across the app -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="BtnBgActive">#D1D5DB</Color>
 
-        <!-- GraphicsView for Compass -->
-        <GraphicsView x:Name="CompassGraphics"
-                      HeightRequest="300"
-                      WidthRequest="300"
-                      HorizontalOptions="Center"
-                      VerticalOptions="Center"
-                      Drawable="{Binding Drawable}" />
+            <!-- Card style (same as other pages) -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-        <!-- Heading -->
-        <Label x:Name="HeadingLabel"
-               Text="0° N"
-               FontSize="24"
-               HorizontalOptions="Center"
-               TextColor="Black"/>
+            <!-- Pale rounded button like StepCounter/Survival -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Coordinates -->
-        <Label x:Name="CoordinatesLabel"
-               Text="Lat: 0.0000, Lon: 0.0000"
-               FontSize="14"
-               HorizontalOptions="Center"
-               TextColor="Black"/>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <!-- Calibration Status -->
-        <Label x:Name="CalibrationStatusLabel"
-               Text="Calibration: Unknown"
-               FontSize="14"
-               HorizontalOptions="Center"
-               TextColor="Red"/>
+            <!-- Compass body (no frame) -->
+            <GraphicsView x:Name="CompassGraphics"
+                          Drawable="{Binding Drawable}"
+                          HeightRequest="320"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center" />
 
-        <!-- Recalibrate Button -->
-        <Button Text="Recalibrate Compass"
-                Clicked="OnRecalibrateClicked"
-                HorizontalOptions="Center"/>
+            <!-- Readouts card -->
+            <Frame>
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <!-- Heading (big) -->
+                    <Label x:Name="HeadingLabel"
+                           Text="0° N"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           HorizontalTextAlignment="Center" />
 
-    </VerticalStackLayout>
+                    <!-- Coordinates -->
+                    <Label x:Name="CoordinatesLabel"
+                           Text="Lat: 0.0000, Lon: 0.0000"
+                           FontSize="14"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center" />
+
+                    <!-- Calibration status -->
+                    <Label x:Name="CalibrationStatusLabel"
+                           Text="Calibration: Unknown"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Actions -->
+            <Grid ColumnDefinitions="*">
+                <Button
+                    Text="Recalibrate compass"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnRecalibrateClicked" />
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
