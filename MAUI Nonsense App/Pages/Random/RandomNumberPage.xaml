@@ -1,73 +1,135 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Random.RandomNumberPage"
-             Title="Random Numbers">
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Random.RandomNumberPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Random Numbers">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="BtnBgActive">#D1D5DB</Color>
 
-        <!-- Label for range -->
-        <Label Text="Range (From - To)"
-               FontSize="16"
-               FontAttributes="Bold"
-               TextColor="#444" />
+            <!-- Card style -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-        <!-- Row: From / To full width -->
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-            <Entry Grid.Column="0"
-                   Text="{Binding From}"
-                   Keyboard="Numeric"
-                   Placeholder="From"
-                   FontSize="14" />
-            <Entry Grid.Column="1"
-                   Text="{Binding To}"
-                   Keyboard="Numeric"
-                   Placeholder="To"
-                   FontSize="14" />
-        </Grid>
+            <!-- Pill grey button -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
 
-        <!-- Label for count -->
-        <Label Text="Count of generated numbers"
-               FontSize="16"
-               FontAttributes="Bold"
-               TextColor="#444" />
+            <!-- Unified section header style -->
+            <Style x:Key="SectionHeader" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Row: Count / +/- full width -->
-        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-            <Label Grid.Column="0"
-                   Text="Count:"
-                   FontSize="14"
-                   VerticalOptions="Center" />
-            <Label Grid.Column="1"
-                   Text="{Binding Count}"
-                   FontSize="14"
-                   VerticalOptions="Center"
-                   HorizontalOptions="Center" />
-            <Stepper Grid.Column="2"
-                     Value="{Binding Count}"
-                     Minimum="1"
-                     Maximum="100"
-                     Increment="1" />
-        </Grid>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-        <!-- Row: Allow duplicates -->
-        <HorizontalStackLayout>
-            <CheckBox IsChecked="{Binding AllowDuplicates}"
-                      IsEnabled="{Binding CanAllowDuplicates}" />
-            <Label Text="Allow duplicates"
-                   FontSize="14"
-                   VerticalOptions="Center" />
-        </HorizontalStackLayout>
+            <!-- Range -->
+            <Frame>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Range (From – To)"
+                           Style="{StaticResource SectionHeader}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Entry Grid.Column="0"
+                               Text="{Binding From}"
+                               Keyboard="Numeric"
+                               Placeholder="From"
+                               FontSize="14" />
+                        <Entry Grid.Column="1"
+                               Text="{Binding To}"
+                               Keyboard="Numeric"
+                               Placeholder="To"
+                               FontSize="14" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-        <!-- Button -->
-        <Button Text="Generate"
-                Command="{Binding GenerateCommand}" />
+            <!-- Count (+ Allow duplicates inside this same card) -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Count of generated numbers"
+                           Style="{StaticResource SectionHeader}" />
 
-        <!-- Output -->
-        <Editor Text="{Binding Result}"
-                HeightRequest="100"
-                IsReadOnly="True"
-                FontSize="14"
-                TextColor="#333" />
-    </VerticalStackLayout>
+                    <!-- Count row -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="Count:"
+                               FontSize="14"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource TextSecondary}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding Count}"
+                               FontSize="14"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Stepper Grid.Column="2"
+                                 Value="{Binding Count}"
+                                 Minimum="1"
+                                 Maximum="100"
+                                 Increment="1" />
+                    </Grid>
+
+                    <!-- Allow duplicates row -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <CheckBox IsChecked="{Binding AllowDuplicates}"
+                                  IsEnabled="{Binding CanAllowDuplicates}" />
+                        <Label Text="Allow duplicates"
+                               FontSize="14"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource TextSecondary}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Generate -->
+            <Grid ColumnDefinitions="*">
+                <Button Text="Generate"
+                        Command="{Binding GenerateCommand}"
+                        Style="{StaticResource PillGrey}">
+                    <!-- Optional: color change when enabled -->
+                    <!--<Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding CanGenerate}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{StaticResource BtnBgActive}" />
+                        </DataTrigger>
+                    </Button.Triggers>-->
+                </Button>
+            </Grid>
+
+            <!-- Output -->
+            <Frame>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Result"
+                           Style="{StaticResource SectionHeader}" />
+                    <Editor Text="{Binding Result}"
+                            HeightRequest="120"
+                            IsReadOnly="True"
+                            FontSize="14"
+                            TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
