@@ -1,29 +1,105 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUI_Nonsense_App.Pages.Survival.MovementDetectorPage"
-             Title="MovementDetectorPage">
-    
-    <VerticalStackLayout Padding="20" Spacing="20">
-        <Label Text="Configure Movement Alarm"
-               FontSize="20"
-               HorizontalOptions="Center" />
+<ContentPage
+    x:Class="MAUI_Nonsense_App.Pages.Survival.MovementDetectorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Movement Detector">
 
-        <Label Text="Arming Delay (seconds)" />
-        <Picker ItemsSource="{Binding AvailableDelays}"
-                SelectedItem="{Binding SelectedDelay}"
-                Title="Select delay" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="BtnBgActive">#D1D5DB</Color>
+            <Color x:Key="SuccessText">#065F46</Color>
 
-        <Label Text="Sensitivity" />
-        <Picker ItemsSource="{Binding AvailableSensitivities}"
-                SelectedItem="{Binding SelectedSensitivity}"
-                Title="Select sensitivity" />
+            <!-- Card style -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-        <Button Text="{Binding ArmButtonText}" Command="{Binding ToggleAlarmCommand}" IsEnabled="{Binding IsArmButtonEnabled}" />
+            <!-- Pill grey button -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <Label Text="{Binding StatusMessage}"
-               HorizontalOptions="Center"
-               TextColor="DarkGreen"
-               FontSize="16" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Header -->
+            <Frame>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Configure Movement Alarm"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="Choose arming delay and sensor sensitivity, then arm."
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Settings -->
+            <Frame>
+                <Grid RowDefinitions="Auto,Auto,16,Auto,Auto" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <!-- Arming delay -->
+                    <Label Grid.Row="0" Grid.Column="0"
+                           Text="Arming delay"
+                           VerticalTextAlignment="Center"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Picker Grid.Row="0" Grid.Column="1"
+                            ItemsSource="{Binding AvailableDelays}"
+                            SelectedItem="{Binding SelectedDelay}"
+                            Title="Select delay" />
+
+                    <!-- Sensitivity -->
+                    <Label Grid.Row="3" Grid.Column="0"
+                           Text="Sensitivity"
+                           VerticalTextAlignment="Center"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Picker Grid.Row="3" Grid.Column="1"
+                            ItemsSource="{Binding AvailableSensitivities}"
+                            SelectedItem="{Binding SelectedSensitivity}"
+                            Title="Select sensitivity" />
+                </Grid>
+            </Frame>
+
+            <!-- Arm / Disarm -->
+            <Grid ColumnDefinitions="*">
+                <Button
+                    Text="{Binding ArmButtonText}"
+                    Command="{Binding ToggleAlarmCommand}"
+                    IsEnabled="{Binding IsArmButtonEnabled}"
+                    Style="{StaticResource PillGrey}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsArmButtonEnabled}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{StaticResource BtnBgActive}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+
+            <!-- Status -->
+            <Frame>
+                <Label Text="{Binding StatusMessage}"
+                       FontSize="14"
+                       TextColor="{StaticResource SuccessText}"
+                       HorizontalTextAlignment="Center" />
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
