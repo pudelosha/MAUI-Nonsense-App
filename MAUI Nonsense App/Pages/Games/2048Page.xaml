@@ -4,56 +4,114 @@
              x:Class="MAUI_Nonsense_App.Pages.Games._2048Page"
              Title="2048">
 
-    <Grid RowDefinitions="7*,3*" Padding="20">
-        <!-- Playfield (no outer frame) -->
-        <GraphicsView x:Name="GameCanvas"
-                      Grid.Row="0"
-                      BackgroundColor="Transparent">
-            <GraphicsView.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Up"    Swiped="OnSwipe" />
-                <SwipeGestureRecognizer Direction="Down"  Swiped="OnSwipe" />
-                <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
-                <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
-            </GraphicsView.GestureRecognizers>
-        </GraphicsView>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
 
-        <!-- Controls -->
-        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
+            <!-- Grey card -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-            <!-- Score / Best -->
-            <Grid ColumnDefinitions="*,*" HorizontalOptions="FillAndExpand">
-                <Label Grid.Column="0"
-                       Text="{Binding Score, StringFormat='Score: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Start" />
-                <Label Grid.Column="1"
-                       Text="{Binding Best, StringFormat='Best: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="End" />
-            </Grid>
+            <!-- Pale rounded buttons -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
 
-            <!-- Up -->
-            <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="⬆ Up" Clicked="OnUpClicked" HorizontalOptions="Fill" />
-            </Grid>
+            <Style x:Key="SmallPrimaryBold" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="TinySecondary" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Left / Down / Right -->
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="⬅ Left"  Clicked="OnLeftClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="⬇ Down"  Clicked="OnDownClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="2" Text="Right ➡" Clicked="OnRightClicked" HorizontalOptions="Fill" />
-            </Grid>
+    <VerticalStackLayout Padding="16" Spacing="16">
 
-            <!-- Start -->
-            <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="Start" Clicked="OnStartClicked" HorizontalOptions="Fill" />
-            </Grid>
+        <!-- PLAYFIELD (wrapped in a grey frame) -->
+        <Frame>
+            <GraphicsView x:Name="GameCanvas"
+                          HeightRequest="320"
+                          BackgroundColor="Transparent">
+                <GraphicsView.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Up"    Swiped="OnSwipe" />
+                    <SwipeGestureRecognizer Direction="Down"  Swiped="OnSwipe" />
+                    <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
+                    <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
+        </Frame>
 
-            <!-- Tiny tip -->
-            <Label Text="Tip: best with your finger — swipe on the board. Buttons also work."
-                   FontSize="12"
-                   TextColor="Gray"
-                   HorizontalTextAlignment="Center" />
-        </VerticalStackLayout>
-    </Grid>
+        <!-- CONTROLS (separate grey card) -->
+        <Frame>
+            <VerticalStackLayout Spacing="12" HorizontalOptions="FillAndExpand">
+
+                <!-- Score / Best -->
+                <Grid ColumnDefinitions="*,*" HorizontalOptions="FillAndExpand">
+                    <Label Grid.Column="0"
+                           Text="{Binding Score, StringFormat='Score: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Grid.Column="1"
+                           Text="{Binding Best, StringFormat='Best: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="End" />
+                </Grid>
+
+                <!-- Up -->
+                <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0"
+                            Text="⬆ Up"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnUpClicked" />
+                </Grid>
+
+                <!-- Left / Down / Right -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0"
+                            Text="⬅ Left"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnLeftClicked" />
+                    <Button Grid.Column="1"
+                            Text="⬇ Down"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnDownClicked" />
+                    <Button Grid.Column="2"
+                            Text="Right ➡"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnRightClicked" />
+                </Grid>
+
+                <!-- Start -->
+                <Grid ColumnDefinitions="*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0"
+                            Text="Start"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnStartClicked" />
+                </Grid>
+
+                <!-- Tip -->
+                <Label Text="Tip: best with your finger — swipe on the board. Buttons also work."
+                       Style="{StaticResource TinySecondary}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Frame>
+
+    </VerticalStackLayout>
 </ContentPage>

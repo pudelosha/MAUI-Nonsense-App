@@ -4,121 +4,179 @@
              x:Class="MAUI_Nonsense_App.Pages.SettingsPage"
              Title="Settings">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+
+            <!-- Grey card frame -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
+
+            <!-- Pale rounded button -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <!-- Section titles: bold 14 -->
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+
+            <!-- Row/parameter labels: same size as checkbox text (14) -->
+            <Style x:Key="RowLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="24">
+        <VerticalStackLayout Padding="16" Spacing="16">
 
-            <!-- Measurements (step accuracy) -->
-            <Label Text="Measurements (accuracy)"
-                   FontSize="18"
-                   FontAttributes="Bold" />
-            <Grid ColumnDefinitions="Auto,*"
-                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-                  ColumnSpacing="12"
-                  RowSpacing="12">
+            <!-- Measurements (accuracy) -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Measurements (accuracy)" Style="{StaticResource SectionTitle}" />
 
-                <Label Grid.Row="0" Text="Date of Birth" FontSize="16" VerticalTextAlignment="Center" />
-                <DatePicker Grid.Row="0" Grid.Column="1" Date="{Binding BirthDate}" />
+                    <Grid ColumnDefinitions="Auto,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                          ColumnSpacing="12"
+                          RowSpacing="12">
 
-                <Label Grid.Row="1" Text="Sex" FontSize="16" VerticalTextAlignment="Center" />
-                <Picker Grid.Row="1" Grid.Column="1"
-                        ItemsSource="{Binding SexOptions}"
-                        SelectedItem="{Binding Sex}" />
+                        <!-- Date of birth -->
+                        <Label Grid.Row="0" Grid.Column="0" Text="Date of Birth" Style="{StaticResource RowLabel}" />
+                        <DatePicker Grid.Row="0" Grid.Column="1" Date="{Binding BirthDate}" />
 
-                <!-- Height row -->
-                <Label Grid.Row="2" Text="{Binding HeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
+                        <!-- Sex -->
+                        <Label Grid.Row="1" Grid.Column="0" Text="Sex" Style="{StaticResource RowLabel}" />
+                        <Picker Grid.Row="1" Grid.Column="1"
+                                ItemsSource="{Binding SexOptions}"
+                                SelectedItem="{Binding Sex}" />
 
-                <!-- Metric: single textbox (cm) -->
-                <Entry x:Name="MetricHeightEntry"
-                       Grid.Row="2" Grid.Column="1"
-                       Keyboard="Numeric"
-                       IsVisible="True"
-                       Text="{Binding HeightCm}">
-                    <Entry.Triggers>
-                        <DataTrigger TargetType="Entry"
-                                     Binding="{Binding IsImperial}"
-                                     Value="True">
-                            <Setter Property="IsVisible" Value="False" />
-                        </DataTrigger>
-                    </Entry.Triggers>
-                </Entry>
+                        <!-- Height -->
+                        <Label Grid.Row="2" Grid.Column="0" Text="{Binding HeightLabel}" Style="{StaticResource RowLabel}" />
 
-                <!-- Imperial: two textboxes (ft + in) in one row -->
-                <HorizontalStackLayout x:Name="ImperialHeightPanel"
-                                       Grid.Row="2" Grid.Column="1"
-                                       Spacing="8"
-                                       IsVisible="False">
-                    <HorizontalStackLayout.Triggers>
-                        <DataTrigger TargetType="HorizontalStackLayout"
-                                     Binding="{Binding IsImperial}"
-                                     Value="True">
-                            <Setter Property="IsVisible" Value="True" />
-                        </DataTrigger>
-                    </HorizontalStackLayout.Triggers>
+                        <!-- Metric height (cm) -->
+                        <Entry x:Name="MetricHeightEntry"
+                               Grid.Row="2" Grid.Column="1"
+                               Keyboard="Numeric"
+                               IsVisible="True"
+                               Text="{Binding HeightCm}">
+                            <Entry.Triggers>
+                                <DataTrigger TargetType="Entry"
+                                             Binding="{Binding IsImperial}"
+                                             Value="True">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Entry.Triggers>
+                        </Entry>
 
-                    <Entry WidthRequest="90"
-                           Keyboard="Numeric"
-                           Placeholder="ft"
-                           Text="{Binding HeightFeetText}" />
-                    <Entry WidthRequest="90"
-                           Keyboard="Numeric"
-                           Placeholder="in"
-                           Text="{Binding HeightInchesText}" />
-                </HorizontalStackLayout>
+                        <!-- Imperial height (ft + in) -->
+                        <HorizontalStackLayout x:Name="ImperialHeightPanel"
+                                               Grid.Row="2" Grid.Column="1"
+                                               Spacing="8"
+                                               IsVisible="False">
+                            <HorizontalStackLayout.Triggers>
+                                <DataTrigger TargetType="HorizontalStackLayout"
+                                             Binding="{Binding IsImperial}"
+                                             Value="True">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </DataTrigger>
+                            </HorizontalStackLayout.Triggers>
 
-                <Label Grid.Row="3" Text="{Binding WeightLabel}" FontSize="16" VerticalTextAlignment="Center" />
-                <Entry Grid.Row="3" Grid.Column="1" Keyboard="Numeric" Text="{Binding WeightKg}" />
+                            <Entry WidthRequest="90"
+                                   Keyboard="Numeric"
+                                   Placeholder="ft"
+                                   Text="{Binding HeightFeetText}" />
+                            <Entry WidthRequest="90"
+                                   Keyboard="Numeric"
+                                   Placeholder="in"
+                                   Text="{Binding HeightInchesText}" />
+                        </HorizontalStackLayout>
 
-                <Label Grid.Row="4" Text="{Binding StrideLabel}" FontSize="16" VerticalTextAlignment="Center" />
-                <Entry Grid.Row="4" Grid.Column="1" Keyboard="Numeric" Placeholder="auto" Text="{Binding StrideLengthCm}" />
+                        <!-- Weight -->
+                        <Label Grid.Row="3" Grid.Column="0" Text="{Binding WeightLabel}" Style="{StaticResource RowLabel}" />
+                        <Entry Grid.Row="3" Grid.Column="1" Keyboard="Numeric" Text="{Binding WeightKg}" />
 
-            </Grid>
+                        <!-- Stride -->
+                        <Label Grid.Row="4" Grid.Column="0" Text="{Binding StrideLabel}" Style="{StaticResource RowLabel}" />
+                        <Entry Grid.Row="4" Grid.Column="1" Keyboard="Numeric" Placeholder="auto" Text="{Binding StrideLengthCm}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-            <!-- Goals and reminders -->
-            <Label Text="Goals and Reminders"
-                   FontSize="18"
-                   FontAttributes="Bold" />
-            <Grid ColumnDefinitions="Auto,*"
-                  RowDefinitions="Auto,Auto"
-                  ColumnSpacing="12"
-                  RowSpacing="12">
-                <Label Grid.Row="0" Text="Daily Goal (steps)" FontSize="16" VerticalTextAlignment="Center" />
-                <Entry Grid.Row="0" Grid.Column="1" Keyboard="Numeric" Text="{Binding DailyGoal}" />
+            <!-- Goals & reminders -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Goals and Reminders" Style="{StaticResource SectionTitle}" />
 
-                <Label Grid.Row="1" Text="Reminder Time" FontSize="16" VerticalTextAlignment="Center" />
-                <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding ReminderTime}" />
-            </Grid>
+                    <Grid ColumnDefinitions="Auto,*"
+                          RowDefinitions="Auto,Auto"
+                          ColumnSpacing="12"
+                          RowSpacing="12">
 
-            <!-- Display and language -->
-            <Label Text="Display and Language"
-                   FontSize="18"
-                   FontAttributes="Bold" />
-            <Grid ColumnDefinitions="Auto,*"
-                  RowDefinitions="Auto,Auto,Auto,Auto"
-                  ColumnSpacing="12"
-                  RowSpacing="12">
-                <Label Grid.Row="0" Text="Units of Measurement" FontSize="16" VerticalTextAlignment="Center" />
-                <Picker Grid.Row="0" Grid.Column="1"
-                        ItemsSource="{Binding UnitsOptions}"
-                        SelectedItem="{Binding Units}" />
+                        <Label Grid.Row="0" Grid.Column="0" Text="Daily Goal (steps)" Style="{StaticResource RowLabel}" />
+                        <Entry Grid.Row="0" Grid.Column="1" Keyboard="Numeric" Text="{Binding DailyGoal}" />
 
-                <Label Grid.Row="1" Text="Week Start Day" FontSize="16" VerticalTextAlignment="Center" />
-                <Picker Grid.Row="1" Grid.Column="1"
-                        ItemsSource="{Binding WeekStartOptions}"
-                        SelectedItem="{Binding WeekStart}" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="Reminder Time" Style="{StaticResource RowLabel}" />
+                        <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding ReminderTime}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
-                <Label Grid.Row="2" Text="Language" FontSize="16" VerticalTextAlignment="Center" />
-                <Picker Grid.Row="2" Grid.Column="1"
-                        ItemsSource="{Binding LanguageOptions}"
-                        SelectedItem="{Binding Language}" />
+            <!-- Display & language -->
+            <Frame>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Display and Language" Style="{StaticResource SectionTitle}" />
 
-                <Label Grid.Row="3" Text="Date Format" FontSize="16" VerticalTextAlignment="Center" />
-                <Picker Grid.Row="3" Grid.Column="1"
-                        ItemsSource="{Binding DateFormatOptions}"
-                        SelectedItem="{Binding DateFormat}" />
-            </Grid>
+                    <Grid ColumnDefinitions="Auto,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="12"
+                          RowSpacing="12">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Units of Measurement" Style="{StaticResource RowLabel}" />
+                        <Picker Grid.Row="0" Grid.Column="1"
+                                ItemsSource="{Binding UnitsOptions}"
+                                SelectedItem="{Binding Units}" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Week Start Day" Style="{StaticResource RowLabel}" />
+                        <Picker Grid.Row="1" Grid.Column="1"
+                                ItemsSource="{Binding WeekStartOptions}"
+                                SelectedItem="{Binding WeekStart}" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Language" Style="{StaticResource RowLabel}" />
+                        <Picker Grid.Row="2" Grid.Column="1"
+                                ItemsSource="{Binding LanguageOptions}"
+                                SelectedItem="{Binding Language}" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Date Format" Style="{StaticResource RowLabel}" />
+                        <Picker Grid.Row="3" Grid.Column="1"
+                                ItemsSource="{Binding DateFormatOptions}"
+                                SelectedItem="{Binding DateFormat}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
 
             <!-- Save -->
-            <Button Text="Save" Command="{Binding SaveCommand}" Margin="0,8,0,0" />
+            <Button Text="Save"
+                    Style="{StaticResource PillGrey}"
+                    Command="{Binding SaveCommand}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

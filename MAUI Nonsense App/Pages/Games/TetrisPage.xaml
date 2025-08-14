@@ -4,11 +4,52 @@
              x:Class="MAUI_Nonsense_App.Pages.Games.TetrisPage"
              Title="Tetris">
 
-    <Grid RowDefinitions="7*,3*" Padding="20">
-        <!-- Playfield (no outer frame) -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+
+            <!-- App card style -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+
+            <!-- Pale rounded buttons -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <Style x:Key="SmallPrimaryBold" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="SmallSecondary" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Keep 70/30 layout -->
+    <Grid RowDefinitions="7*,3*" Padding="16" RowSpacing="16">
+
+        <!-- PLAYFIELD (no frame/border) -->
         <GraphicsView x:Name="TetrisCanvas"
                       Grid.Row="0"
-                      BackgroundColor="Transparent">
+                      BackgroundColor="#FAFAFA">
             <GraphicsView.GestureRecognizers>
                 <SwipeGestureRecognizer Direction="Left"  Swiped="OnSwipe" />
                 <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipe" />
@@ -16,30 +57,56 @@
             </GraphicsView.GestureRecognizers>
         </GraphicsView>
 
-        <!-- Controls (unchanged) -->
-        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
-            <Grid ColumnDefinitions="*,*" HorizontalOptions="FillAndExpand">
-                <Label Grid.Column="0"
-                       Text="{Binding Score, StringFormat='Score: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Start" />
-                <Label Grid.Column="1"
-                       Text="{Binding Level, StringFormat='Level: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="End" />
-            </Grid>
+        <!-- CONTROLS (single grey card) -->
+        <Frame Grid.Row="1">
+            <VerticalStackLayout Spacing="12">
 
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="⟸" Clicked="OnMoveLeftClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="⟳"  Clicked="OnRotateClicked"    HorizontalOptions="Fill" />
-                <Button Grid.Column="2" Text="⟹" Clicked="OnMoveRightClicked" HorizontalOptions="Fill" />
-            </Grid>
+                <!-- Score / Level -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding Score, StringFormat='Score: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Grid.Column="1"
+                           Text="{Binding Level, StringFormat='Level: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="End" />
+                </Grid>
 
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="⬇ Drop" Clicked="OnDropClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="Pause"  Clicked="OnPauseClicked" HorizontalOptions="Fill" />
-                <Button Grid.Column="2" Text="Start"  Clicked="OnStartClicked" HorizontalOptions="Fill" />
-            </Grid>
-        </VerticalStackLayout>
+                <!-- Move / Rotate -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="⟸"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnMoveLeftClicked" />
+                    <Button Grid.Column="1"
+                            Text="⟳"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnRotateClicked" />
+                    <Button Grid.Column="2"
+                            Text="⟹"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnMoveRightClicked" />
+                </Grid>
+
+                <!-- Drop / Pause / Start -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="⬇ Drop"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnDropClicked" />
+                    <Button Grid.Column="1"
+                            Text="Pause"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnPauseClicked" />
+                    <Button Grid.Column="2"
+                            Text="Start"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnStartClicked" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </Frame>
+
     </Grid>
 </ContentPage>

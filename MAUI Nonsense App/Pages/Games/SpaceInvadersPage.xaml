@@ -4,9 +4,48 @@
              x:Class="MAUI_Nonsense_App.Pages.Games.SpaceInvadersPage"
              Title="Space Invaders">
 
-    <Grid RowDefinitions="7*,3*" Padding="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
 
-        <!-- Playfield (no outer frame) -->
+            <!-- Grey card -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
+
+            <!-- Pale rounded buttons -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <Style x:Key="SmallPrimaryBold" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+            <Style x:Key="SmallSecondary" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Keep 70/30 layout -->
+    <Grid RowDefinitions="7*,3*" Padding="16" RowSpacing="16">
+
+        <!-- PLAYFIELD (no outer frame) -->
         <GraphicsView x:Name="GameCanvas"
                       Grid.Row="0"
                       BackgroundColor="Transparent">
@@ -16,43 +55,61 @@
             </GraphicsView.GestureRecognizers>
         </GraphicsView>
 
-        <!-- Controls -->
-        <VerticalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="FillAndExpand">
+        <!-- CONTROLS (single grey card) -->
+        <Frame Grid.Row="1">
+            <VerticalStackLayout Spacing="12" HorizontalOptions="FillAndExpand">
 
-            <!-- Score / Lives / Wave -->
-            <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand">
-                <Label Grid.Column="0"
-                       Text="{Binding Score, StringFormat='Score: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Start" />
-                <Label Grid.Column="1"
-                       Text="{Binding Lives, StringFormat='Lives: {0}'}"
-                       FontAttributes="Bold"
+                <!-- Score / Lives / Wave -->
+                <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand">
+                    <Label Grid.Column="0"
+                           Text="{Binding Score, StringFormat='Score: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Start" />
+                    <Label Grid.Column="1"
+                           Text="{Binding Lives, StringFormat='Lives: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="2"
+                           Text="{Binding Wave, StringFormat='Wave: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="End" />
+                </Grid>
+
+                <!-- Move -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0"
+                            Text="⟸ Left"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnLeft" />
+                    <Button Grid.Column="1"
+                            Text="Right ⟹"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnRight" />
+                </Grid>
+
+                <!-- Fire / Pause / Start -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
+                    <Button Grid.Column="0"
+                            Text="🔥 Fire"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnFire" />
+                    <Button Grid.Column="1"
+                            Text="Pause"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnPause" />
+                    <Button Grid.Column="2"
+                            Text="Start"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnStart" />
+                </Grid>
+
+                <!-- Tip -->
+                <Label Text="Tip: drag on the board to move, tap to fire. Buttons also work."
+                       Style="{StaticResource SmallSecondary}"
                        HorizontalTextAlignment="Center" />
-                <Label Grid.Column="2"
-                       Text="{Binding Wave, StringFormat='Wave: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="End" />
-            </Grid>
 
-            <!-- Move -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="⟸ Left"  Clicked="OnLeft"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="Right ⟹" Clicked="OnRight" HorizontalOptions="Fill" />
-            </Grid>
+            </VerticalStackLayout>
+        </Frame>
 
-            <!-- Fire / Pause / Start -->
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="🔥 Fire" Clicked="OnFire"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="Pause"   Clicked="OnPause" HorizontalOptions="Fill" />
-                <Button Grid.Column="2" Text="Start"   Clicked="OnStart" HorizontalOptions="Fill" />
-            </Grid>
-
-            <!-- Tiny tip -->
-            <Label Text="Tip: drag on the board to move, tap to fire. Buttons also work."
-                   FontSize="12"
-                   TextColor="Gray"
-                   HorizontalTextAlignment="Center" />
-        </VerticalStackLayout>
     </Grid>
 </ContentPage>

@@ -2,60 +2,83 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUI_Nonsense_App.Pages.Tools.LevelPage"
-             Title="Level"
-             BackgroundColor="White">
+             Title="Level">
 
-    <Grid RowSpacing="10" ColumnSpacing="10" Padding="20"
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+
+            <!-- App-wide card style -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
+
+            <!-- Optional small label style (if you need it later) -->
+            <Style x:Key="SmallPrimary" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowSpacing="12" ColumnSpacing="12" Padding="16"
           HorizontalOptions="Fill"
           VerticalOptions="Start">
+
+        <!-- Rows:
+             0: Top horizontal bubble
+             1: Main row (vertical bubble + main circle)
+             2: Readings (card) -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Top horizontal bubble -->
             <RowDefinition Height="Auto"/>
-            <!-- Main circle + vertical bubble defines height -->
             <RowDefinition Height="Auto"/>
-            <!-- Readings -->
         </Grid.RowDefinitions>
+
+        <!-- Columns:
+             0: Left vertical bubble
+             1: Horizontal + Main bubble -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <!-- Left vertical bubble -->
             <ColumnDefinition Width="*"/>
-            <!-- Horizontal & Main bubble -->
         </Grid.ColumnDefinitions>
 
-        <!-- Top: Horizontal Bubble -->
+        <!-- Top: Horizontal Bubble (no frame) -->
         <GraphicsView x:Name="HorizontalBubbleCanvas"
                       Grid.Row="0" Grid.Column="1"
                       HeightRequest="50"
                       HorizontalOptions="Fill"
-                      VerticalOptions="Start"/>
+                      VerticalOptions="Start" />
 
-        <!-- Middle left: Vertical Bubble -->
+        <!-- Middle left: Vertical Bubble (no frame) -->
         <GraphicsView x:Name="VerticalBubbleCanvas"
                       Grid.Row="1" Grid.Column="0"
                       WidthRequest="50"
                       HeightRequest="{Binding Source={x:Reference LevelCanvas}, Path=Height}"
                       HorizontalOptions="Start"
-                      VerticalOptions="Fill"/>
+                      VerticalOptions="Fill" />
 
-        <!-- Middle right: Main Circle Bubble -->
+        <!-- Middle right: Main Circle Bubble (no frame) -->
         <GraphicsView x:Name="LevelCanvas"
                       Grid.Row="1" Grid.Column="1"
                       HeightRequest="300"
                       HorizontalOptions="Fill"
-                      VerticalOptions="Fill"/>
+                      VerticalOptions="Fill" />
 
-        <!-- Bottom: Readings -->
-        <Frame Grid.Row="2" Grid.Column="1"
-               BackgroundColor="LightGray"
-               Padding="10"
-               HorizontalOptions="Center">
+        <!-- Bottom: Readings (in grey card) -->
+        <Frame Grid.Row="2" Grid.Column="1" Padding="12" >
             <Label x:Name="ReadingLabel"
                    Text="X: 0°  Y: 0°"
-                   FontSize="Medium"
+                   FontSize="14"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
-                   TextColor="Black"/>
+                   TextColor="{StaticResource TextPrimary}" />
         </Frame>
     </Grid>
 </ContentPage>

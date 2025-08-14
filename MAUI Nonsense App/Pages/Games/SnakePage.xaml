@@ -4,13 +4,61 @@
              x:Class="MAUI_Nonsense_App.Pages.Games.SnakePage"
              Title="Snake">
 
-    <Grid RowDefinitions="7*,3*" Padding="20">
-        <!-- Playfield with frame -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Shared palette (same as other pages) -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="BorderCol">#E5E7EB</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+
+            <!-- App-wide card -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+
+            <!-- Pale rounded buttons (match StepCounter etc.) -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <Style x:Key="SmallSecondary" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+            </Style>
+            <Style x:Key="SmallPrimaryBold" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Keep the 70/30 split like before -->
+    <Grid RowDefinitions="7*,3*" Padding="16" RowSpacing="16">
+
+        <!-- PLAYFIELD (thin outlined Border, NOT a grey frame) -->
         <Border Grid.Row="0"
-                Stroke="Gray"
-                StrokeThickness="2"
-                BackgroundColor="LightGray"
-                StrokeShape="RoundRectangle 8">
+                Stroke="{StaticResource BorderCol}"
+                StrokeThickness="2">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12" />
+            </Border.StrokeShape>
+
+            <!-- Light surface so the snake stands out -->
+            <Border.Background>
+                <SolidColorBrush Color="#FAFAFA"/>
+            </Border.Background>
+
             <GraphicsView x:Name="SnakeCanvas"
                           BackgroundColor="Transparent">
                 <GraphicsView.GestureRecognizers>
@@ -20,46 +68,58 @@
             </GraphicsView>
         </Border>
 
-        <!-- Controls -->
-        <VerticalStackLayout Grid.Row="1" Spacing="12" HorizontalOptions="FillAndExpand">
+        <!-- CONTROLS (single grey card) -->
+        <Frame Grid.Row="1">
+            <VerticalStackLayout Spacing="12">
 
-            <!-- Score / Status / Speed (bound) -->
-            <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand">
-                <Label Grid.Column="0"
-                       Text="{Binding Score, StringFormat='Score: {0}'}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Start" />
+                <!-- Score / Status / Speed -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding Score, StringFormat='Score: {0}'}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Start" />
 
-                <Label Grid.Column="1"
-                       Text="{Binding State}"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding State}"
+                           Style="{StaticResource SmallPrimaryBold}"
+                           HorizontalTextAlignment="Center" />
 
-                <Label Grid.Column="2"
-                       Text="{Binding SpeedMultiplier, StringFormat='Speed: {0:0.0}x'}"
-                       HorizontalTextAlignment="End" />
-            </Grid>
+                    <Label Grid.Column="2"
+                           Text="{Binding SpeedMultiplier, StringFormat='Speed: {0:0.0}x'}"
+                           Style="{StaticResource SmallSecondary}"
+                           HorizontalTextAlignment="End" />
+                </Grid>
 
-            <!-- Direction (2 equal full-width buttons) -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0"
-                        Text="⟲ Left"
-                        Clicked="OnTurnLeftClicked"
-                        HorizontalOptions="Fill" />
-                <Button Grid.Column="1"
-                        Text="⟳ Right"
-                        Clicked="OnTurnRightClicked"
-                        HorizontalOptions="Fill" />
-            </Grid>
+                <!-- Turn buttons (50/50) -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="Left"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnTurnLeftClicked" />
+                    <Button Grid.Column="1"
+                            Text="Right"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnTurnRightClicked" />
+                </Grid>
 
-            <!-- Start / Pause / Reset (3 equal full-width buttons) -->
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" HorizontalOptions="FillAndExpand">
-                <Button Grid.Column="0" Text="Start"  Clicked="OnStartClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="1" Text="Pause"  Clicked="OnPauseClicked"  HorizontalOptions="Fill" />
-                <Button Grid.Column="2" Text="Reset"  Clicked="OnResetClicked"  HorizontalOptions="Fill" />
-            </Grid>
+                <!-- Start / Pause / Reset (three equal) -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="Start"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnStartClicked" />
+                    <Button Grid.Column="1"
+                            Text="Pause"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnPauseClicked" />
+                    <Button Grid.Column="2"
+                            Text="Reset"
+                            Style="{StaticResource PillGrey}"
+                            Clicked="OnResetClicked" />
+                </Grid>
 
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
 
     </Grid>
 </ContentPage>
