@@ -279,8 +279,31 @@ namespace MAUI_Nonsense_App.Pages.Activity
 
         private void LoadDay()
         {
-            HourlyStepsForDay = _svc.GetHourlySteps(AnchorDate) ?? new int[24];
+            // 1) read what’s stored
+            var arr = _svc.GetHourlySteps(AnchorDate) ?? new int[24];
 
+            // 2) if we are looking at *today*, cross-check with the live total
+            if (AnchorDate == DateTime.UtcNow.Date)
+            {
+                int live = _svc.Last24HoursSteps;     // what the header shows
+                int hist = arr.Sum();                 // what the chart would plot
+
+                // Heuristics:
+                // - if hourly is empty but live > 0, we don't want a flat zero chart
+                // - if hourly >> live (e.g., after ResetAll), treat hourly as stale
+                //   ">>" threshold: more than live + 50 steps (tweak if you like)
+                if ((hist == 0 && live > 0) || (hist > live + 50))
+                {
+                    var proxy = new int[24];
+                    int hour = DateTime.Now.Hour;     // drop all live steps into current hour
+                    proxy[hour] = Math.Max(0, live);
+                    arr = proxy;
+                }
+            }
+
+            HourlyStepsForDay = arr;
+
+            // keep header in sync
             OnPropertyChanged(nameof(TopPrimaryValueText));
             OnPropertyChanged(nameof(TopAverageText));
             OnPropertyChanged(nameof(LeftValueText));

@@ -111,7 +111,18 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Preferences.Set("LastSensorReading", 0);
             Preferences.Set("LastStepUnixMs", 0L);
 
-            // Keep InstallDate as-is (acts like “first seen” timestamp)
+            // Recreate empty "today" entries so UI immediately sees zeros
+            var todayKey = DateTime.Now.Date.ToString("yyyy-MM-dd");
+
+            // daily
+            var daily = GetStepHistoryDaily();
+            daily[todayKey] = 0;
+            SaveStepHistoryDaily(daily);
+
+            // hourly
+            var hourly = GetStepHistoryHourly();
+            hourly[todayKey] = new int[24];
+            SaveStepHistoryHourly(hourly);
 
             RaiseStepsUpdated();
         }
