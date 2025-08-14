@@ -3,7 +3,7 @@
     x:Class="MAUI_Nonsense_App.Pages.Activity.ActivityReportPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Week">
+    Title="Report">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -33,68 +33,107 @@
                 <Setter Property="BackgroundColor" Value="#E5E7EB"/>
                 <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
                 <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="16" RowSpacing="16">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="16" RowSpacing="16">
 
-        <!-- HEADER -->
-        <Frame Grid.Row="0">
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                <!-- Today, selected metric -->
-                <Label Grid.Row="0" Grid.ColumnSpan="3"
-                       Text="{Binding TopPrimaryValueText}"
-                       FontSize="28" FontAttributes="Bold"
-                       HorizontalOptions="Center" HorizontalTextAlignment="Center"
-                       TextColor="{StaticResource TextPrimary}" />
+        <!-- RANGE SELECTOR (unchanged) -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+            <Button Grid.Column="0" Text="DAY"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetRangeCommand}" CommandParameter="Day">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedRange}" Value="Day">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Grid.Column="1" Text="WEEK"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetRangeCommand}" CommandParameter="Week">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedRange}" Value="Week">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Grid.Column="2" Text="MONTH"
+                    Style="{StaticResource PillButton}"
+                    Command="{Binding SetRangeCommand}" CommandParameter="Month">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding SelectedRange}" Value="Month">
+                        <Setter Property="BackgroundColor" Value="#D1D5DB"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
 
-                <!-- Average for selected week so far -->
-                <Grid Grid.Row="1" Grid.ColumnSpan="3"
-                      ColumnDefinitions="Auto,Auto" ColumnSpacing="6"
-                      HorizontalOptions="Center">
-                    <Label Grid.Column="0" Text="Daily average:" FontSize="12"
+        <!-- HEADER CARD: two centered columns + navigation row -->
+        <Frame Grid.Row="1">
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <!-- Left column = Total -->
+                <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding LeftLabel}"
+                           FontSize="12"
+                           HorizontalTextAlignment="Center"
                            TextColor="{StaticResource TextSecondary}" />
-                    <Label Grid.Column="1" Text="{Binding TopAverageText}" FontSize="12"
-                           FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="{Binding LeftValueText}"
+                           FontSize="22" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+
+                <!-- Right column = Average -->
+                <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding RightLabel}"
+                           FontSize="12"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="{Binding RightValueText}"
+                           FontSize="22" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
+
+                <!-- Navigation row -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="◀" Style="{StaticResource ArrowBtn}"
+                            Clicked="Prev_Clicked"/>
+                    <Label  Grid.Column="1" Text="{Binding RangeText}"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            TextColor="{StaticResource TextSecondary}" />
+                    <Button Grid.Column="2" Text="▶" Style="{StaticResource ArrowBtn}"
+                            Clicked="Next_Clicked" IsEnabled="{Binding CanGoForward}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding CanGoForward}" Value="False">
+                                <Setter Property="TextColor" Value="{StaticResource ArrowDisabled}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
                 </Grid>
-
-                <!-- Arrows + week range -->
-                <Button Grid.Row="2" Grid.Column="0" Text="◀" Style="{StaticResource ArrowBtn}"
-                        Clicked="PrevWeek_Clicked"/>
-                <Label  Grid.Row="2" Grid.Column="1" Text="{Binding WeekRangeText}"
-                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                        TextColor="{StaticResource TextSecondary}" />
-                <Button Grid.Row="2" Grid.Column="2" Text="▶" Style="{StaticResource ArrowBtn}"
-                        Clicked="NextWeek_Clicked" IsEnabled="{Binding CanGoForward}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding CanGoForward}" Value="False">
-                            <Setter Property="TextColor" Value="{StaticResource ArrowDisabled}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
             </Grid>
         </Frame>
 
-        <!-- CHART -->
-        <Frame Grid.Row="1" Padding="12" x:Name="ChartCard">
-            <Grid>
-                <!-- tiny background so gestures always hit -->
-                <GraphicsView x:Name="Chart"
-                              BackgroundColor="#01000000"
-                              HorizontalOptions="Fill"
-                              VerticalOptions="FillAndExpand">
-                    <GraphicsView.GestureRecognizers>
-                        <SwipeGestureRecognizer Direction="Left"  Swiped="OnChartSwipedLeft"/>
-                        <SwipeGestureRecognizer Direction="Right" Swiped="OnChartSwipedRight"/>
-                        <PanGestureRecognizer PanUpdated="OnChartPanUpdated"/>
-                    </GraphicsView.GestureRecognizers>
-                </GraphicsView>
-            </Grid>
+        <!-- CHART (unchanged) -->
+        <Frame Grid.Row="2" Padding="12" x:Name="ChartCard">
+            <GraphicsView x:Name="Chart"
+                          BackgroundColor="#01000000"
+                          HorizontalOptions="Fill"
+                          VerticalOptions="FillAndExpand">
+                <GraphicsView.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Left"  Swiped="OnChartSwipedLeft"/>
+                    <SwipeGestureRecognizer Direction="Right" Swiped="OnChartSwipedRight"/>
+                    <PanGestureRecognizer PanUpdated="OnChartPanUpdated"/>
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
         </Frame>
 
-        <!-- METRIC SELECTOR -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+        <!-- METRIC SELECTOR (unchanged) -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
             <Button Grid.Column="0" Text="STEPS"
                     Style="{StaticResource PillButton}"
                     Command="{Binding SetModeCommand}" CommandParameter="Steps">
@@ -104,7 +143,6 @@
                     </DataTrigger>
                 </Button.Triggers>
             </Button>
-
             <Button Grid.Column="1" Text="CALORIES"
                     Style="{StaticResource PillButton}"
                     Command="{Binding SetModeCommand}" CommandParameter="Calories">
@@ -114,7 +152,6 @@
                     </DataTrigger>
                 </Button.Triggers>
             </Button>
-
             <Button Grid.Column="2" Text="TIME"
                     Style="{StaticResource PillButton}"
                     Command="{Binding SetModeCommand}" CommandParameter="Time">
@@ -124,7 +161,6 @@
                     </DataTrigger>
                 </Button.Triggers>
             </Button>
-
             <Button Grid.Column="3" Text="DISTANCE"
                     Style="{StaticResource PillButton}"
                     Command="{Binding SetModeCommand}" CommandParameter="Distance">
