@@ -29,6 +29,14 @@
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
             </Style>
+
+            <!-- Header style to match "Result: -" -->
+            <Style x:Key="SectionHeader" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -58,30 +66,32 @@
                     Style="{StaticResource PillGrey}"
                     Clicked="OnTossClicked" />
 
-            <!-- SPLIT -->
+            <!-- DETAILS: Split + Last results in ONE frame -->
             <Frame>
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Heads/Tails Split"
-                           FontSize="14"
-                           TextColor="{StaticResource TextSecondary}" />
+                <VerticalStackLayout Spacing="10">
+
+                    <!-- Split -->
+                    <Label Text="Heads/Tails Split" Style="{StaticResource SectionHeader}" />
                     <Label x:Name="SplitLabel"
                            Text="0% Heads, 0% Tails"
                            FontSize="14"
+                           HorizontalTextAlignment="Center"
                            TextColor="{StaticResource TextPrimary}" />
-                </VerticalStackLayout>
-            </Frame>
 
-            <!-- LAST RESULTS -->
-            <Frame>
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Last 5 Results"
-                           FontSize="14"
-                           TextColor="{StaticResource TextSecondary}" />
+                    <!-- subtle divider -->
+                    <BoxView HeightRequest="1"
+                             Opacity="0.12"
+                             BackgroundColor="{StaticResource TextSecondary}" />
+
+                    <!-- Last results -->
+                    <Label Text="Last 5 Results" Style="{StaticResource SectionHeader}" />
                     <Label x:Name="LastResultsLabel"
                            Text="-"
                            FontSize="14"
                            LineBreakMode="WordWrap"
+                           HorizontalTextAlignment="Center"
                            TextColor="{StaticResource TextPrimary}" />
+
                 </VerticalStackLayout>
             </Frame>
 

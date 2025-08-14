@@ -49,6 +49,7 @@
             <Frame>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Range (From – To)"
+                           FontSize="14"
                            Style="{StaticResource SectionHeader}" />
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                         <Entry Grid.Column="0"
@@ -69,6 +70,7 @@
             <Frame>
                 <VerticalStackLayout Spacing="12">
                     <Label Text="Count of generated numbers"
+                           FontSize="14"
                            Style="{StaticResource SectionHeader}" />
 
                     <!-- Count row -->
@@ -121,6 +123,7 @@
             <Frame>
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Result"
+                           FontSize="14"
                            Style="{StaticResource SectionHeader}" />
                     <Editor Text="{Binding Result}"
                             HeightRequest="120"
