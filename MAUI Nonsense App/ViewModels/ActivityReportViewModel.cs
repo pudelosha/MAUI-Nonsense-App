@@ -190,6 +190,24 @@ namespace MAUI_Nonsense_App.Pages.Activity
 
         private readonly bool _isMondayStart;
 
+        public double ConvertSteps(int steps, MetricMode mode) => mode switch
+        {
+            MetricMode.Steps => steps,
+            MetricMode.Distance => steps * _strideCm / 100_000.0,   // km
+            MetricMode.Time => steps / 100.0,                   // minutes (100 steps/min)
+            MetricMode.Calories => MinutesToCalories(steps / 100.0),
+            _ => steps
+        };
+
+        public string UnitSuffix(MetricMode mode) => mode switch
+        {
+            MetricMode.Steps => "steps",
+            MetricMode.Distance => "km",
+            MetricMode.Time => "min",
+            MetricMode.Calories => "kcal",
+            _ => ""
+        };
+
         public ActivityReportViewModel(IStepCounterService service)
         {
             _svc = service;

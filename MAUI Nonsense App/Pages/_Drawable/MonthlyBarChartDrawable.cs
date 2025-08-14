@@ -1,12 +1,15 @@
 ﻿using Microsoft.Maui.Graphics;
+using System;
+using System.Globalization;
 using System.Linq;
+using MAUI_Nonsense_App.Pages.Activity;
 
 namespace MAUI_Nonsense_App.Pages._Drawable
 {
     public class MonthlyBarChartDrawable : IDrawable
     {
-        private readonly Activity.ActivityReportViewModel _vm;
-        public MonthlyBarChartDrawable(Activity.ActivityReportViewModel vm) => _vm = vm;
+        private readonly ActivityReportViewModel _vm;
+        public MonthlyBarChartDrawable(ActivityReportViewModel vm) => _vm = vm;
 
         public float GrowthProgress { get; set; } = 1f;
 
@@ -15,184 +18,214 @@ namespace MAUI_Nonsense_App.Pages._Drawable
             canvas.SaveState();
             canvas.Antialias = true;
 
-            // ---- Layout with left gutter for Y-axis ----
-            const float AxisLabelWidth = 56f;
-            const float OuterPad = 8f;
-            float left = dirtyRect.Left + OuterPad + AxisLabelWidth + 6f;
-            float right = dirtyRect.Right - 12f;
-            float top = dirtyRect.Top + 12f;
-            float bottom = dirtyRect.Bottom - 26f; // room for day labels
-            float width = System.Math.Max(0, right - left);
-            float height = System.Math.Max(0, bottom - top);
-            float axisX = left - 8f;
-
-            var axis = Color.FromArgb("#D1D5DB");
-            var grid = Color.FromArgb("#E5E7EB");
-            var label = Color.FromArgb("#6B7280");
-            var bar = Color.FromArgb("#22C55E");
-            var barToday = Color.FromArgb("#16A34A");
-            var goalCol = Color.FromArgb("#86EFAC");
-
             var days = _vm.MonthDays?.ToList() ?? new();
             if (days.Count == 0) { canvas.RestoreState(); return; }
 
-            // scale: past + today only
-            double maxShown = 1;
-            for (int i = 0; i < days.Count; i++)
-                if (!days[i].IsFuture)
-                    maxShown = System.Math.Max(maxShown, days[i].Steps);
-
-            double scaleMax = System.Math.Max(maxShown, _vm.DailyGoalSteps);
-            if (scaleMax <= 0) scaleMax = 1;
-            scaleMax *= 1.15;
-
-            var (tickStep, tickMax, decimals) = GetAxisScale(scaleMax);
-
-            // axes
-            canvas.StrokeSize = 1;
-            canvas.StrokeColor = axis;
-            canvas.DrawLine(left, bottom, right, bottom); // X
-            canvas.DrawLine(axisX, top, axisX, bottom);   // Y
-
-            // grid + Y labels (small font)
-            DrawYAxis(canvas, axisX, left, right, top, height, tickStep, tickMax, decimals);
-
-            // goal dashed line
-            if (_vm.DailyGoalSteps > 0)
+            // ---- Values per metric ----
+            double ValueOf(DayStat d) => _vm.SelectedMode switch
             {
-                float gy = (float)(top + height - (_vm.DailyGoalSteps / tickMax) * height);
-                canvas.StrokeColor = goalCol;
-                canvas.StrokeSize = 2;
-                canvas.StrokeDashPattern = new float[] { 6, 4 };
-                canvas.DrawLine(left, gy, right, gy);
-                canvas.StrokeDashPattern = null;
+                MetricMode.Steps => d.Steps,
+                MetricMode.Distance => d.DistanceKm,
+                MetricMode.Time => d.Minutes,
+                _ => d.Calories
+            };
+            var vals = days.Select(ValueOf).ToArray();
+
+            // ---- Scale (include daily goal in Steps, and ensure >= one tick above it) ----
+            double maxShown = vals.Max();
+            if (_vm.SelectedMode == MetricMode.Steps)
+                maxShown = Math.Max(maxShown, _vm.DailyGoalSteps);
+            if (maxShown <= 0) maxShown = 1;
+            maxShown *= 1.15;
+
+            var (tickStep, tickMax, decimals) = GetAxisScale(maxShown, _vm.SelectedMode);
+
+            if (_vm.SelectedMode == MetricMode.Steps && _vm.DailyGoalSteps > 0 && tickMax <= _vm.DailyGoalSteps)
+            {
+                tickMax = Math.Ceiling((_vm.DailyGoalSteps + tickStep) / tickStep) * tickStep;
             }
 
-            // clamp once
-            float grow = Clamp01(GrowthProgress);
+            // ---- Shared plot layout ----
+            string maxLabel = ChartLayout.FormatTick(tickMax, decimals);
+            var (plot, axisX, left, right, top, bottom) = ChartLayout.ComputePlot(canvas, dirtyRect, maxLabel);
 
-            // bars
-            int n = days.Count;
-            float colW = width / n;
-            float barW = System.MathF.Max(1.5f, colW * 0.6f);
+            // ---- Axes ----
+            canvas.StrokeSize = 1;
+            canvas.StrokeColor = Colors.LightGray;
+            canvas.DrawLine(axisX, top, axisX, plot.Bottom);
+            canvas.DrawLine(left, plot.Bottom, right, plot.Bottom);
+
+            // ---- Grid + Y labels (no units) ----
+            for (double t = 0; t <= tickMax + tickStep * 0.25; t += tickStep)
+            {
+                float y = (float)(plot.Bottom - (t / tickMax) * plot.Height);
+                canvas.StrokeColor = Color.FromArgb("#E5E7EB");
+                canvas.DrawLine(left, y, right, y);
+
+                string text = ChartLayout.FormatTick(t, decimals);
+                canvas.FontSize = ChartLayout.YLabelFont;
+                canvas.FontColor = Color.FromArgb("#6B7280");
+                float labelRight = axisX - 6f;
+                float labelLeft = dirtyRect.Left + ChartLayout.OuterPad;
+                float labelW = MathF.Max(0, labelRight - labelLeft);
+                canvas.DrawString(text, labelLeft, y - 8, labelW, 16,
+                    HorizontalAlignment.Right, VerticalAlignment.Center);
+            }
+
+            // ---- Dashed daily goal (Steps only) + left gutter pill ----
+            if (_vm.SelectedMode == MetricMode.Steps && _vm.DailyGoalSteps > 0)
+            {
+                float gy = (float)(plot.Bottom - (_vm.DailyGoalSteps / tickMax) * plot.Height);
+                canvas.StrokeColor = Color.FromArgb("#86EFAC");
+                canvas.StrokeSize = 2;
+                canvas.StrokeDashPattern = new float[] { 6, 6 };
+                canvas.DrawLine(left, gy, right, gy);
+                canvas.StrokeDashPattern = null;
+
+                DrawGoalTagLeftGutter(canvas, axisX, top, plot.Height, gy,
+                    _vm.DailyGoalSteps, decimals,
+                    pillFill: Color.FromArgb("#86EFAC"),
+                    textCol: Color.FromArgb("#065F46"));
+            }
+
+            // ---- Columns ----
+            float colW = plot.Width / days.Count;
+            float barW = Math.Max(1.5f, colW * 0.6f);
+            float grow = Math.Clamp(GrowthProgress, 0f, 1f);
 
             int todayIndex = -1;
-            float todayTrueTop = 0;
-            float todayColCenter = 0;
+            float todayTop = 0, todayCenterX = 0;
 
-            for (int i = 0; i < n; i++)
+            var barPast = Color.FromArgb("#22C55E");
+            var barToday = Color.FromArgb("#16A34A");
+
+            for (int i = 0; i < days.Count; i++)
             {
-                var d = days[i];
-                float fullH = (float)(height * (d.Steps / (double)tickMax));
+                double v = vals[i];
+                float fullH = (float)(plot.Height * (v / tickMax));
                 float h = fullH * grow;
-                if (h > 0)
-                {
-                    float bx = left + i * colW + (colW - barW) / 2f;
-                    float by = bottom - h;
-                    canvas.FillColor = d.IsToday ? barToday : bar;
-                    canvas.FillRoundedRectangle(bx, by, barW, h, 2);
+                if (h <= 0) continue;
 
-                    if (d.IsToday)
-                    {
-                        todayIndex = i;
-                        todayTrueTop = bottom - fullH;
-                        todayColCenter = bx + barW / 2f;
-                    }
+                float bx = plot.Left + i * colW + (colW - barW) / 2f;
+                float by = plot.Bottom - h;
+
+                canvas.FillColor = days[i].IsToday ? barToday : barPast;
+                canvas.FillRoundedRectangle(bx, by, barW, h, 2);
+
+                if (days[i].IsToday)
+                {
+                    todayIndex = i;
+                    todayTop = plot.Bottom - fullH; // true (ungrown) top
+                    todayCenterX = bx + barW / 2f;
                 }
             }
 
-            // day labels (every 5th)
-            canvas.FontColor = label;
-            canvas.FontSize = 10;
-            for (int i = 0; i < n; i += 5)
+            // ---- Day labels (every 5th, unified small font) ----
+            canvas.FontSize = 10f;
+            canvas.FontColor = Color.FromArgb("#6B7280");
+            for (int i = 0; i < days.Count; i += 5)
             {
-                string t = days[i].Date.Day.ToString();
-                float xCenter = left + i * colW + colW / 2f;
-                canvas.DrawString(t, xCenter - 12, bottom + 2, 24, 14,
-                    HorizontalAlignment.Center, VerticalAlignment.Top);
+                string dTxt = days[i].Date.Day.ToString();
+                float cx = plot.Left + i * colW + colW / 2f;
+                canvas.DrawString(dTxt, cx, plot.Bottom + 14f, HorizontalAlignment.Center);
             }
 
-            // Today-only green bubble
-            if (todayIndex >= 0)
+            // ---- Green bubble above TODAY only ----
+            if (todayIndex >= 0 && GrowthProgress >= 0.98f)
             {
-                var d = days[todayIndex];
-                string bubble = $"{d.Steps:N0} Steps";
+                var v = vals[todayIndex];
+                string text = _vm.SelectedMode switch
+                {
+                    MetricMode.Steps => $"{v:N0} Steps",
+                    MetricMode.Distance => $"{v:F2} km",
+                    MetricMode.Time => $"{v:N0} min",
+                    _ => $"{v:F0} kcal"
+                };
 
-                float bw = System.MathF.Max(colW + 40, 120);
-                float bh = 34f;
+                float bw = Math.Max(120f, 9f * text.Length);
+                float bh = 28f;
                 float pointerH = 8f;
-                float minGap = 10f;
-                float extraCeiling = 6f;
+                float gap = 8f;
 
-                float refTop = todayTrueTop;
-                float ryTarget = refTop - (bh + pointerH + minGap);
-                float ry = System.MathF.Max(top + extraCeiling, ryTarget);
-                float rx = todayColCenter - bw / 2f;
+                float ry = todayTop - (bh + pointerH + gap);
+                ry = MathF.Max(top + 6, ry);
+                float rx = todayCenterX - bw / 2f;
 
                 canvas.FillColor = Color.FromArgb("#34D399");
-                canvas.FillRoundedRectangle(rx, ry, bw, bh, 8f);
+                canvas.FillRoundedRectangle(rx, ry, bw, bh, 8);
 
-                canvas.FontSize = 14;
                 canvas.FontColor = Colors.White;
-                canvas.DrawString(bubble, rx, ry, bw, bh,
+                canvas.FontSize = 13;
+                canvas.DrawString(text, rx, ry, bw, bh,
                     HorizontalAlignment.Center, VerticalAlignment.Center);
 
-                var pointer = new PathF();
-                pointer.MoveTo(todayColCenter - 6, ry + bh);
-                pointer.LineTo(todayColCenter + 6, ry + bh);
-                pointer.LineTo(todayColCenter, ry + bh + pointerH);
-                pointer.Close();
-                canvas.FillPath(pointer);
+                var p = new PathF();
+                p.MoveTo(todayCenterX - 6, ry + bh);
+                p.LineTo(todayCenterX + 6, ry + bh);
+                p.LineTo(todayCenterX, ry + bh + pointerH);
+                p.Close();
+                canvas.FillPath(p);
             }
 
             canvas.RestoreState();
         }
 
-        private static float Clamp01(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
+        // ----- helpers -----
 
-        private static (double step, double maxTick, int decimals) GetAxisScale(double scaleMax)
+        // Minimum tick steps: Distance >= 0.1 ; others >= 1
+        private static (double step, double maxTick, int decimals) GetAxisScale(double scaleMax, MetricMode mode)
         {
-            if (scaleMax <= 0) return (1, 1, 0);
             int targetTicks = 4;
-            double rawStep = scaleMax / targetTicks;
-            double step = NiceStep(rawStep);
-            double maxTick = System.Math.Ceiling(scaleMax / step) * step;
-            return (step, maxTick, 0);
+            double raw = scaleMax / targetTicks;
+            double step = NiceStep(raw);
+
+            if (mode == MetricMode.Distance) step = Math.Max(0.1, step);
+            else step = Math.Max(1, step);
+
+            int decimals = (mode == MetricMode.Distance && step < 1) ? 1 : 0;
+            double maxTick = Math.Ceiling(scaleMax / step) * step;
+            return (step, maxTick, decimals);
         }
 
         private static double NiceStep(double x)
         {
             if (x <= 0) return 1;
-            double exp = System.Math.Floor(System.Math.Log10(x));
-            double f = x / System.Math.Pow(10, exp); // 1..10
+            double exp = Math.Floor(Math.Log10(x));
+            double f = x / Math.Pow(10, exp);
             double nice = (f < 1.5) ? 1 : (f < 3) ? 2 : (f < 7) ? 5 : 10;
-            return nice * System.Math.Pow(10, exp);
+            return nice * Math.Pow(10, exp);
         }
 
-        private static void DrawYAxis(
-            ICanvas canvas, float axisX, float left, float right, float top, float height,
-            double tickStep, double tickMax, int decimals)
+        // Goal tag in the left gutter (aligned with dashed line)
+        private static void DrawGoalTagLeftGutter(
+            ICanvas canvas, float axisX, float top, float height, float gy,
+            double goal, int decimals, Color pillFill, Color textCol)
         {
-            for (double t = 0; t <= tickMax + tickStep * 0.25; t += tickStep)
-            {
-                float y = (float)(top + height - (t / tickMax) * height);
+            string txt = decimals == 0
+                ? goal.ToString("N0", CultureInfo.CurrentCulture)
+                : goal.ToString($"F{decimals}", CultureInfo.CurrentCulture);
+            txt = txt.Replace(' ', '\u00A0');
 
-                canvas.StrokeColor = Color.FromArgb("#E5E7EB");
-                canvas.StrokeSize = 1;
-                canvas.DrawLine(left, y, right, y);
+            const float bh = 20f;
+            float ry = gy - bh / 2f;
+            ry = MathF.Max(top + 2, MathF.Min(top + height - bh - 2, ry));
 
-                string text = decimals == 0 ? t.ToString("N0") : t.ToString($"F{decimals}");
-                text = text.Replace(' ', '\u00A0');
+            float bw = MathF.Max(48f, 8f * txt.Length + 16f);
+            float rx = axisX - bw - 6f;
 
-                canvas.FontSize = 10;
-                canvas.FontColor = Colors.Gray;
+            const float linkW = 4f;
+            const float linkH = 8f;
+            float lx = axisX - linkW;
+            float ly = gy - linkH / 2f;
 
-                float labelRight = axisX - 6f;
-                float labelLeft = 8f;
-                float labelW = labelRight - labelLeft;
-                canvas.DrawString(text, labelLeft, y - 7, labelW, 14,
-                    HorizontalAlignment.Right, VerticalAlignment.Center);
-            }
+            canvas.FillColor = pillFill;
+            canvas.FillRoundedRectangle(lx, ly, linkW, linkH, linkH / 2f);
+            canvas.FillRoundedRectangle(rx, ry, bw, bh, 6f);
+
+            canvas.FontSize = 11;
+            canvas.FontColor = textCol;
+            canvas.DrawString(txt, rx, ry, bw, bh,
+                HorizontalAlignment.Center, VerticalAlignment.Center);
         }
     }
 }

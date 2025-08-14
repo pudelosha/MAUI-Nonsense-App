@@ -32,7 +32,7 @@ namespace MAUI_Nonsense_App.ViewModels
         // backing
         private int _todaySteps;
         private int _dailyGoal;
-        private long _activeSeconds; // kept for future use, not used in derived calcs now
+        private long _activeSeconds; // kept for future use
         private double _distanceKm;
         private double _calories;
         private double _goalProgress;
@@ -41,7 +41,7 @@ namespace MAUI_Nonsense_App.ViewModels
         // today bindings
         public int TodaySteps { get => _todaySteps; set { if (_todaySteps != value) { _todaySteps = value; OnChanged(nameof(TodaySteps)); RecalcDerived(); } } }
         public int DailyGoal { get => _dailyGoal; set { if (_dailyGoal != value) { _dailyGoal = value; OnChanged(nameof(DailyGoal)); RecalcDerived(); BuildWeekStrip(); } } }
-        public long ActiveSeconds { get => _activeSeconds; set { if (_activeSeconds != value) { _activeSeconds = value; OnChanged(nameof(ActiveSeconds)); /* not used in calc */ } } }
+        public long ActiveSeconds { get => _activeSeconds; set { if (_activeSeconds != value) { _activeSeconds = value; OnChanged(nameof(ActiveSeconds)); } } }
 
         public double DistanceKm { get => _distanceKm; private set { if (Math.Abs(_distanceKm - value) > 1e-6) { _distanceKm = value; OnChanged(nameof(DistanceKm)); } } }
         public double Calories { get => _calories; private set { if (Math.Abs(_calories - value) > 1e-6) { _calories = value; OnChanged(nameof(Calories)); } } }
@@ -55,11 +55,16 @@ namespace MAUI_Nonsense_App.ViewModels
         public ObservableCollection<StepDay> Last7Days { get; } = new();
         public ObservableCollection<WeekDayItem> WeekDays { get; } = new();
 
-        // DAILY AVERAGE (now ALL-TIME average, not 7-day)
+        // DAILY AVERAGE (all-time daily average)
         public int SevenDayAverage { get; private set; }
         public double SevenDayAvgDistanceKm { get; private set; }
         public double SevenDayAvgCalories { get; private set; }
         public string SevenDayAvgTimeText { get; private set; } = "0h 0m";
+
+        // ALL-TIME TOTALS (for the new card)
+        public int AllTimeSteps { get; private set; }
+        public double AllTimeDistanceKm { get; private set; }
+        public double AllTimeCalories { get; private set; }
 
         // helpers
         public DateTime InstallDate => _service.InstallDate;
@@ -85,6 +90,7 @@ namespace MAUI_Nonsense_App.ViewModels
             ActiveSeconds = _service.ActiveSecondsToday;
             LoadLast7Days();
             BuildWeekStrip();
+            RecalcAllTimeTotals();
 
             _service.StepsUpdated += (s, e) =>
             {
@@ -92,6 +98,7 @@ namespace MAUI_Nonsense_App.ViewModels
                 ActiveSeconds = _service.ActiveSecondsToday;
                 LoadLast7Days();
                 BuildWeekStrip();
+                RecalcAllTimeTotals();
             };
         }
 
@@ -101,14 +108,14 @@ namespace MAUI_Nonsense_App.ViewModels
             RecalcDerived();
         }
 
-        public void ReloadLast7Days() { LoadLast7Days(); BuildWeekStrip(); }
+        public void ReloadLast7Days() { LoadLast7Days(); BuildWeekStrip(); RecalcAllTimeTotals(); }
 
         private void LoadLast7Days()
         {
             Last7Days.Clear();
             var history = _service.StepHistoryDaily;
 
-            // Fill the "last 7 days" list (for UI cards that show a small recap)
+            // Fill the "last 7 days" list (for recap)
             for (int i = 0; i < 7; i++)
             {
                 var key = DateTime.Now.Date.AddDays(-i).ToString("yyyy-MM-dd");
@@ -116,8 +123,7 @@ namespace MAUI_Nonsense_App.ViewModels
                 Last7Days.Add(new StepDay { Date = key, Steps = steps });
             }
 
-            // ---------- ALL-TIME DAILY AVERAGE ----------
-            // 1) find earliest recorded day (prefer history, fall back to InstallDate)
+            // ---------- ALL-TIME DAILY AVERAGE (same logic as report page) ----------
             DateTime today = DateTime.Now.Date;
             DateTime first;
             if (history.Count > 0)
@@ -132,15 +138,12 @@ namespace MAUI_Nonsense_App.ViewModels
                 first = InstallDate.Date;
             }
 
-            // 2) inclusive day span, at least 1 day
             int daySpan = Math.Max(1, (today - first).Days + 1);
 
-            // 3) total steps across full history (fall back to today's steps if history not yet persisted)
             long totalSteps = history.Values.Sum(v => (long)v);
             if (history.Count == 0)
                 totalSteps = _service.Last24HoursSteps;
 
-            // 4) compute average and derive other metrics using SAME formulas as ActivityReport
             SevenDayAverage = (int)Math.Round(totalSteps / (double)daySpan, MidpointRounding.AwayFromZero);
 
             int strideCm = Preferences.Get(KeyStrideLengthCm, 75);
@@ -192,7 +195,7 @@ namespace MAUI_Nonsense_App.ViewModels
 
         private void RecalcDerived()
         {
-            // MATCH ACTIVITY REPORT conversions from steps:
+            // conversions from steps:
             int strideCm = Preferences.Get(KeyStrideLengthCm, 75);
 
             DistanceKm = TodaySteps * (strideCm / 100000.0);
@@ -207,9 +210,31 @@ namespace MAUI_Nonsense_App.ViewModels
             GoalProgress = DailyGoal > 0 ? Math.Clamp(TodaySteps / (double)DailyGoal, 0, 1) : 0;
         }
 
+        private void RecalcAllTimeTotals()
+        {
+            var history = _service.StepHistoryDaily;
+            var todayKey = DateTime.Now.Date.ToString("yyyy-MM-dd");
+
+            long total = history.Values.Sum(v => (long)v);
+            if (!history.ContainsKey(todayKey))
+                total += _service.Last24HoursSteps;
+
+            AllTimeSteps = (int)Math.Min(total, int.MaxValue);
+
+            int strideCm = Preferences.Get(KeyStrideLengthCm, 75);
+            AllTimeDistanceKm = AllTimeSteps * (strideCm / 100000.0);
+
+            var minutes = AllTimeSteps / 100.0;
+            AllTimeCalories = MinutesToCalories(minutes);
+
+            OnChanged(nameof(AllTimeSteps));
+            OnChanged(nameof(AllTimeDistanceKm));
+            OnChanged(nameof(AllTimeCalories));
+        }
+
         private double MinutesToCalories(double minutes)
         {
-            // kcal/min = MET(=3.5) * 3.5 * kg / 200  (same as ActivityReportViewModel)
+            // kcal/min = MET(=3.5) * 3.5 * kg / 200
             var kg = Preferences.Get(KeyWeightKg, 70.0);
             var kcalPerMin = 3.5 * 3.5 * kg / 200.0;
             return minutes * kcalPerMin;
