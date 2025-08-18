@@ -19,7 +19,6 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         private readonly Context _context;
         public static AndroidStepCounterService? Instance { get; private set; }
 
-        // -------- Public props --------
         public int TotalSteps => Preferences.Get("AccumulatedSteps", 0);
         public int Last24HoursSteps => Preferences.Get("DailySteps", 0);
         public long ActiveSecondsToday => Preferences.Get("ActiveSecondsToday", 0L);
@@ -50,13 +49,12 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
         public async Task StartAsync()
         {
-            // mark install date once
             if (!Preferences.ContainsKey("InstallDate"))
                 Preferences.Set("InstallDate", DateTime.Now.Date.ToString("yyyy-MM-dd"));
 
-            await Task.Delay(600); // small delay after boot/unlock
+            await Task.Delay(600);
             StartForegroundService();
-            InitializeMidnightBaselineIfMissing();
+            InitializeMidnightBaselineIfMissing(); // defensive rollover if alarm missed
             EnsureTodayDailyExists();
             ScheduleMidnightReset();
             RaiseStepsUpdated();
@@ -73,7 +71,9 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             string today = DateTime.Now.Date.ToString("yyyy-MM-dd");
             int currentSensorValue = Preferences.Get("LastSensorReading", 0);
 
-            // Re-baseline to current sensor reading so next tick starts at 0
+            // Re-baseline to current value so next tick starts at 0 delta
+            if (Preferences.ContainsKey("LastSensorReading"))
+                Preferences.Set("LastSensorReading", currentSensorValue);
             Preferences.Set("MidnightStepSensorValue", currentSensorValue);
             Preferences.Set("LastStepDate", today);
 
@@ -83,12 +83,11 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Preferences.Set("LastStepUnixMs", 0L);
             Preferences.Set("RebootDailyOffset", 0);
 
-            // Daily history -> 0
+            // History entries for today
             var daily = GetStepHistoryDaily();
             daily[today] = 0;
             SaveStepHistoryDaily(daily);
 
-            // Hourly history -> zero 24 slots
             var hourly = GetStepHistoryHourly();
             hourly[today] = new int[24];
             SaveStepHistoryHourly(hourly);
@@ -101,25 +100,24 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             Preferences.Set("AccumulatedSteps", 0);
             Preferences.Set("DailySteps", 0);
             Preferences.Set("ActiveSecondsToday", 0L);
+
             Preferences.Remove("FirstEverStepSensorValue");
             Preferences.Remove("MidnightStepSensorValue");
+            Preferences.Remove("LastSensorReading"); // <-- DO NOT set to 0 (prevents huge delta)
             Preferences.Set("StepHistoryDaily", "{}");
             Preferences.Set("StepHistoryHourly", "{}");
             Preferences.Set("LastStepDate", DateTime.Now.ToString("yyyy-MM-dd"));
             Preferences.Set("RebootDailyOffset", 0);
             Preferences.Set("RunningTotalSteps", 0);
-            Preferences.Set("LastSensorReading", 0);
             Preferences.Set("LastStepUnixMs", 0L);
 
-            // Recreate empty "today" entries so UI immediately sees zeros
+            // Create empty "today" entries
             var todayKey = DateTime.Now.Date.ToString("yyyy-MM-dd");
 
-            // daily
             var daily = GetStepHistoryDaily();
             daily[todayKey] = 0;
             SaveStepHistoryDaily(daily);
 
-            // hourly
             var hourly = GetStepHistoryHourly();
             hourly[todayKey] = new int[24];
             SaveStepHistoryHourly(hourly);
@@ -128,8 +126,6 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         }
 
         public void RaiseStepsUpdated() => StepsUpdated?.Invoke(this, EventArgs.Empty);
-
-        // ---------- Helpers exposed to UI ----------
 
         public int[] GetHourlySteps(DateTime localDate)
         {
@@ -168,6 +164,10 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             return dt.AddDays(-diff).Date;
         }
 
+        /// <summary>
+        /// Defensive rollover: if the stored day != today, perform a midnight reset here
+        /// (in case the alarm didn’t fire).
+        /// </summary>
         private void InitializeMidnightBaselineIfMissing()
         {
             string today = DateTime.Now.Date.ToString("yyyy-MM-dd");
@@ -175,21 +175,47 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             if (lastDate != today)
             {
+                // Freeze yesterday total in history if not present yet
+                var yesterdayKey = DateTime.Now.Date.AddDays(-1).ToString("yyyy-MM-dd");
+                var daily = GetStepHistoryDaily();
+                if (!daily.ContainsKey(yesterdayKey))
+                {
+                    daily[yesterdayKey] = Preferences.Get("DailySteps", 0);
+                    SaveStepHistoryDaily(daily);
+                }
+
+                // Baselines roll to "now"
+                if (Preferences.ContainsKey("LastSensorReading"))
+                {
+                    int currentValue = Preferences.Get("LastSensorReading", 0);
+                    Preferences.Set("MidnightStepSensorValue", currentValue);
+                }
+                else
+                {
+                    Preferences.Remove("MidnightStepSensorValue"); // let first tick set it
+                }
+
+                // Reset today’s counters
+                Preferences.Set("DailySteps", 0);
+                Preferences.Set("ActiveSecondsToday", 0L);
+                Preferences.Set("LastStepUnixMs", 0L);
+                Preferences.Set("RebootDailyOffset", 0);
                 Preferences.Set("LastStepDate", today);
             }
 
-            if (!Preferences.ContainsKey("MidnightStepSensorValue"))
-            {
-                int currentValue = Preferences.Get("LastSensorReading", 0);
-                Preferences.Set("MidnightStepSensorValue", currentValue);
-            }
-
-            // Ensure hourly array for today exists
+            // Ensure hourly/today entries exist
             var hourly = GetStepHistoryHourly();
             if (!hourly.ContainsKey(today))
             {
                 hourly[today] = new int[24];
                 SaveStepHistoryHourly(hourly);
+            }
+
+            var dailyToday = GetStepHistoryDaily();
+            if (!dailyToday.ContainsKey(today))
+            {
+                dailyToday[today] = Preferences.Get("DailySteps", 0);
+                SaveStepHistoryDaily(dailyToday);
             }
         }
 
@@ -240,15 +266,12 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
             _context.StopService(intent);
         }
 
-        // ---- Storage (daily & hourly) ----
-
         private Dictionary<string, int> GetStepHistoryDaily()
         {
             var json = Preferences.Get("StepHistoryDaily",
-                        Preferences.Get("StepHistory", "{}")); // migrate older key
+                        Preferences.Get("StepHistory", "{}"));
             var history = JsonSerializer.Deserialize<Dictionary<string, int>>(json)
                           ?? new Dictionary<string, int>();
-            // migrate if old key used
             if (!Preferences.ContainsKey("StepHistoryDaily"))
                 Preferences.Set("StepHistoryDaily", JsonSerializer.Serialize(history));
             return history;
