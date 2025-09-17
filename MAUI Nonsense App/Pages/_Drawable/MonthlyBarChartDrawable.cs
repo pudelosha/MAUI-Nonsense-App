@@ -104,20 +104,20 @@ namespace MAUI_Nonsense_App.Pages._Drawable
                 double v = vals[i];
                 float fullH = (float)(plot.Height * (v / tickMax));
                 float h = fullH * grow;
-                if (h <= 0) continue;
-
+                
                 float bx = plot.Left + i * colW + (colW - barW) / 2f;
+                                if (days[i].IsToday)
+                                    {
+                    todayIndex = i;
+                    todayTop = plot.Bottom - fullH;
+                    todayCenterX = bx + barW / 2f;
+                                    }
+                
+                                if (h <= 0) continue;
+                
                 float by = plot.Bottom - h;
-
                 canvas.FillColor = days[i].IsToday ? barToday : barPast;
                 canvas.FillRoundedRectangle(bx, by, barW, h, 2);
-
-                if (days[i].IsToday)
-                {
-                    todayIndex = i;
-                    todayTop = plot.Bottom - fullH; // true (ungrown) top
-                    todayCenterX = bx + barW / 2f;
-                }
             }
 
             // ---- Day labels (every 5th, unified small font) ----
@@ -131,7 +131,7 @@ namespace MAUI_Nonsense_App.Pages._Drawable
             }
 
             // ---- Green bubble above TODAY only ----
-            if (todayIndex >= 0 && GrowthProgress >= 0.98f)
+            if (todayIndex >= 0)
             {
                 var v = vals[todayIndex];
                 string text = _vm.SelectedMode switch

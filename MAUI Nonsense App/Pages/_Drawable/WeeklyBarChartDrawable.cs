@@ -142,7 +142,7 @@ namespace MAUI_Nonsense_App.Pages._Drawable
                         _ => $"{v:F0}"
                     };
 
-                    canvas.FontSize = 9.5f;
+                    canvas.FontSize = 8.0f; // Bar chart labels font size
                     canvas.FontColor = Colors.Gray;
                     float trueTop = barTrueTops[i];
                     float labelY = (v == 0) ? (plot.Bottom - 18) : (trueTop - 10);
