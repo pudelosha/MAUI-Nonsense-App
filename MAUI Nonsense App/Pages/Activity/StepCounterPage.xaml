@@ -34,6 +34,13 @@
                 <Setter Property="VerticalOptions" Value="Center"/>
             </Style>
 
+            <!-- Center the icons and make progress/achieved green -->
+            <Style TargetType="controls:RadialGoalIcon">
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="ProgressColor" Value="{StaticResource TrackFill}" />
+                <Setter Property="AchievedFillColor" Value="{StaticResource TrackFill}" />
+            </Style>
+
             <helpers:MultiplyConverter x:Key="MultiplyConverter" />
             <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" MinPixels="30" />
         </ResourceDictionary>
@@ -64,8 +71,8 @@
 
                         <!-- green fill (independent of label) -->
                         <Border Background="{StaticResource TrackFill}"
-                            HorizontalOptions="Start"
-                            Margin="2">
+                                HorizontalOptions="Start"
+                                Margin="2">
                             <!-- small inset so rounded ends look nicer -->
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
@@ -159,31 +166,31 @@
                     <Label Text="This week" FontSize="16" TextColor="{StaticResource TextSecondary}" />
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="8">
                         <VerticalStackLayout Grid.Column="0" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[0].Progress}" Achieved="{Binding WeekDays[0].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[0].Progress}" Achieved="{Binding WeekDays[0].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[0].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[1].Progress}" Achieved="{Binding WeekDays[1].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[1].Progress}" Achieved="{Binding WeekDays[1].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[1].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="2" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[2].Progress}" Achieved="{Binding WeekDays[2].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[2].Progress}" Achieved="{Binding WeekDays[2].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[2].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="3" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[3].Progress}" Achieved="{Binding WeekDays[3].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[3].Progress}" Achieved="{Binding WeekDays[3].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[3].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="4" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[4].Progress}" Achieved="{Binding WeekDays[4].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[4].Progress}" Achieved="{Binding WeekDays[4].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[4].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="5" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[5].Progress}" Achieved="{Binding WeekDays[5].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[5].Progress}" Achieved="{Binding WeekDays[5].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[5].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="6" Spacing="0" HorizontalOptions="Center">
-                            <controls:RadialGoalIcon Progress="{Binding WeekDays[6].Progress}" Achieved="{Binding WeekDays[6].Achieved}" Size="32" TranslationX="-6"/>
+                            <controls:RadialGoalIcon Progress="{Binding WeekDays[6].Progress}" Achieved="{Binding WeekDays[6].Achieved}" Size="32"/>
                             <Label Text="{Binding WeekDays[6].Abbrev}" Margin="0,8,0,0" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </Grid>
