@@ -32,10 +32,11 @@ public partial class ActivityReportPage : ContentPage
 
         AttachDrawableForRange();
 
-        _vm.RedrawRequested += (_, __) =>
+        _vm.RedrawRequested += animate =>
         {
             if (_isSliding) { Chart.Invalidate(); return; }
-            AnimateBarsGrowth();
+            if (animate) AnimateBarsGrowth();
+            else Chart.Invalidate(); // bez animacji dla live-odœwie¿eñ
         };
 
         _vm.PropertyChanged += Vm_PropertyChanged;

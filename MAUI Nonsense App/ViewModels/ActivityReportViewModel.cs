@@ -36,11 +36,14 @@ namespace MAUI_Nonsense_App.Pages.Activity
         private const string KeyWeightKg = "Settings.WeightKg";
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        public event EventHandler? RedrawRequested;
+        public event Action<bool>? RedrawRequested;
+        private bool _animateNextRedraw;
 
         public ObservableCollection<DayStat> Days { get; } = new();        // Week view
         public ObservableCollection<DayStat> MonthDays { get; } = new();   // Month view
         public int[] HourlyStepsForDay { get; private set; } = new int[24]; // Day view
+
+        private static DateTime TodayLocal => DateTime.Now.Date;
 
         private ReportRange _selectedRange = ReportRange.Week;
         public ReportRange SelectedRange
@@ -51,11 +54,8 @@ namespace MAUI_Nonsense_App.Pages.Activity
                 if (_selectedRange == value) return;
                 _selectedRange = value;
                 OnPropertyChanged(nameof(SelectedRange));
+                _animateNextRedraw = true;
                 LoadRange();
-                OnPropertyChanged(nameof(LeftLabel));
-                OnPropertyChanged(nameof(RightLabel));
-                OnPropertyChanged(nameof(LeftValueText));
-                OnPropertyChanged(nameof(RightValueText));
             }
         }
 
@@ -149,7 +149,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
         {
             get
             {
-                var today = DateTime.UtcNow.Date;
+                var today = TodayLocal;
                 return SelectedRange switch
                 {
                     ReportRange.Day => AnchorDate < today,
@@ -173,7 +173,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
                 OnPropertyChanged(nameof(TopAverageText));
                 OnPropertyChanged(nameof(LeftValueText));
                 OnPropertyChanged(nameof(RightValueText));
-                RedrawRequested?.Invoke(this, EventArgs.Empty);
+                RedrawRequested?.Invoke(true);
             }
         }
 
@@ -194,7 +194,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
         {
             MetricMode.Steps => steps,
             MetricMode.Distance => steps * _strideCm / 100_000.0,   // km
-            MetricMode.Time => steps / 100.0,                   // minutes (100 steps/min)
+            MetricMode.Time => steps / 100.0,                       // minutes (100 steps/min)
             MetricMode.Calories => MinutesToCalories(steps / 100.0),
             _ => steps
         };
@@ -215,7 +215,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
             _isMondayStart = Preferences.Get(KeyWeekStart, "Monday")
                                         .Equals("Monday", StringComparison.OrdinalIgnoreCase);
 
-            AnchorDate = DateTime.UtcNow.Date;
+            AnchorDate = TodayLocal;
 
             DailyGoalSteps = Preferences.Get(KeyDailyGoal, 10000);
             _strideCm = Preferences.ContainsKey(KeyStrideLengthCm) ? Preferences.Get(KeyStrideLengthCm, 75) : 75;
@@ -235,11 +235,8 @@ namespace MAUI_Nonsense_App.Pages.Activity
 
             _svc.StepsUpdated += (_, __) =>
             {
+                // Live update: bez animacji (LoadRange -> RedrawRequested(false))
                 LoadRange();
-                OnPropertyChanged(nameof(TopPrimaryValueText));
-                OnPropertyChanged(nameof(TopAverageText));
-                OnPropertyChanged(nameof(LeftValueText));
-                OnPropertyChanged(nameof(RightValueText));
             };
 
             LoadRange();
@@ -247,6 +244,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
 
         public void TryShiftRange(int delta)
         {
+            _animateNextRedraw = true;
             switch (SelectedRange)
             {
                 case ReportRange.Day: AnchorDate = AnchorDate.AddDays(delta); break;
@@ -274,7 +272,8 @@ namespace MAUI_Nonsense_App.Pages.Activity
             OnPropertyChanged(nameof(LeftValueText));
             OnPropertyChanged(nameof(RightValueText));
 
-            RedrawRequested?.Invoke(this, EventArgs.Empty);
+            RedrawRequested?.Invoke(_animateNextRedraw);
+            _animateNextRedraw = false;
         }
 
         private void LoadDay()
@@ -283,19 +282,16 @@ namespace MAUI_Nonsense_App.Pages.Activity
             var arr = _svc.GetHourlySteps(AnchorDate) ?? new int[24];
 
             // 2) if we are looking at *today*, cross-check with the live total
-            if (AnchorDate == DateTime.UtcNow.Date)
+            if (AnchorDate == TodayLocal)
             {
-                int live = _svc.Last24HoursSteps;     // what the header shows
-                int hist = arr.Sum();                 // what the chart would plot
+                int live = _svc.Last24HoursSteps; // header value
+                int hist = arr.Sum();             // chart sum
 
-                // Heuristics:
-                // - if hourly is empty but live > 0, we don't want a flat zero chart
-                // - if hourly >> live (e.g., after ResetAll), treat hourly as stale
-                //   ">>" threshold: more than live + 50 steps (tweak if you like)
+                // Heuristics (jak wcześniej)
                 if ((hist == 0 && live > 0) || (hist > live + 50))
                 {
                     var proxy = new int[24];
-                    int hour = DateTime.Now.Hour;     // drop all live steps into current hour
+                    int hour = DateTime.Now.Hour; // lokalna godzina
                     proxy[hour] = Math.Max(0, live);
                     arr = proxy;
                 }
@@ -314,7 +310,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
         {
             Days.Clear();
             var history = _svc.StepHistory;
-            var today = DateTime.UtcNow.Date;
+            var today = TodayLocal;
 
             for (int i = 0; i < 7; i++)
             {
@@ -341,7 +337,7 @@ namespace MAUI_Nonsense_App.Pages.Activity
         {
             MonthDays.Clear();
             var history = _svc.StepHistory;
-            var today = DateTime.UtcNow.Date;
+            var today = TodayLocal;
 
             for (var d = MonthStart; d <= MonthEnd; d = d.AddDays(1))
             {
@@ -367,18 +363,15 @@ namespace MAUI_Nonsense_App.Pages.Activity
 
         private int GetDayTotalSteps()
         {
-            var today = DateTime.UtcNow.Date;
+            var today = TodayLocal;
             return AnchorDate == today ? _svc.Last24HoursSteps : Sum(HourlyStepsForDay);
         }
 
-        // ---------- FIXED: all-time daily average ----------
-        // Now starts from the first day that actually has recorded steps (>0).
-        // If there’s no history, we use today (days = 1). Today’s live steps are
-        // added if today isn’t already present in history.
+        // all-time daily average (jak wcześniej, ale lokalny "today")
         private int GetAllTimeDailyAverageSteps()
         {
             var history = _svc.StepHistory;
-            var today = DateTime.UtcNow.Date;
+            var today = TodayLocal;
             var todayKey = today.ToString("yyyy-MM-dd");
 
             // Find the first date that has >0 steps
