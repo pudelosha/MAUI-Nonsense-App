@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿// Platforms/Android/Services/StepCounter/StepCounterForegroundService.cs
+using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Hardware;
@@ -20,6 +21,21 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
         private bool _isUsingStepCounter = true;
         private int _lastNotifiedSteps = -1;
 
+        // --- Add a PendingIntent so tapping the notification opens StepCounterPage ---
+        private PendingIntent BuildLaunchIntent()
+        {
+            var intent = new Intent(this, typeof(MainActivity))
+                .SetAction(Intent.ActionMain)
+                .AddCategory(Intent.CategoryLauncher)
+                .SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+
+            // Tell MainActivity what to open
+            intent.PutExtra("navigateTo", "StepCounter");
+
+            var flags = PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable;
+            return PendingIntent.GetActivity(this, 0, intent, flags);
+        }
+
         public override void OnCreate()
         {
             base.OnCreate();
@@ -40,6 +56,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 .SetContentTitle("Step Counter")
                 .SetContentText("Counting steps in background")
                 .SetSmallIcon(Resource.Mipmap.appicon)
+                .SetContentIntent(BuildLaunchIntent()) // <— open app to StepCounterPage
                 .SetOngoing(true)
                 .Build();
             StartForeground(101, ntf);
@@ -204,6 +221,7 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
                 .SetContentTitle("Step Counter")
                 .SetContentText($"Today's steps: {steps}")
                 .SetSmallIcon(Resource.Mipmap.appicon)
+                .SetContentIntent(BuildLaunchIntent()) // <— ensure tap always navigates
                 .SetOngoing(true)
                 .Build();
             NotificationManagerCompat.From(this).Notify(101, ntf);

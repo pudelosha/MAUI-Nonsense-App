@@ -1,4 +1,5 @@
-﻿using Android;
+﻿// Platforms/Android/MainActivity.cs
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -10,6 +11,8 @@ using MAUI_Nonsense_App.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
+using Microsoft.Maui.Controls; // Shell / NavigationPage
+using System.Threading.Tasks;
 
 namespace MAUI_Nonsense_App
 {
@@ -37,6 +40,9 @@ namespace MAUI_Nonsense_App
             }
 
             RegisterAllNotificationChannels();
+
+            // Handle deep-link from notification (cold start)
+            HandleIntent(Intent);
         }
 
         private bool _serviceStarted = false;
@@ -119,6 +125,42 @@ namespace MAUI_Nonsense_App
 
             intent.AddFlags(ActivityFlags.NewTask);
             StartActivity(intent);
+        }
+
+        // -------- handle notification taps while app is already running --------
+        protected override void OnNewIntent(Intent? intent)
+        {
+            base.OnNewIntent(intent);
+            HandleIntent(intent);
+        }
+
+        private void HandleIntent(Intent? intent)
+        {
+            if (intent == null) return;
+
+            var target = intent.GetStringExtra("navigateTo");
+            if (!string.Equals(target, "StepCounter", System.StringComparison.OrdinalIgnoreCase))
+                return;
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                var mainPage = App.Current?.MainPage;
+
+                if (mainPage is Shell shell)
+                {
+                    // Ensure you have Routing.RegisterRoute("stepcounter", typeof(Pages.Activity.StepCounterPage));
+                    await shell.GoToAsync("stepcounter"); // use "//stepcounter" if it's a top-level shell item
+                    return;
+                }
+
+                if (mainPage is NavigationPage nav)
+                {
+                    var svc = MauiApplication.Current.Services
+                        .GetService(typeof(IStepCounterService)) as IStepCounterService;
+
+                    await nav.PushAsync(new Pages.Activity.StepCounterPage(svc));
+                }
+            });
         }
     }
 }
