@@ -1,8 +1,7 @@
-﻿using MAUI_Nonsense_App.Models;
-using MAUI_Nonsense_App.Services;
-using Microsoft.Maui.Graphics;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using MAUI_Nonsense_App.Models;
+using MAUI_Nonsense_App.Services;
 
 namespace MAUI_Nonsense_App.ViewModels;
 
@@ -39,11 +38,8 @@ public class SavePdfViewModel : INotifyPropertyChanged
             : $"Document_{DateTime.Now:yyyyMMdd_HHmmss}";
     }
 
-    public async Task<bool> SaveDocumentAsync(string fileName, string? password, List<ImagePageModel> pages)
-    {
-        return await _docService.CreatePdfAsync(fileName, password, pages);
-    }
-
+    public Task<bool> SaveDocumentAsync(string fileName, string? password, List<ImagePageModel> pages)
+        => _docService.CreatePdfAsync(fileName, password, pages);
 
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string? name = null) =>

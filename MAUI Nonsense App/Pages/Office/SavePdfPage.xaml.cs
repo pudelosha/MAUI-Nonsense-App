@@ -30,11 +30,11 @@ public partial class SavePdfPage : ContentPage
             return;
         }
 
-        var success = await _viewModel.SaveDocumentAsync(fileName, password, _session.Pages);
+        bool ok = await _viewModel.SaveDocumentAsync(fileName, password, _session.Pages);
 
-        if (success)
+        if (ok)
         {
-            await DisplayAlert("Success", "PDF saved successfully.", "OK");
+            // ImageToPdfPage is your root; it refreshes in OnAppearing()
             await Navigation.PopToRootAsync();
         }
         else

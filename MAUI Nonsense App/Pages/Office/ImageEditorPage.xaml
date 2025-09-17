@@ -4,28 +4,49 @@
              x:Class="MAUI_Nonsense_App.Pages.Office.ImageEditorPage"
              Title="Edit Image">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <Grid Padding="20" RowDefinitions="Auto,*,Auto" RowSpacing="15">
 
         <!-- Instructions -->
-        <Label Text="Adjust the image frame (cropping UI to come)"
+        <Label Grid.Row="0"
+               Text="Drag the 4 green dots to adjust the page frame"
                FontAttributes="Bold"
                FontSize="16"
                HorizontalOptions="Center" />
 
-        <!-- Image Placeholder -->
-        <Border Stroke="Gray" StrokeThickness="1" Padding="5">
-            <Image x:Name="EditableImage"
-                   Aspect="AspectFit"
-                   HeightRequest="400" />
+        <!-- Image + overlay share the SAME Border (padding & clipping) -->
+        <Border Grid.Row="1"
+                Stroke="Gray"
+                StrokeThickness="1"
+                Padding="5"
+                BackgroundColor="Transparent">  <!-- optional -->
+            <Grid>
+                <Image x:Name="EditableImage"
+                       Aspect="AspectFit"
+                       HeightRequest="400" />
+                <GraphicsView x:Name="Overlay"
+                              InputTransparent="False"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="Fill"
+                              BackgroundColor="Transparent" />
+            </Grid>
         </Border>
 
-        <!-- Done Button -->
-        <Button Text="Done"
-                Clicked="OnDoneClicked"
-                BackgroundColor="#512BD4"
-                TextColor="White"
-                CornerRadius="8"
-                HorizontalOptions="Fill" />
+        <!-- Actions -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Button Text="Cancel"
+                    Clicked="OnCancelClicked"
+                    BackgroundColor="#666"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HorizontalOptions="Fill" />
+            <Button Grid.Column="1"
+                    Text="Save"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="#512BD4"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HorizontalOptions="Fill" />
+        </Grid>
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>
