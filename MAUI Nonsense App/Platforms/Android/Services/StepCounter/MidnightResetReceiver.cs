@@ -1,4 +1,6 @@
-﻿using Android.Content;
+﻿using Android.App;
+using Android.Content;
+using AndroidX.Core.App;
 using Microsoft.Maui.Storage;
 using System;
 using System.Collections.Generic;
@@ -48,6 +50,38 @@ namespace MAUI_Nonsense_App.Platforms.Android.Services.StepCounter
 
             if (!daily.ContainsKey(today)) daily[today] = 0;
             Preferences.Set("StepHistoryDaily", JsonSerializer.Serialize(daily));
+
+            // NEW: Immediately refresh the persistent notification to show 0
+            UpdateNotificationToZero(context);
+        }
+
+        // --- helpers ---
+
+        private void UpdateNotificationToZero(Context context)
+        {
+            // Uses the same channel ("step_counter_channel") and ID (101) as the foreground service
+            var builder = new NotificationCompat.Builder(context, "step_counter_channel")
+                .SetContentTitle("Step Counter")
+                .SetContentText("Today's steps: 0")
+                .SetSmallIcon(Resource.Mipmap.appicon)
+                .SetOngoing(true)
+                .SetContentIntent(BuildLaunchIntent(context));
+
+            NotificationManagerCompat.From(context).Notify(101, builder.Build());
+        }
+
+        private PendingIntent BuildLaunchIntent(Context context)
+        {
+            // Keep tap-to-open StepCounterPage behavior consistent with the service notification
+            var intent = new Intent(context, typeof(MAUI_Nonsense_App.MainActivity))
+                .SetAction(Intent.ActionMain)
+                .AddCategory(Intent.CategoryLauncher)
+                .SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+
+            intent.PutExtra("navigateTo", "StepCounter");
+
+            var flags = PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable;
+            return PendingIntent.GetActivity(context, 0, intent, flags);
         }
     }
 }
