@@ -48,10 +48,9 @@ public partial class ImageToPdfPage : ContentPage
         await Navigation.PushAsync(new ImageSelectionPage(docService));
     }
 
-
     private async void OnDeletePdfClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is PdfDocumentModel pdf)
+        if ((sender as BindableObject)?.BindingContext is PdfDocumentModel pdf)
         {
             bool confirm = await DisplayAlert("Delete", $"Delete '{pdf.Name}'?", "Yes", "Cancel");
             if (confirm && File.Exists(pdf.FilePath))
@@ -64,7 +63,7 @@ public partial class ImageToPdfPage : ContentPage
 
     private async void OnSendPdfClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is PdfDocumentModel pdf)
+        if ((sender as BindableObject)?.BindingContext is PdfDocumentModel pdf)
         {
             await Share.RequestAsync(new ShareFileRequest
             {

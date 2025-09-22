@@ -6,11 +6,15 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            <!-- Colors -->
             <Color x:Key="CardBg">#F3F4F6</Color>
             <Color x:Key="TextPrimary">#111827</Color>
             <Color x:Key="TextSecondary">#6B7280</Color>
             <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="InnerCardBg">White</Color>
+            <!-- white inner card -->
 
+            <!-- Keep your original soft shadow style -->
             <Style TargetType="Frame">
                 <Setter Property="HasShadow" Value="True"/>
                 <Setter Property="CornerRadius" Value="16"/>
@@ -18,6 +22,7 @@
                 <Setter Property="Padding" Value="16"/>
             </Style>
 
+            <!-- Grey pill buttons -->
             <Style x:Key="PillGrey" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
                 <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
@@ -26,11 +31,27 @@
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
             </Style>
+
+            <!-- Compact pill (for stacked buttons) -->
+            <Style x:Key="PillGreySm" TargetType="Button" BasedOn="{StaticResource PillGrey}">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Padding" Value="14,10" />
+            </Style>
+
+            <!-- Inner item cards: white, rounded, NO border/shadow -->
+            <Style x:Key="InnerCard" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="Stroke" Value="{x:Null}" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="BackgroundColor" Value="{StaticResource InnerCardBg}" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Margin" Value="0,8" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!-- Uniform page padding; both sections use the same extra 4dp gutter -->
-    <Grid Padding="12" RowDefinitions="Auto,*" RowSpacing="12">
+    <!-- Grid makes the bottom area fill all remaining space -->
+    <Grid Padding="10" RowDefinitions="Auto,*" RowSpacing="12" IsClippedToBounds="False">
 
         <!-- Top card -->
         <Frame Grid.Row="0" Margin="6,0">
@@ -44,73 +65,81 @@
             </VerticalStackLayout>
         </Frame>
 
-        <!-- List container: same gutter; allow shadows to overflow -->
-        <Grid Grid.Row="1"
-              Padding="4,0"
-              IsClippedToBounds="False"
-              BackgroundColor="Transparent">
+        <!-- Bottom card fills the rest of the screen -->
+        <Frame Grid.Row="1"
+               Margin="6,0"
+               VerticalOptions="FillAndExpand">
+            <Grid IsClippedToBounds="False">
 
-            <CollectionView x:Name="PdfListView"
-                            ItemsSource="{Binding PdfDocuments}"
-                            SelectionMode="None"
-                            BackgroundColor="Transparent">
+                <CollectionView x:Name="PdfListView"
+                                ItemsSource="{Binding PdfDocuments}"
+                                SelectionMode="None"
+                                BackgroundColor="Transparent"
+                                VerticalOptions="FillAndExpand">
 
-                <CollectionView.EmptyView>
-                    <!-- Card has no horizontal margin: width matches top card; shadow room comes from container padding -->
-                    <Frame Margin="2,6">
-                        <VerticalStackLayout Spacing="6">
-                            <Label Text="No PDFs yet"
-                                   FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource TextPrimary}" />
-                            <Label Text="Tap “New PDF” to create your first document."
-                                   FontSize="12"
-                                   TextColor="{StaticResource TextSecondary}" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </CollectionView.EmptyView>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <!-- Same here: no horizontal margin; consistent spacing top/bottom -->
-                        <Frame Margin="0,6">
-                            <VerticalStackLayout Spacing="8">
-
-                                <Label Text="{Binding Name}"
-                                       FontSize="18"
+                    <!-- Full-height empty view -->
+                    <CollectionView.EmptyView>
+                        <Grid RowDefinitions="*"
+                              ColumnDefinitions="*"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="Fill">
+                            <VerticalStackLayout Spacing="6"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center">
+                                <Label Text="No PDFs yet"
+                                       FontSize="16"
                                        FontAttributes="Bold"
                                        TextColor="{StaticResource TextPrimary}" />
-
-                                <Grid RowDefinitions="Auto,Auto">
-                                    <Label Grid.Row="0"
-                                           Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}"
-                                           FontSize="12"
-                                           TextColor="{StaticResource TextSecondary}" />
-                                    <Label Grid.Row="1"
-                                           Text="{Binding SizeInKb}"
-                                           FontSize="12"
-                                           TextColor="{StaticResource TextSecondary}" />
-                                </Grid>
-
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                                    <Button Grid.Column="0"
-                                            Text="Delete"
-                                            Style="{StaticResource PillGrey}"
-                                            Clicked="OnDeletePdfClicked"
-                                            CommandParameter="{Binding .}" />
-                                    <Button Grid.Column="1"
-                                            Text="Send"
-                                            Style="{StaticResource PillGrey}"
-                                            Clicked="OnSendPdfClicked"
-                                            CommandParameter="{Binding .}" />
-                                </Grid>
-
+                                <Label Text="Tap “New PDF” to create your first document."
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
+                        </Grid>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- White, rounded, no border -->
+                            <Border Style="{StaticResource InnerCard}">
+                                <!-- Two columns: details (grow) + vertical buttons (auto) -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" RowSpacing="6">
+
+                                    <!-- Left: file details -->
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="WordWrap"
+                                               TextColor="{StaticResource TextPrimary}" />
+                                        <Label Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                        <Label Text="{Binding SizeInKb}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Right: buttons stacked vertically -->
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="8"
+                                                         VerticalOptions="Center"
+                                                         HorizontalOptions="End">
+                                        <Button Text="Delete"
+                                                Style="{StaticResource PillGreySm}"
+                                                Clicked="OnDeletePdfClicked" />
+                                        <Button Text="Send"
+                                                Style="{StaticResource PillGreySm}"
+                                                Clicked="OnSendPdfClicked" />
+                                    </VerticalStackLayout>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Frame>
 
     </Grid>
 </ContentPage>
