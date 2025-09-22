@@ -32,10 +32,10 @@ public partial class ImageSelectionPage : ContentPage
         await Navigation.PushAsync(new ImageArrangePage(session));
     }
 
-
     private void OnDeleteClicked(object sender, EventArgs e)
     {
-        if ((sender as Button)?.CommandParameter is ImagePageModel model)
+        // More robust than CommandParameter inside a CollectionView template
+        if ((sender as BindableObject)?.BindingContext is ImagePageModel model)
             _viewModel.SelectedImages.Remove(model);
     }
 

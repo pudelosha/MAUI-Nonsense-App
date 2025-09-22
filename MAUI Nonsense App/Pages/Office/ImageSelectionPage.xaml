@@ -15,8 +15,9 @@
             <Color x:Key="TextPrimary">#111827</Color>
             <Color x:Key="TextSecondary">#6B7280</Color>
             <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="InnerCardBg">White</Color>
 
-            <!-- Card frame: soft shadow, no border -->
+            <!-- Shadowed card (outer frames) -->
             <Style TargetType="Frame">
                 <Setter Property="HasShadow" Value="True" />
                 <Setter Property="CornerRadius" Value="16" />
@@ -24,7 +25,7 @@
                 <Setter Property="Padding" Value="16" />
             </Style>
 
-            <!-- Grey pill buttons (default size) -->
+            <!-- Grey pill (default) -->
             <Style x:Key="PillGrey" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
                 <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
@@ -34,22 +35,34 @@
                 <Setter Property="HorizontalOptions" Value="Fill" />
             </Style>
 
-            <!-- Smaller grey pill (for header actions) -->
+            <!-- Grey pill (compact) -->
             <Style x:Key="PillGreySm" TargetType="Button" BasedOn="{StaticResource PillGrey}">
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="Padding" Value="14,10" />
             </Style>
+
+            <!-- Inner item card: white, rounded, no border/shadow -->
+            <Style x:Key="InnerCard" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="Stroke" Value="{x:Null}" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="BackgroundColor" Value="{StaticResource InnerCardBg}" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Margin" Value="0,8" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid Padding="8" RowDefinitions="Auto,*,Auto" RowSpacing="16">
+    <!-- Use Grid so the list area always fills remaining height -->
+    <Grid Padding="10" RowDefinitions="Auto,*,Auto" RowSpacing="12" IsClippedToBounds="False">
 
         <!-- Top card: actions + hint -->
-        <Frame Grid.Row="0" Margin="8,0">
+        <Frame Grid.Row="0" Margin="6,0">
             <VerticalStackLayout Spacing="12">
                 <Label Text="Pick images from your gallery or take a new photo. You can reorder and crop them later."
                        FontSize="12"
                        TextColor="{StaticResource TextSecondary}" />
+
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                     <Button Grid.Column="0"
                             Text="Take Photo"
@@ -63,74 +76,88 @@
             </VerticalStackLayout>
         </Frame>
 
-        <!-- Selected images list (scrolls itself) -->
-        <CollectionView Grid.Row="1"
-                        x:Name="SelectedImagesView"
-                        ItemsSource="{Binding SelectedImages}"
-                        SelectionMode="None">
+        <!-- Bottom card: fills remaining height, hosts the list -->
+        <Frame Grid.Row="1"
+               Margin="6,0"
+               VerticalOptions="FillAndExpand">
+            <Grid IsClippedToBounds="False">
 
-            <CollectionView.EmptyView>
-                <!-- Give the empty card horizontal margin so its shadow isn't clipped -->
-                <Frame Margin="8,4">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="No images selected"
-                               FontSize="16"
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextPrimary}" />
-                        <Label Text="Use the buttons above to add images."
-                               FontSize="12"
-                               TextColor="{StaticResource TextSecondary}" />
-                    </VerticalStackLayout>
-                </Frame>
-            </CollectionView.EmptyView>
+                <CollectionView x:Name="SelectedImagesView"
+                                ItemsSource="{Binding SelectedImages}"
+                                SelectionMode="None"
+                                VerticalOptions="FillAndExpand"
+                                BackgroundColor="Transparent">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <!-- Add horizontal margin so the drop shadow has room -->
-                    <Frame Margin="8,4">
-                        <Grid ColumnDefinitions="Auto,*,Auto"
-                              RowDefinitions="Auto,Auto"
-                              ColumnSpacing="12"
-                              RowSpacing="6">
-
-                            <!-- Thumbnail -->
-                            <Image Grid.RowSpan="2"
-                                   Source="{Binding FilePath}"
-                                   WidthRequest="64"
-                                   HeightRequest="86"
-                                   Aspect="AspectFill" />
-
-                            <!-- File name -->
-                            <Label Grid.Column="1" Grid.Row="0"
-                                   Text="{Binding FileName}"
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource TextPrimary}" />
-
-                            <!-- Meta -->
-                            <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Spacing="12">
-                                <Label Text="{Binding DisplayDate}"
+                    <!-- Full-height, centered empty state -->
+                    <CollectionView.EmptyView>
+                        <Grid RowDefinitions="*"
+                              ColumnDefinitions="*"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="Fill">
+                            <VerticalStackLayout Spacing="6"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center">
+                                <Label Text="No images selected"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="Use the buttons above to add images."
                                        FontSize="12"
                                        TextColor="{StaticResource TextSecondary}" />
-                                <Label Text="{Binding DisplaySize}"
-                                       FontSize="12"
-                                       TextColor="{StaticResource TextSecondary}" />
-                            </HorizontalStackLayout>
-
-                            <!-- Remove -->
-                            <Button Grid.Column="2" Grid.RowSpan="2"
-                                    Text="Remove"
-                                    Style="{StaticResource PillGrey}"
-                                    CommandParameter="{Binding .}"
-                                    Clicked="OnDeleteClicked"
-                                    VerticalOptions="Center" />
+                            </VerticalStackLayout>
                         </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- White rounded card (no shadow) inside the shadowed frame -->
+                            <Border Style="{StaticResource InnerCard}">
+                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                      RowDefinitions="Auto,Auto"
+                                      ColumnSpacing="12"
+                                      RowSpacing="6">
+
+                                    <!-- Thumbnail -->
+                                    <Image Grid.RowSpan="2"
+                                           Source="{Binding FilePath}"
+                                           WidthRequest="64"
+                                           HeightRequest="86"
+                                           Aspect="AspectFill" />
+
+                                    <!-- File name -->
+                                    <Label Grid.Column="1" Grid.Row="0"
+                                           Text="{Binding FileName}"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="WordWrap"
+                                           TextColor="{StaticResource TextPrimary}" />
+
+                                    <!-- Meta -->
+                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Spacing="12">
+                                        <Label Text="{Binding DisplayDate}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                        <Label Text="{Binding DisplaySize}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- Remove -->
+                                    <Button Grid.Column="2" Grid.RowSpan="2"
+                                            Text="Remove"
+                                            Style="{StaticResource PillGreySm}"
+                                            Clicked="OnDeleteClicked"
+                                            VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Frame>
 
         <!-- Bottom actions -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" Margin="5,0">
             <Button Grid.Column="0"
                     Text="Back"
                     Style="{StaticResource PillGrey}"
