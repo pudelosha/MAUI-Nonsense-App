@@ -8,6 +8,6 @@ namespace MAUI_Nonsense_App.Services
         Task<List<string>> PickImagesAsync();
         Task<string> SaveTempImageAsync(FileResult file);
         Task<bool> GeneratePdfAsync(PdfCreationSession session, string outputPath, string? password);
-        Task<bool> CreatePdfAsync(string name, string? password, List<ImagePageModel> pages);
+        Task<bool> CreatePdfAsync(string name, string? password, List<ImagePageModel> pages, int jpegQuality);
     }
 }

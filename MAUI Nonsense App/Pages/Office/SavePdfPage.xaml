@@ -4,36 +4,81 @@
              x:Class="MAUI_Nonsense_App.Pages.Office.SavePdfPage"
              Title="Save PDF">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
 
-            <!-- Title -->
-            <Label Text="Finalize PDF Document"
-                   FontAttributes="Bold"
-                   FontSize="18"
-                   HorizontalOptions="Center" />
+            <!-- Soft gray card -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="CornerRadius" Value="16"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
 
-            <!-- Document name -->
-            <Label Text="Document Name" />
-            <Entry Placeholder="e.g. Notes_2025"
-                   Text="{Binding Name}"
-                   ReturnType="Done" />
+            <!-- Grey pill button -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Optional password -->
-            <Label Text="Password (optional)" />
-            <Entry IsPassword="True"
-                   Placeholder="Leave empty for no password"
-                   Text="{Binding Password}"
-                   ReturnType="Done" />
+    <Grid Padding="10" RowDefinitions="*,Auto" RowSpacing="12">
 
-            <!-- Save Button -->
-            <Button Text="Save PDF"
-                    Clicked="OnSaveClicked"
-                    BackgroundColor="#512BD4"
-                    TextColor="White"
-                    CornerRadius="8"
-                    HorizontalOptions="Fill" />
+        <!-- Single gray card with all controls -->
+        <Frame Grid.Row="0" Margin="6,0">
+            <VerticalStackLayout Spacing="14">
 
-        </VerticalStackLayout>
-    </ScrollView>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Document name" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Entry Text="{Binding Name}" Placeholder="e.g. Notes_2025" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Password (optional)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Leave empty for no password" />
+                </VerticalStackLayout>
+
+                <!-- Compression -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Compression" Grid.Column="0" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="{Binding CompressionPercent, StringFormat='{0}%'}"
+                           Grid.Column="1" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                </Grid>
+
+                <Slider Minimum="0" Maximum="100"
+                        Value="{Binding CompressionPercent, Mode=TwoWay}"
+                        MinimumTrackColor="#6B7280" />
+
+                <Label Text="{Binding EstimatedSizeText}"
+                       FontAttributes="Bold"
+                       TextColor="{Binding EstimatedColor}" />
+
+                <Label Text="Tip: higher compression reduces file size but also slightly reduces image quality."
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Bottom buttons -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" Margin="5,0">
+            <Button Grid.Column="0"
+                    Text="Cancel"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnCancelClicked" />
+            <Button Grid.Column="1"
+                    Text="Save PDF"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnSaveClicked" />
+        </Grid>
+
+    </Grid>
 </ContentPage>

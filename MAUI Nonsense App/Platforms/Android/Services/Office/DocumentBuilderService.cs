@@ -54,11 +54,12 @@ public class DocumentBuilderService : IDocumentBuilderService
         return dest;
     }
 
-    // Legacy helper – left for compatibility; now uses the real writer
+    // Legacy helper – left for compatibility; now uses the real writer with default quality 85
     public async Task<bool> GeneratePdfAsync(PdfCreationSession session, string outputPath, string? password)
-        => await CreatePdfInternalAsync(outputPath, session.Pages);
+        => await CreatePdfInternalAsync(outputPath, session.Pages, jpegQuality: 85);
 
-    public async Task<bool> CreatePdfAsync(string name, string? password, List<ImagePageModel> pages)
+    // NEW SIGNATURE: with jpegQuality
+    public async Task<bool> CreatePdfAsync(string name, string? password, List<ImagePageModel> pages, int jpegQuality)
     {
         try
         {
@@ -72,7 +73,7 @@ public class DocumentBuilderService : IDocumentBuilderService
             Directory.CreateDirectory(outputDir);
 
             var path = GetUniquePath(Path.Combine(outputDir, $"{safeName}.pdf"));
-            var ok = await CreatePdfInternalAsync(path, pages);
+            var ok = await CreatePdfInternalAsync(path, pages, jpegQuality);
             return ok;
         }
         catch (Exception ex)
@@ -108,13 +109,15 @@ public class DocumentBuilderService : IDocumentBuilderService
     }
 
     /// <summary>
-    /// Core PDF writer. Uses SkiaSharp to crop images (axis-aligned) and add as PDF pages.
-    /// Note: SkiaSharp's PDF doesn't support password; 'password' is currently ignored.
+    /// Core PDF writer. Uses SkiaSharp to crop (axis-aligned from your quad) and add to PDF.
+    /// Encodes each page as JPEG with requested quality to control final size.
     /// </summary>
-    private static async Task<bool> CreatePdfInternalAsync(string outputPath, List<ImagePageModel> pages)
+    private static async Task<bool> CreatePdfInternalAsync(string outputPath, List<ImagePageModel> pages, int jpegQuality)
     {
         try
         {
+            int q = Math.Clamp(jpegQuality, 1, 100); // we’ll pass this straight to Skia’s encoder
+
             using var fs = File.Open(outputPath, FileMode.Create, FileAccess.Write, FileShare.None);
             using var doc = SKDocument.CreatePdf(fs);
 
@@ -125,9 +128,10 @@ public class DocumentBuilderService : IDocumentBuilderService
                 using var upright = LoadBitmapUpright(p.FilePath);
                 if (upright is null) continue;
 
+                // Quad -> axis-aligned crop rect in SOURCE pixels
                 var crop = ToCropRect(upright.Width, upright.Height, p.FrameCrop);
 
-                // Clamp to bounds
+                // Clamp to bitmap bounds (handles outside-image placements safely)
                 crop = SKRectI.Intersect(crop, new SKRectI(0, 0, upright.Width, upright.Height));
                 if (crop.IsEmpty) continue;
 
@@ -137,16 +141,22 @@ public class DocumentBuilderService : IDocumentBuilderService
                 {
                     var src = new SKRect(crop.Left, crop.Top, crop.Right, crop.Bottom);
                     var dst = new SKRect(0, 0, crop.Width, crop.Height);
+                    canvas.Clear(SKColors.White); // if alpha present, flatten to white
                     canvas.DrawBitmap(upright, src, dst);
                 }
 
-                // PDF page size = cropped bitmap size (points)
+                // Encode cropped bitmap as JPEG with quality q (controls size)
+                using var img = SKImage.FromBitmap(cropped);
+                using var encoded = img.Encode(SKEncodedImageFormat.Jpeg, q);
+
+                // Place encoded image on the PDF page at native pixel size (1 px = 1 pt)
                 using var pageCanvas = doc.BeginPage(cropped.Width, cropped.Height);
-                pageCanvas.DrawBitmap(cropped, new SKRect(0, 0, cropped.Width, cropped.Height));
+                using var encImg = SKImage.FromEncodedData(encoded);
+                pageCanvas.DrawImage(encImg, new SKRect(0, 0, cropped.Width, cropped.Height));
                 doc.EndPage();
             }
 
-            doc.Close();
+            doc.Close(); // flush
             await Task.CompletedTask;
             return true;
         }
@@ -173,7 +183,7 @@ public class DocumentBuilderService : IDocumentBuilderService
             var bmp = new SKBitmap(info.Width, info.Height, info.ColorType, info.AlphaType);
             codec.GetPixels(bmp.Info, bmp.GetPixels());
 
-            // EXIF
+            // EXIF orientation
             int degrees = 0;
             bool flipH = false, flipV = false;
             try
@@ -224,7 +234,7 @@ public class DocumentBuilderService : IDocumentBuilderService
     }
 
     /// <summary>
-    /// Convert a normalized quad (or null) into an axis-aligned pixel rect.
+    /// Convert a normalized quad (may be outside 0..1) into an axis-aligned pixel rect.
     /// </summary>
     private static SKRectI ToCropRect(int width, int height, CropQuadNormalized? quad)
     {
@@ -242,13 +252,14 @@ public class DocumentBuilderService : IDocumentBuilderService
         int x3 = (int)Math.Round(q.BL.X * width);
         int y3 = (int)Math.Round(q.BL.Y * height);
 
-        int left = Math.Clamp(Math.Min(Math.Min(x0, x1), Math.Min(x2, x3)), 0, width);
-        int top = Math.Clamp(Math.Min(Math.Min(y0, y1), Math.Min(y2, y3)), 0, height);
-        int right = Math.Clamp(Math.Max(Math.Max(x0, x1), Math.Max(x2, x3)), 0, width);
-        int bottom = Math.Clamp(Math.Max(Math.Max(y0, y1), Math.Max(y2, y3)), 0, height);
+        int left = Math.Min(Math.Min(x0, x1), Math.Min(x2, x3));
+        int top = Math.Min(Math.Min(y0, y1), Math.Min(y2, y3));
+        int right = Math.Max(Math.Max(x0, x1), Math.Max(x2, x3));
+        int bottom = Math.Max(Math.Max(y0, y1), Math.Max(y2, y3));
 
-        if (right <= left) right = Math.Min(left + 1, width);
-        if (bottom <= top) bottom = Math.Min(top + 1, height);
+        // We DO NOT clamp here (so outside is preserved), clamp happens before cropping
+        if (right <= left) right = left + 1;
+        if (bottom <= top) bottom = top + 1;
 
         return new SKRectI(left, top, right, bottom);
     }
