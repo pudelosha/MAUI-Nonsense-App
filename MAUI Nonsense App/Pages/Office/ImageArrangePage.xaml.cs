@@ -27,21 +27,22 @@ public partial class ImageArrangePage : ContentPage
         await Navigation.PopAsync();
     }
 
-    private void OnMoveUpTapped(object sender, TappedEventArgs e)
+    // New: button-click versions that read the item from BindingContext
+    private void OnMoveUpClicked(object sender, EventArgs e)
     {
-        if (e.Parameter is ImagePageModel page)
+        if ((sender as BindableObject)?.BindingContext is ImagePageModel page)
             _viewModel.MoveUp(page);
     }
 
-    private void OnMoveDownTapped(object sender, TappedEventArgs e)
+    private void OnMoveDownClicked(object sender, EventArgs e)
     {
-        if (e.Parameter is ImagePageModel page)
+        if ((sender as BindableObject)?.BindingContext is ImagePageModel page)
             _viewModel.MoveDown(page);
     }
 
-    private async void OnEditTapped(object sender, TappedEventArgs e)
+    private async void OnEditClicked(object sender, EventArgs e)
     {
-        if (e.Parameter is ImagePageModel page)
+        if ((sender as BindableObject)?.BindingContext is ImagePageModel page)
             await Navigation.PushAsync(new ImageEditorPage(page));
     }
 }

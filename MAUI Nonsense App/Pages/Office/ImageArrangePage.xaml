@@ -4,133 +4,165 @@
              x:Class="MAUI_Nonsense_App.Pages.Office.ImageArrangePage"
              Title="Arrange Pages">
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Palette -->
+            <Color x:Key="CardBg">#F3F4F6</Color>
+            <Color x:Key="TextPrimary">#111827</Color>
+            <Color x:Key="TextSecondary">#6B7280</Color>
+            <Color x:Key="BtnBg">#E5E7EB</Color>
+            <Color x:Key="InnerCardBg">White</Color>
 
-        <!-- Instruction -->
-        <Label Grid.Row="0"
-               Text="Reorder and edit pages before creating PDF."
-               FontAttributes="Bold"
-               FontSize="14"
-               Margin="0,0,0,10" />
+            <!-- Shadowed outer cards -->
+            <Style TargetType="Frame">
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
 
-        <!-- Scrollable List -->
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="10">
+            <!-- Grey pill (default) -->
+            <Style x:Key="PillGrey" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="18,12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
+            <!-- Grey pill (compact) -->
+            <Style x:Key="PillGreySm" TargetType="Button" BasedOn="{StaticResource PillGrey}">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Padding" Value="14,10" />
+            </Style>
+
+            <!-- Inner item card: white, rounded, no border/shadow -->
+            <Style x:Key="InnerCard" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="Stroke" Value="{x:Null}" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="BackgroundColor" Value="{StaticResource InnerCardBg}" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Margin" Value="0,8" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Grid makes the list area fill the remaining height -->
+    <Grid Padding="10" RowDefinitions="Auto,*,Auto" RowSpacing="12" IsClippedToBounds="False">
+
+        <!-- Top card: instruction -->
+        <Frame Grid.Row="0" Margin="6,0">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Reorder and edit pages before creating the PDF."
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Bottom card: holds the reorderable list -->
+        <Frame Grid.Row="1"
+               Margin="6,0"
+               VerticalOptions="FillAndExpand">
+            <Grid IsClippedToBounds="False">
 
                 <CollectionView x:Name="ImagesCollectionView"
                                 ItemsSource="{Binding Pages}"
-                                SelectionMode="None">
+                                SelectionMode="None"
+                                VerticalOptions="FillAndExpand"
+                                BackgroundColor="Transparent">
+
+                    <CollectionView.EmptyView>
+                        <Grid RowDefinitions="*"
+                              ColumnDefinitions="*"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="Fill">
+                            <VerticalStackLayout Spacing="6"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center">
+                                <Label Text="No pages yet"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="Add images on the previous screen."
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </CollectionView.EmptyView>
+
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame BorderColor="LightGray"
-                                   CornerRadius="8"
-                                   Padding="10"
-                                   Margin="0,5"
-                                   HeightRequest="160">
+                            <!-- White rounded inner card -->
+                            <Border Style="{StaticResource InnerCard}">
+                                <!-- Three columns: thumbnail / details / vertical buttons -->
+                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                      RowDefinitions="Auto,Auto"
+                                      ColumnSpacing="12"
+                                      RowSpacing="6">
 
-                                <!-- Two equal columns -->
-                                <Grid ColumnDefinitions="*,*"
-                                      ColumnSpacing="15"
-                                      VerticalOptions="CenterAndExpand">
+                                    <!-- Thumbnail -->
+                                    <Image Grid.RowSpan="2"
+                                           Source="{Binding FilePath}"
+                                           WidthRequest="72"
+                                           HeightRequest="98"
+                                           Aspect="AspectFill" />
 
-                                    <!-- Image (left) -->
-                                    <Image Source="{Binding FilePath}"
-                                           WidthRequest="100"
-                                           HeightRequest="140"
-                                           Aspect="AspectFill"
-                                           Grid.Column="0"
-                                           HorizontalOptions="Start"
-                                           VerticalOptions="Center" />
+                                    <!-- Details -->
+                                    <VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" Spacing="4">
+                                        <!-- Smaller filename -->
+                                        <Label Text="{Binding FileName}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="WordWrap"
+                                               TextColor="{StaticResource TextPrimary}" />
+                                        <!-- Date above size (stacked) -->
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding DisplayDate}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondary}" />
+                                            <Label Text="{Binding DisplaySize}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
 
-                                    <!-- Buttons (right) -->
-                                    <Grid Grid.Column="1"
-                                          RowDefinitions="Auto,Auto,Auto"
-                                          VerticalOptions="CenterAndExpand"
-                                          HorizontalOptions="FillAndExpand">
-
-                                        <!-- Up -->
-                                        <Border BackgroundColor="#512BD4"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="8"
-                                                Margin="0,0,0,10"
-                                                Grid.Row="0"
-                                                HorizontalOptions="FillAndExpand">
-                                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                                <Label Text="&#xf062;" FontFamily="FASolid" FontSize="16" TextColor="White" />
-                                                <Label Text="Up" TextColor="White" Margin="5,0,0,0" />
-                                            </HorizontalStackLayout>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer 
-                                                    CommandParameter="{Binding}"
-                                                    Tapped="OnMoveUpTapped" />
-                                            </Border.GestureRecognizers>
-                                        </Border>
-
-                                        <!-- Edit -->
-                                        <Border BackgroundColor="#512BD4"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="8"
-                                                Margin="0,0,0,10"
-                                                Grid.Row="1"
-                                                HorizontalOptions="FillAndExpand">
-                                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                                <Label Text="&#xf044;" FontFamily="FASolid" FontSize="16" TextColor="White" />
-                                                <Label Text="Edit" TextColor="White" Margin="5,0,0,0" />
-                                            </HorizontalStackLayout>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer 
-                                                    CommandParameter="{Binding}"
-                                                    Tapped="OnEditTapped" />
-                                            </Border.GestureRecognizers>
-                                        </Border>
-
-                                        <!-- Down -->
-                                        <Border BackgroundColor="#512BD4"
-                                                StrokeShape="RoundRectangle 8"
-                                                Padding="8"
-                                                Grid.Row="2"
-                                                HorizontalOptions="FillAndExpand">
-                                            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                                <Label Text="&#xf063;" FontFamily="FASolid" FontSize="16" TextColor="White" />
-                                                <Label Text="Down" TextColor="White" Margin="5,0,0,0" />
-                                            </HorizontalStackLayout>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer 
-                                                    CommandParameter="{Binding}"
-                                                    Tapped="OnMoveDownTapped" />
-                                            </Border.GestureRecognizers>
-                                        </Border>
-                                    </Grid>
+                                    <!-- Actions: stacked -->
+                                    <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2"
+                                                         Spacing="8"
+                                                         VerticalOptions="Center"
+                                                         HorizontalOptions="End">
+                                        <Button Text="Up"
+                                                Style="{StaticResource PillGreySm}"
+                                                Clicked="OnMoveUpClicked" />
+                                        <Button Text="Edit"
+                                                Style="{StaticResource PillGreySm}"
+                                                Clicked="OnEditClicked" />
+                                        <Button Text="Down"
+                                                Style="{StaticResource PillGreySm}"
+                                                Clicked="OnMoveDownClicked" />
+                                    </VerticalStackLayout>
                                 </Grid>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
+
                 </CollectionView>
+            </Grid>
+        </Frame>
 
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <!-- Bottom Buttons -->
-        <Grid Grid.Row="2"
-              ColumnDefinitions="*,*"
-              ColumnSpacing="10"
-              Margin="0,10,0,0">
-
-            <Button Text="Back"
-                    Clicked="OnBackClicked"
-                    Grid.Column="0"
-                    BackgroundColor="Gray"
-                    TextColor="White"
-                    CornerRadius="8"
-                    HorizontalOptions="Fill" />
-
-            <Button Text="Next"
-                    Clicked="OnNextClicked"
-                    Grid.Column="1"
-                    BackgroundColor="#512BD4"
-                    TextColor="White"
-                    CornerRadius="8"
-                    HorizontalOptions="Fill" />
+        <!-- Bottom actions -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" Margin="5,0">
+            <Button Grid.Column="0"
+                    Text="Back"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnBackClicked" />
+            <Button Grid.Column="1"
+                    Text="Next"
+                    Style="{StaticResource PillGrey}"
+                    Clicked="OnNextClicked" />
         </Grid>
+
     </Grid>
 </ContentPage>
