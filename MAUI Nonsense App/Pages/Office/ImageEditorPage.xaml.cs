@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Linq; // Any(), First()
+using System.Linq;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Devices; // DeviceDisplay
+using Microsoft.Maui.Devices;
 using MAUI_Nonsense_App.Models;
 
 namespace MAUI_Nonsense_App.Pages.Office;
@@ -13,11 +13,15 @@ public partial class ImageEditorPage : ContentPage
     private readonly ImagePageModel _imagePage;
 
     private readonly FrameDrawable _drawable;
-    private RectF _imageRectOnCanvas;
+    private RectF _imageRectOnCanvas;      // where the bitmap actually draws inside the Overlay
+    private RectF _dragClampRect;          // a slightly bigger rect = imageRect inflated for “outside” dragging
     private Size _bitmapSize;
     private int? _draggingIndex = null;
+
+    // UI affordances (in dp)
     private const float HandleRadiusDp = 10f;
-    private const float HitRadiusDp = 24f;
+    private const float HitRadiusDp = 28f;
+    private const float DragOutsetDp = 24f;   // how far outside the image you can drag
 
     public ImageEditorPage(ImagePageModel imagePage)
     {
@@ -27,10 +31,12 @@ public partial class ImageEditorPage : ContentPage
         _drawable = new FrameDrawable();
         Overlay.Drawable = _drawable;
 
+        // touch
         Overlay.StartInteraction += OverlayOnStartInteraction;
         Overlay.DragInteraction += OverlayOnDragInteraction;
         Overlay.EndInteraction += OverlayOnEndInteraction;
 
+        // layout changes
         Overlay.SizeChanged += (_, __) => RecomputeImageRectAndRedraw();
         EditableImage.SizeChanged += (_, __) => RecomputeImageRectAndRedraw();
 
@@ -39,51 +45,63 @@ public partial class ImageEditorPage : ContentPage
 
     private void LoadImage()
     {
-        if (!File.Exists(_imagePage.FilePath))
-            return;
+        if (!File.Exists(_imagePage.FilePath)) return;
 
         EditableImage.Source = ImageSource.FromFile(_imagePage.FilePath);
 
-        // Best-effort intrinsic size (not critical on Android because we query the actual drawn rect)
-        try
+        // If selection page filled these, use them; otherwise detect once.
+        if (_imagePage.OriginalPixelWidth <= 0 || _imagePage.OriginalPixelHeight <= 0)
         {
-            using var fs = File.OpenRead(_imagePage.FilePath);
-            var img = Microsoft.Maui.Graphics.Platform.PlatformImage.FromStream(fs);
-            _bitmapSize = new Size(img.Width, img.Height);
+            try
+            {
+                using var fs = File.OpenRead(_imagePage.FilePath);
+#if ANDROID || IOS || MACCATALYST || WINDOWS
+                var img = Microsoft.Maui.Graphics.Platform.PlatformImage.FromStream(fs);
+                _bitmapSize = new Size(img.Width, img.Height);
+#else
+                _bitmapSize = new Size(1000, 1000);
+#endif
+            }
+            catch { _bitmapSize = new Size(1000, 1000); }
         }
-        catch
+        else
         {
-            _bitmapSize = new Size(1000, 1000);
+            _bitmapSize = new Size(_imagePage.OriginalPixelWidth, _imagePage.OriginalPixelHeight);
         }
 
-        // Default to full image unless we have a saved crop
-        if (_imagePage.FrameCrop is { } saved)
-            _drawable.SetNormalizedCorners(saved);
-        else
-            _drawable.SetNormalizedCorners(CropQuadNormalized.FullImage);
+        // Seed corners (exact full-image) if nothing saved yet
+        _drawable.SetNormalizedCorners(_imagePage.FrameCrop ?? CropQuadNormalized.FullImage);
 
         RecomputeImageRectAndRedraw();
     }
 
     private void RecomputeImageRectAndRedraw()
     {
+        // Get the exact rect where the platform drew the bitmap (best), else math fallback
 #if ANDROID
         var rectFromAndroid = TryGetAndroidDisplayedImageRectInDips();
         if (rectFromAndroid.HasValue)
-        {
             _imageRectOnCanvas = rectFromAndroid.Value;
-        }
         else
 #endif
         {
             if (Overlay.Width <= 0 || Overlay.Height <= 0 || _bitmapSize.Width <= 0 || _bitmapSize.Height <= 0)
                 return;
 
-            // Fallback (non-Android or drawable not ready yet)
             _imageRectOnCanvas = ComputeAspectFitRect(new Size(Overlay.Width, Overlay.Height), _bitmapSize);
         }
 
+        // allow dragging slightly outside image
+        var outset = DpToPixels(DragOutsetDp);
+        _dragClampRect = _imageRectOnCanvas;
+        _dragClampRect.X -= outset;
+        _dragClampRect.Y -= outset;
+        _dragClampRect.Width += 2 * outset;
+        _dragClampRect.Height += 2 * outset;
+
         _drawable.ImageRect = _imageRectOnCanvas;
+        _drawable.HandleRadiusPx = DpToPixels(HandleRadiusDp);
+
         Overlay.Invalidate();
     }
 
@@ -97,19 +115,15 @@ public partial class ImageEditorPage : ContentPage
         return new RectF(x, y, w, h);
     }
 
-    private float DpToPixels(float dp) =>
-        (float)(dp * DeviceDisplay.MainDisplayInfo.Density);
+    private float DpToPixels(float dp) => (float)(dp * DeviceDisplay.MainDisplayInfo.Density);
 
-    #region Interaction
-
+    // -------- touch handlers --------
     private void OverlayOnStartInteraction(object? sender, TouchEventArgs e)
     {
         if (!e.Touches.Any()) return;
-
         var p = e.Touches.First();
-        var hitRadius = DpToPixels(HitRadiusDp);
 
-        _draggingIndex = _drawable.HitTestHandle(new PointF((float)p.X, (float)p.Y), hitRadius);
+        _draggingIndex = _drawable.HitTestHandle(new PointF((float)p.X, (float)p.Y), DpToPixels(HitRadiusDp));
     }
 
     private void OverlayOnDragInteraction(object? sender, TouchEventArgs e)
@@ -119,9 +133,11 @@ public partial class ImageEditorPage : ContentPage
         var p = e.Touches.First();
         var newPt = new PointF((float)p.X, (float)p.Y);
 
+        // Clamp to our enlarged rect so you can go a bit outside the photo
         var clamped = new PointF(
-            x: Math.Clamp(newPt.X, _imageRectOnCanvas.Left, _imageRectOnCanvas.Right),
-            y: Math.Clamp(newPt.Y, _imageRectOnCanvas.Top, _imageRectOnCanvas.Bottom));
+            Math.Clamp(newPt.X, _dragClampRect.Left, _dragClampRect.Right),
+            Math.Clamp(newPt.Y, _dragClampRect.Top, _dragClampRect.Bottom)
+        );
 
         _drawable.MoveHandle(_draggingIndex.Value, clamped);
         Overlay.Invalidate();
@@ -132,13 +148,11 @@ public partial class ImageEditorPage : ContentPage
         _draggingIndex = null;
     }
 
-    #endregion
-
+    // -------- actions --------
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        var norm = _drawable.GetNormalizedCorners();
-        _imagePage.FrameCrop = norm;
-        await DisplayAlert("Saved", "Frame coordinates saved.", "OK");
+        // Save without any popups
+        _imagePage.FrameCrop = _drawable.GetNormalizedCorners();
         await Navigation.PopAsync();
     }
 
@@ -149,8 +163,7 @@ public partial class ImageEditorPage : ContentPage
 
 #if ANDROID
     /// <summary>
-    /// Reads the exact rectangle where Android's ImageView drew the bitmap (in DIPs).
-    /// This accounts for EXIF rotation, scaling, and matrix translations.
+    /// Exact rectangle where Android's ImageView drew the bitmap (in DIPs).
     /// </summary>
     private RectF? TryGetAndroidDisplayedImageRectInDips()
     {
@@ -158,48 +171,45 @@ public partial class ImageEditorPage : ContentPage
         if (handler == null) return null;
 
         var imageView = handler.PlatformView as global::Android.Widget.ImageView;
-        var drawable = imageView?.Drawable;
+        var drawable  = imageView?.Drawable;
         if (imageView == null || drawable == null) return null;
 
-        // Drawable bounds in source pixels
-        var srcRect = new global::Android.Graphics.RectF(0, 0, drawable.IntrinsicWidth, drawable.IntrinsicHeight);
+        // drawable source rect (px)
+        var mapped = new global::Android.Graphics.RectF(0, 0, drawable.IntrinsicWidth, drawable.IntrinsicHeight);
 
-        // Copy ImageMatrix and map to view-space pixels
+        // apply the matrix used by ImageView (px space)
         var matrix = new global::Android.Graphics.Matrix(imageView.ImageMatrix);
-        matrix.MapRect(srcRect);
+        matrix.MapRect(mapped);
 
-        // Include view padding (also in pixels)
-        srcRect.Offset(imageView.PaddingLeft, imageView.PaddingTop);
+        // include view padding (px)
+        mapped.Offset(imageView.PaddingLeft, imageView.PaddingTop);
 
-        // Convert to MAUI device-independent units (DIPs)
         var density = (float)DeviceDisplay.MainDisplayInfo.Density;
-        return new RectF(
-            srcRect.Left / density,
-            srcRect.Top / density,
-            srcRect.Width() / density,
-            srcRect.Height() / density
-        );
+        return new RectF(mapped.Left / density, mapped.Top / density, mapped.Width() / density, mapped.Height() / density);
     }
 #endif
 
-    // === Overlay drawable ===
+    // ================= draw overlay =================
     private sealed class FrameDrawable : IDrawable
     {
-        // 0=TL, 1=TR, 2=BR, 3=BL
+        // order: TL(0) TR(1) BR(2) BL(3)
         private readonly PointF[] _canvasPoints = new PointF[4];
         private CropQuadNormalized _normalized = CropQuadNormalized.FullImage;
 
         public RectF ImageRect { get; set; }
-        private const float HandleRadius = 10f;
+        public float HandleRadiusPx { get; set; } = 10f;
+
         private const float LineThickness = 2f;
 
         public void Draw(ICanvas canvas, RectF dirtyRect)
         {
+            // map normalized to canvas points each frame
             for (int i = 0; i < 4; i++)
                 _canvasPoints[i] = NormalizedToCanvas(GetNorm(i));
 
             canvas.StrokeColor = Colors.LimeGreen;
             canvas.StrokeSize = LineThickness;
+
             for (int i = 0; i < 4; i++)
             {
                 var a = _canvasPoints[i];
@@ -209,7 +219,7 @@ public partial class ImageEditorPage : ContentPage
 
             canvas.FillColor = Colors.LimeGreen;
             foreach (var p in _canvasPoints)
-                canvas.FillCircle(p, HandleRadius);
+                canvas.FillCircle(p, HandleRadiusPx);
         }
 
         public void SetNormalizedCorners(CropQuadNormalized quad) => _normalized = quad;
@@ -231,8 +241,11 @@ public partial class ImageEditorPage : ContentPage
         public void MoveHandle(int index, PointF newCanvasPoint)
         {
             _canvasPoints[index] = newCanvasPoint;
-            var norm = CanvasToNormalized(newCanvasPoint);
-            SetNorm(index, norm);
+
+            // convert to normalized relative to *imageRect*, but do not clamp:
+            // allow values <0 or >1 so user can place handles outside.
+            var n = CanvasToNormalized(newCanvasPoint);
+            SetNorm(index, n);
         }
 
         private PointF NormalizedToCanvas(PointD n) =>
@@ -248,14 +261,11 @@ public partial class ImageEditorPage : ContentPage
 
             var x = (c.X - ImageRect.Left) / ImageRect.Width;
             var y = (c.Y - ImageRect.Top) / ImageRect.Height;
-
-            return new PointD(
-                Math.Clamp(x, 0f, 1f),
-                Math.Clamp(y, 0f, 1f)
-            );
+            // NOTE: intentionally NOT clamped to [0,1]
+            return new PointD(x, y);
         }
 
-        private PointD GetNorm(int idx) => idx switch
+        private PointD GetNorm(int i) => i switch
         {
             0 => _normalized.TL,
             1 => _normalized.TR,
@@ -264,15 +274,16 @@ public partial class ImageEditorPage : ContentPage
             _ => _normalized.TL
         };
 
-        private void SetNorm(int idx, PointD value)
+        private void SetNorm(int i, PointD v)
         {
-            switch (idx)
+            _normalized = i switch
             {
-                case 0: _normalized = _normalized with { TL = value }; break;
-                case 1: _normalized = _normalized with { TR = value }; break;
-                case 2: _normalized = _normalized with { BR = value }; break;
-                case 3: _normalized = _normalized with { BL = value }; break;
-            }
+                0 => _normalized with { TL = v },
+                1 => _normalized with { TR = v },
+                2 => _normalized with { BR = v },
+                3 => _normalized with { BL = v },
+                _ => _normalized
+            };
         }
     }
 }

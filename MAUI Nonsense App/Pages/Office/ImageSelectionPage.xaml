@@ -129,17 +129,18 @@
                                            Text="{Binding FileName}"
                                            FontAttributes="Bold"
                                            LineBreakMode="WordWrap"
+                                           FontSize="12"
                                            TextColor="{StaticResource TextPrimary}" />
 
                                     <!-- Meta -->
-                                    <HorizontalStackLayout Grid.Column="1" Grid.Row="1" Spacing="12">
+                                    <VerticalStackLayout Grid.Column="1" Grid.Row="1" Spacing="2">
                                         <Label Text="{Binding DisplayDate}"
                                                FontSize="12"
                                                TextColor="{StaticResource TextSecondary}" />
                                         <Label Text="{Binding DisplaySize}"
                                                FontSize="12"
                                                TextColor="{StaticResource TextSecondary}" />
-                                    </HorizontalStackLayout>
+                                    </VerticalStackLayout>
 
                                     <!-- Remove -->
                                     <Button Grid.Column="2" Grid.RowSpan="2"

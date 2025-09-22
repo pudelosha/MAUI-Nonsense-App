@@ -12,8 +12,7 @@ namespace MAUI_Nonsense_App.Models
     }
 
     /// <summary>
-    /// Four-corner crop quad stored as normalized coordinates.
-    /// Order: TL, TR, BR, BL.
+    /// Four-corner crop quad stored as normalized coordinates. Order: TL, TR, BR, BL.
     /// </summary>
     public record struct CropQuadNormalized(PointD TL, PointD TR, PointD BR, PointD BL)
     {
@@ -25,15 +24,21 @@ namespace MAUI_Nonsense_App.Models
     {
         public string FilePath { get; set; } = string.Empty;
         public string FileName => Path.GetFileName(FilePath);
+
+        // Intrinsic pixel size of the source bitmap (filled at selection time)
+        public int OriginalPixelWidth { get; set; }
+        public int OriginalPixelHeight { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public long FileSizeBytes { get; set; }
-        public string Source { get; set; } = "Unknown"; // e.g., "Gallery" or "Camera"
+        public string Source { get; set; } = "Unknown"; // "Gallery" or "Camera"
 
         public string DisplayDate => CreatedAt.ToString("yyyy-MM-dd HH:mm");
         public string DisplaySize => $"{FileSizeBytes / 1024.0:F1} KB";
 
         /// <summary>
-        /// User-defined frame crop, as normalized quad; null if not set yet.
+        /// Saved or default crop (normalized to the displayed image rect).
+        /// If null, the selection page will seed this with FullImage.
         /// </summary>
         public CropQuadNormalized? FrameCrop { get; set; }
     }
