@@ -6,13 +6,11 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <!-- Colors -->
             <Color x:Key="CardBg">#F3F4F6</Color>
             <Color x:Key="TextPrimary">#111827</Color>
             <Color x:Key="TextSecondary">#6B7280</Color>
             <Color x:Key="BtnBg">#E5E7EB</Color>
 
-            <!-- Card style -->
             <Style TargetType="Frame">
                 <Setter Property="HasShadow" Value="True"/>
                 <Setter Property="CornerRadius" Value="16"/>
@@ -20,7 +18,6 @@
                 <Setter Property="Padding" Value="16"/>
             </Style>
 
-            <!-- Grey pill buttons -->
             <Style x:Key="PillGrey" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
                 <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
@@ -32,11 +29,11 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!-- No ScrollView here; let CollectionView scroll -->
-    <Grid Padding="16" RowDefinitions="Auto,*" RowSpacing="16">
+    <!-- Uniform page padding; both sections use the same extra 4dp gutter -->
+    <Grid Padding="12" RowDefinitions="Auto,*" RowSpacing="12">
 
-        <!-- Top card: description + New PDF -->
-        <Frame Grid.Row="0">
+        <!-- Top card -->
+        <Frame Grid.Row="0" Margin="6,0">
             <VerticalStackLayout Spacing="12">
                 <Label Text="Create a new PDF from images, or manage your saved documents below."
                        FontSize="12"
@@ -47,65 +44,73 @@
             </VerticalStackLayout>
         </Frame>
 
-        <!-- PDF list -->
-        <CollectionView Grid.Row="1"
-                        x:Name="PdfListView"
-                        ItemsSource="{Binding PdfDocuments}"
-                        SelectionMode="None">
-            <CollectionView.EmptyView>
-                <Frame>
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="No PDFs yet"
-                               FontSize="16"
-                               FontAttributes="Bold"
-                               TextColor="{StaticResource TextPrimary}" />
-                        <Label Text="Tap “New PDF” to create your first document."
-                               FontSize="12"
-                               TextColor="{StaticResource TextSecondary}" />
-                    </VerticalStackLayout>
-                </Frame>
-            </CollectionView.EmptyView>
+        <!-- List container: same gutter; allow shadows to overflow -->
+        <Grid Grid.Row="1"
+              Padding="4,0"
+              IsClippedToBounds="False"
+              BackgroundColor="Transparent">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,4">
-                        <VerticalStackLayout Spacing="8">
+            <CollectionView x:Name="PdfListView"
+                            ItemsSource="{Binding PdfDocuments}"
+                            SelectionMode="None"
+                            BackgroundColor="Transparent">
 
-                            <Label Text="{Binding Name}"
-                                   FontSize="18"
+                <CollectionView.EmptyView>
+                    <!-- Card has no horizontal margin: width matches top card; shadow room comes from container padding -->
+                    <Frame Margin="2,6">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="No PDFs yet"
+                                   FontSize="16"
                                    FontAttributes="Bold"
                                    TextColor="{StaticResource TextPrimary}" />
-
-                            <Grid ColumnDefinitions="*"
-                                  RowDefinitions="Auto,Auto">
-                                <Label Grid.Row="0"
-                                       Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}"
-                                       FontSize="12"
-                                       TextColor="{StaticResource TextSecondary}" />
-                                <Label Grid.Row="1"
-                                       Text="{Binding SizeInKb}"
-                                       FontSize="12"
-                                       TextColor="{StaticResource TextSecondary}" />
-                            </Grid>
-
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                                <Button Grid.Column="0"
-                                        Text="Delete"
-                                        Style="{StaticResource PillGrey}"
-                                        Clicked="OnDeletePdfClicked"
-                                        CommandParameter="{Binding .}" />
-                                <Button Grid.Column="1"
-                                        Text="Send"
-                                        Style="{StaticResource PillGrey}"
-                                        Clicked="OnSendPdfClicked"
-                                        CommandParameter="{Binding .}" />
-                            </Grid>
-
+                            <Label Text="Tap “New PDF” to create your first document."
+                                   FontSize="12"
+                                   TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
                     </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Same here: no horizontal margin; consistent spacing top/bottom -->
+                        <Frame Margin="0,6">
+                            <VerticalStackLayout Spacing="8">
+
+                                <Label Text="{Binding Name}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}" />
+
+                                <Grid RowDefinitions="Auto,Auto">
+                                    <Label Grid.Row="0"
+                                           Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Row="1"
+                                           Text="{Binding SizeInKb}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                    <Button Grid.Column="0"
+                                            Text="Delete"
+                                            Style="{StaticResource PillGrey}"
+                                            Clicked="OnDeletePdfClicked"
+                                            CommandParameter="{Binding .}" />
+                                    <Button Grid.Column="1"
+                                            Text="Send"
+                                            Style="{StaticResource PillGrey}"
+                                            Clicked="OnSendPdfClicked"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
 
     </Grid>
 </ContentPage>
