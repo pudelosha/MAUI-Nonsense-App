@@ -32,26 +32,34 @@
     <Grid Padding="10" RowDefinitions="Auto,*,Auto" RowSpacing="12" IsClippedToBounds="False">
 
         <Frame Grid.Row="0" Margin="6,0">
-            <Label Text="Drag the 4 green dots to adjust the page frame."
+            <Label Text="Drag the 4 green dots to set the page frame."
                    FontSize="12"
                    TextColor="{StaticResource TextSecondary}" />
         </Frame>
 
-        <!-- IMPORTANT: no padding on the Frame; no clipping anywhere -->
+        <!-- Gray parent frame -->
         <Frame Grid.Row="1"
                Margin="6,0"
                Padding="0"
                IsClippedToBounds="False"
                VerticalOptions="FillAndExpand">
-            <Grid x:Name="ImageHost"
-                  Padding="50"
-                BackgroundColor="Transparent"
-                  IsClippedToBounds="False">
-                <Image x:Name="EditableImage"
-                       Aspect="AspectFit"
-                       HorizontalOptions="Fill"
-                       VerticalOptions="Fill" />
+
+            <!-- Host: bottom=image area (with margin), top=invisible overlay (no margin) -->
+            <Grid x:Name="FrameHost" IsClippedToBounds="False">
+                <Grid x:Name="ImageArea"
+                      Margin="50"
+                      BackgroundColor="Transparent"
+                      IsClippedToBounds="False">
+                    <Image x:Name="EditableImage"
+                           Aspect="AspectFit"
+                           InputTransparent="True"
+                           BackgroundColor="Transparent"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill" />
+                </Grid>
+
                 <GraphicsView x:Name="Overlay"
+                              ZIndex="10"
                               BackgroundColor="Transparent"
                               HorizontalOptions="Fill"
                               VerticalOptions="Fill"
