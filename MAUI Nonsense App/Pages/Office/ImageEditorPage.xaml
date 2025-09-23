@@ -6,13 +6,11 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <!-- Palette (same as other screens) -->
             <Color x:Key="CardBg">#F3F4F6</Color>
             <Color x:Key="TextSecondary">#6B7280</Color>
             <Color x:Key="BtnBg">#E5E7EB</Color>
             <Color x:Key="TextPrimary">#111827</Color>
 
-            <!-- Outer card -->
             <Style TargetType="Frame">
                 <Setter Property="HasShadow" Value="True"/>
                 <Setter Property="CornerRadius" Value="16"/>
@@ -20,7 +18,6 @@
                 <Setter Property="Padding" Value="16"/>
             </Style>
 
-            <!-- Pills -->
             <Style x:Key="PillGrey" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource BtnBg}" />
                 <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
@@ -29,45 +26,39 @@
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
             </Style>
-
-            <!-- Transparent inner surface (no white box behind the photo) -->
-            <Style x:Key="InnerSurface" TargetType="Border">
-                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
-                <Setter Property="StrokeThickness" Value="0" />
-                <Setter Property="BackgroundColor" Value="Transparent" />
-                <!-- A bit of padding so the user can easily grab the handles -->
-                <Setter Property="Padding" Value="8" />
-            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid Padding="10" RowDefinitions="Auto,*,Auto" RowSpacing="12" IsClippedToBounds="False">
 
-        <!-- Instructions -->
         <Frame Grid.Row="0" Margin="6,0">
             <Label Text="Drag the 4 green dots to adjust the page frame."
                    FontSize="12"
                    TextColor="{StaticResource TextSecondary}" />
         </Frame>
 
-        <!-- Image area (fills) -->
-        <Frame Grid.Row="1" Margin="6,0" VerticalOptions="FillAndExpand">
-            <Border Style="{StaticResource InnerSurface}">
-                <Grid>
-                    <Image x:Name="EditableImage"
-                           Aspect="AspectFit"
-                           HorizontalOptions="Fill"
-                           VerticalOptions="Fill" />
-                    <GraphicsView x:Name="Overlay"
-                                  BackgroundColor="Transparent"
-                                  HorizontalOptions="Fill"
-                                  VerticalOptions="Fill"
-                                  InputTransparent="False" />
-                </Grid>
-            </Border>
+        <!-- IMPORTANT: no padding on the Frame; no clipping anywhere -->
+        <Frame Grid.Row="1"
+               Margin="6,0"
+               Padding="0"
+               IsClippedToBounds="False"
+               VerticalOptions="FillAndExpand">
+            <Grid x:Name="ImageHost"
+                  Padding="50"
+                BackgroundColor="Transparent"
+                  IsClippedToBounds="False">
+                <Image x:Name="EditableImage"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Fill"
+                       VerticalOptions="Fill" />
+                <GraphicsView x:Name="Overlay"
+                              BackgroundColor="Transparent"
+                              HorizontalOptions="Fill"
+                              VerticalOptions="Fill"
+                              InputTransparent="False" />
+            </Grid>
         </Frame>
 
-        <!-- Actions -->
         <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" Margin="5,0">
             <Button Text="Cancel"
                     Style="{StaticResource PillGrey}"
